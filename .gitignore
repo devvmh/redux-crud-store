@@ -56,4 +56,3 @@ ios
 .editorconfig
 npm-debug.log
 webpack/dist
-dist/
