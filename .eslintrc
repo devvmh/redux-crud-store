@@ -1,0 +1,20 @@
+{
+  "parser": "babel-eslint",
+  "extends": "eslint-config-airbnb",
+  "globals": {
+    "describe": false,
+    "it": false
+  },
+  "rules": {
+    semi: [2, "never"],
+    indent: [2, 2, {"SwitchCase": 1}],
+    comma-dangle: [2, "never"],
+    id-length: 0,
+    no-unused-vars: 0,
+    camelcase: 0,
+    new-cap: 0
+  },
+  "ecmaFeatures": {
+    "experimentalObjectRestSpread": true
+  }
+}
