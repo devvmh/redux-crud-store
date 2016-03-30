@@ -105,12 +105,14 @@ export function clearActionStatus(model, action) {
   }
 }
 
-export function apiCall(success, failure, method, path, params = {}, data = undefined) {
+export function apiCall(success, failure, method, path, params = {}, data = undefined, opts = {}) {
+  const meta = opts.meta || {}
   return {
     type: API_CALL,
     meta: {
+      ...meta,
       success,
-      failure
+      failure,
     },
     payload: {
       method,

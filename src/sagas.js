@@ -11,7 +11,6 @@ const apiGeneric = (apiClient) => function* _apiGeneric(action) {
   const { success, failure } = action.meta
 
   action.meta.fetchTime = Date.now()
-  action.meta.params = params
 
   try {
     const response = yield call(apiClient[method], path, { params, data })
