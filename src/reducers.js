@@ -207,7 +207,7 @@ export default function crudReducer(state = initialState, action) {
   const id = action.meta ? action.meta.id : undefined
   switch (action.type) {
     case CLEAR_ACTION_STATUS:
-      return state.updateIn([action.meta.model, 'actionStatus'],
+      return state.updateIn([action.payload.model, 'actionStatus'],
                           (s) => actionStatusReducer(s, action))
     case FETCH:
     case FETCH_SUCCESS:
