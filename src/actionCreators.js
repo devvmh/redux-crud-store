@@ -7,7 +7,8 @@ import {
   CLEAR_ACTION_STATUS, API_CALL
 } from './actionTypes'
 
-export function fetchCollection(model, path, params = {}) {
+export function fetchCollection(model, path, params = {}, opts = {}) {
+  const method = opts.method || 'get'
   return {
     type: FETCH,
     meta: {
@@ -17,14 +18,15 @@ export function fetchCollection(model, path, params = {}) {
       model
     },
     payload: {
-      method: 'get',
+      method,
       path,
       params
     }
   }
 }
 
-export function fetchRecord(model, id, path, params = {}) {
+export function fetchRecord(model, id, path, params = {}, opts = {}) {
+  const method = opts.method || 'get'
   return {
     type: FETCH_ONE,
     meta: {
@@ -34,14 +36,15 @@ export function fetchRecord(model, id, path, params = {}) {
       id
     },
     payload: {
-      method: 'get',
+      method,
       path,
       params
     }
   }
 }
 
-export function createRecord(model, path, data = {}, params = {}) {
+export function createRecord(model, path, data = {}, params = {}, opts = {}) {
+  const method = opts.method || 'post'
   return {
     type: CREATE,
     meta: {
@@ -50,7 +53,7 @@ export function createRecord(model, path, data = {}, params = {}) {
       model
     },
     payload: {
-      method: 'post',
+      method,
       path,
       data,
       params
@@ -58,7 +61,8 @@ export function createRecord(model, path, data = {}, params = {}) {
   }
 }
 
-export function updateRecord(model, id, path, data = {}, params = {}) {
+export function updateRecord(model, id, path, data = {}, params = {}, opts = {}) {
+  const method = opts.method || 'put'
   return {
     type: UPDATE,
     meta: {
@@ -68,7 +72,7 @@ export function updateRecord(model, id, path, data = {}, params = {}) {
       id
     },
     payload: {
-      method: 'put',
+      method,
       path,
       data,
       params
@@ -76,7 +80,8 @@ export function updateRecord(model, id, path, data = {}, params = {}) {
   }
 }
 
-export function deleteRecord(model, id, path, params = {}) {
+export function deleteRecord(model, id, path, params = {}, opts = {}) {
+  const method = opts.method || 'del'
   return {
     type: DELETE,
     meta: {
@@ -86,7 +91,7 @@ export function deleteRecord(model, id, path, params = {}) {
       id
     },
     payload: {
-      method: 'del',
+      method,
       path,
       params
     }
