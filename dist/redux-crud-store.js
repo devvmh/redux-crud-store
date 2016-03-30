@@ -9710,7 +9710,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var id = action.meta ? action.meta.id : undefined;
 	  switch (action.type) {
 	    case _actionTypes.CLEAR_ACTION_STATUS:
-	      return state.updateIn([action.meta.model, 'actionStatus'], function (s) {
+	      return state.updateIn([action.payload.model, 'actionStatus'], function (s) {
 	        return actionStatusReducer(s, action);
 	      });
 	    case _actionTypes.FETCH:
