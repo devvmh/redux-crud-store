@@ -9253,7 +9253,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function fetchCollection(model, path) {
 	  var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	  var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 
+	  var method = opts.method || 'get';
 	  return {
 	    type: _actionTypes.FETCH,
 	    meta: {
@@ -9263,7 +9265,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      model: model
 	    },
 	    payload: {
-	      method: 'get',
+	      method: method,
 	      path: path,
 	      params: params
 	    }
@@ -9272,7 +9274,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function fetchRecord(model, id, path) {
 	  var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+	  var opts = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
+	  var method = opts.method || 'get';
 	  return {
 	    type: _actionTypes.FETCH_ONE,
 	    meta: {
@@ -9282,7 +9286,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      id: id
 	    },
 	    payload: {
-	      method: 'get',
+	      method: method,
 	      path: path,
 	      params: params
 	    }
@@ -9292,7 +9296,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	function createRecord(model, path) {
 	  var data = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 	  var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+	  var opts = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
+	  var method = opts.method || 'post';
 	  return {
 	    type: _actionTypes.CREATE,
 	    meta: {
@@ -9301,7 +9307,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      model: model
 	    },
 	    payload: {
-	      method: 'post',
+	      method: method,
 	      path: path,
 	      data: data,
 	      params: params
@@ -9312,7 +9318,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	function updateRecord(model, id, path) {
 	  var data = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 	  var params = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
+	  var opts = arguments.length <= 5 || arguments[5] === undefined ? {} : arguments[5];
 
+	  var method = opts.method || 'put';
 	  return {
 	    type: _actionTypes.UPDATE,
 	    meta: {
@@ -9322,7 +9330,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      id: id
 	    },
 	    payload: {
-	      method: 'put',
+	      method: method,
 	      path: path,
 	      data: data,
 	      params: params
@@ -9332,7 +9340,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function deleteRecord(model, id, path) {
 	  var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+	  var opts = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
+	  var method = opts.method || 'del';
 	  return {
 	    type: _actionTypes.DELETE,
 	    meta: {
@@ -9342,7 +9352,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      id: id
 	    },
 	    payload: {
-	      method: 'del',
+	      method: method,
 	      path: path,
 	      params: params
 	    }
