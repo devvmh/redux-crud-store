@@ -170,22 +170,22 @@ function actionStatusReducer(state = actionStatusInitialState, action) {
         errors: action.payload.errors || {}, id: null
       }))
     case UPDATE:
-      return state.set('create', fromJS({
-        pending: true, id: action.payload.id
+      return state.set('update', fromJS({
+        pending: true, id: action.meta.id
       }))
     case UPDATE_SUCCESS:
       return state.set('update', fromJS({
         pending: false, isSuccess: true, message: null, errors: {},
-        id: action.payload.id
+        id: action.meta.id
       }))
     case UPDATE_ERROR:
       return state.set('update', fromJS({
         pending: false, isSuccess: false, message: action.payload.message,
-        errors: action.payload.errors, id: null
+        errors: action.payload.errors, id: action.meta.id
       }))
     case DELETE:
       return state.set('delete', fromJS({
-        pending: true, id: action.payload.id
+        pending: true, id: action.meta.id
       }))
     case DELETE_SUCCESS:
       return state.set('delete', fromJS({

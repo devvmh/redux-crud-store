@@ -241,8 +241,10 @@ What follows is our original notes on the functioning of this module. Someday we
         },
         actionStatus: {
           create: { pending: false, isSuccess: true, errors: null },
-          update: { pending: false, isSuccess: false, message: "Invalid id", errors: { "planner_id": "not a planner" } },
-          delete: { pending: true }
+          update: { pending: false, id: 8, isSuccess: false,
+                    message: "Invalid id",
+                    errors: { "planner_id": "not a planner" } },
+          delete: { pending: true, id: 45 }
         }
       },
       comments: {
