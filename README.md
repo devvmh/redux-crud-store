@@ -1,29 +1,15 @@
 # redux-crud-store - a reusable API for syncing models with a backend
 
-This module contains a number of helper functions to make keeping a Redux store for a single page application in sync with a backend. In particular, it provides these four things:
+Making a single page application (SPA)? Using a Redux store?
 
-2. A redux-saga saga that you can add to your middlewares to send the async calls for CRUD actions, and also to dispatch the success/error actions when the call is complete.
-1. A reducer that handles the async send, async success, and async failure actions, and stores the results in an intelligent way in your redux store.
-3. Constants and action creators for each action type.
-4. Selector functions, which return a collection of models, a single model, or an object saying "wait for me to load" or "you need to dispatch another fetch action"
+This module contains helper functions to make it easier to keep your models in sync with a backend. In particular, it provides these four things:
 
-Additionally, the module caches collections and records. So if you send a request like `GET /posts` to your server with the params
+1. **It handles async for you**, using redux-saga. A middleware will watch for your async send actions, and will dispatch the success/error actions when the call is complete.
+2. It implements a **default reducer for all of your backend models**. This reducer will handle your async send, success, and failure actions, and store them in your redux store in an intelligent way.
+3. You can **quickly write action creators** for this reducer using the predefined constants and action creators exported by redux-crud-store.
+4. It provides **selector functions for your components**, which query the store and return a collection of models, a single model, or an object saying "wait for me to load" or "you need to dispatch another fetch action"
 
-    {
-      page: 2,
-      per: 25,
-      filter: {
-        author_id: 20
-      }
-    }
-
-it will store the ids associated with that collection in the store. If you make the same request again in the next 10 minutes, it will simply use the cached result instead.
-
-Further, if you then want to inspect or edit one of the 25 posts returned by that query, it will already be stored in the byId array in the store. Collections simply hold a list of ids.
-
-If you ever worry about your cache getting out of sync, it's easy to manually sync to the server from your components.
-
-## How to use it
+# How to use it
 
 There are four ways to integrate redux-crud-store into your app:
 
@@ -38,6 +24,7 @@ You'll need to write an ApiClient that looks something like this, and can handle
 
     import superagent from 'superagent'
     const base_path = 'https://example.com/api/v3'
+
     class _ApiClient {
       constructor(req) {
         methods.forEach((method) =>
@@ -62,12 +49,13 @@ You don't need to use this exact code, but you must match the API. See src/sagas
 Once you've done that, you can create a redux-saga middleware and add it to your store:
 
     import { createStore, applyMiddleware, compose } from 'redux'
-    import { crudSaga } from 'redux-crud-store'
     import createSagaMiddleware from 'redux-saga'
+
+    import { crudSaga } from 'redux-crud-store'
     import { ApiClient } from './util/ApiClient' // write this yourself!
 
     const client = new ApiClient()
-    const crudMiddleware = createSagaMiddleware(crudSaga(client) 
+    const crudMiddleware = createSagaMiddleware(crudSaga(client))
 
     const createStoreWithMiddleware = compose(
       applyMiddleware(
@@ -80,7 +68,7 @@ Once you've done that, you can create a redux-saga middleware and add it to your
 
 ### 2. Add the reducer to your store
 
-This step is a bit easier! If you like composing your reducers in one file, here's what that file might look like:
+This step is a bit easier! If you like combining your reducers in one file, here's what that file might look like:
 
     import { combineReducers } from 'redux'
     import { crudReducer } from 'redux-crud-store'
@@ -187,7 +175,26 @@ Fetching a single record is very similar. A typical component for editing a sing
       }
     }
 
-## What's still missing
+### Collection caching
+
+Additionally, the module caches collections and records. So if you send a request like `GET /posts` to your server with the params
+
+    {
+      page: 2,
+      per: 25,
+      filter: {
+        author_id: 20
+      }
+    }
+
+it will store the ids associated with that collection in the store. If you make the same request again in the next 10 minutes, it will simply use the cached result instead.
+
+Further, if you then want to inspect or edit one of the 25 posts returned by that query, it will already be stored in the byId array in the store. Collections simply hold a list of ids.
+
+If you ever worry about your cache getting out of sync, it's easy to manually sync to the server from your components.
+
+
+### What's still missing
 
  - it would be great to have a garbage collector using redux-saga
  - default fetch client could be included, to make saga setup easier
@@ -197,7 +204,7 @@ Fetching a single record is very similar. A typical component for editing a sing
  - it would be great to support nested models - automatically stripping the models out of a parent object, moving them into their own store, and storing the parent with just an id reference. This might make component logic kind of intense if we aren't careful.
  - allow other methods and customizations through object parameters on the default functions
 
-## The original documentation
+# The original documentation
 
 What follows is our original notes on the functioning of this module. Someday we'll clean this up. Pull requests are welcome!
 
@@ -254,8 +261,8 @@ What follows is our original notes on the functioning of this module. Someday we
 
 ### Fetch Time
 
- - state.models.plans.collections[n].fetchTime is used for refreshing current page if desired
- - state.models.plans.byId.15000.fetchTime is used for refreshing current record if desired
+ - state.models.posts.collections[n].fetchTime is used for refreshing current page if desired
+ - state.models.posts.byId.15000.fetchTime is used for refreshing current record if desired
  - getting a collection and then a record: getting the record should be intantaneous.
  - fetching 25 records and then the corresponding collection, sadly, is not.
  - fetchTime === 0 indicates loading
@@ -297,11 +304,11 @@ What follows is our original notes on the functioning of this module. Someday we
 
 ### Definitions:
 
- - Model is an abstract type like "plans" or "countries"
+ - Model is an abstract type like "posts" or "comments"
    - it also refers to an object in state.models
  - Record is a single resource e.g. the plan with id=10
- - Collection is a number of records e.g. page 1 of plans
-   - state.plans.collections refers to previously executed queries
+ - Collection is a number of records e.g. page 1 of posts
+   - state.posts.collections refers to previously executed queries
    - a single collection is made up of params, the returned ids, and then metadata
  - fetch means to go to the server
  - select means to get the existing models from the state, or an object saying "please fetch this object!!"
