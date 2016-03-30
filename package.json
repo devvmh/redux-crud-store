@@ -14,6 +14,7 @@
     "clean": "rimraf lib dist es",
     "build": "npm run build:commonjs && npm run build:umd && npm run build:umd:min && npm run build:es",
     "prepublish": "npm run clean && npm run test && npm run build",
+    "postpublish": "git add -A src dist lib es && git commit -m \"publish v${npm_package_version}\" && git tag v${npm_package_version} HEAD && git push && git push --tags",
     "posttest": "npm run lint",
     "lint": "eslint src test",
     "test": "cross-env BABEL_ENV=commonjs mocha --compilers js:babel-core/register --reporter spec test/*.js",
