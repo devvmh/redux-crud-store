@@ -178,6 +178,15 @@ Fetching a single record is very similar. A typical component for editing a sing
       return !!nextProps.status.pending
     }
 
+    ....
+
+    function mapStateToProps(state, ownProps) {
+      return {
+        post: selectRecord('posts', ownProps.id, state.models) },
+        status: selectActionStatus('posts', state.models, 'update')
+      }
+    }
+
 ## What's still missing
 
  - it would be great to have a garbage collector using redux-saga
@@ -185,6 +194,7 @@ Fetching a single record is very similar. A typical component for editing a sing
  - expand support for the generic API_CALL action
  - allow dispatching multiple actions for API_CALL
  - consider allowing dispatching multiple actions for CREATE/UPDATE/DELETE
+ - it would be great to support nested models - automatically stripping the models out of a parent object, moving them into their own store, and storing the parent with just an id reference. This might make component logic kind of intense if we aren't careful.
  - allow other methods and customizations through object parameters on the default functions
 
 ## The original documentation
