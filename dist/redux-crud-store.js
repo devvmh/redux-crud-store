@@ -9655,22 +9655,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        errors: action.payload.errors || {}, id: null
 	      }));
 	    case _actionTypes.UPDATE:
-	      return state.set('create', (0, _immutable.fromJS)({
-	        pending: true, id: action.payload.id
+	      return state.set('update', (0, _immutable.fromJS)({
+	        pending: true, id: action.meta.id
 	      }));
 	    case _actionTypes.UPDATE_SUCCESS:
 	      return state.set('update', (0, _immutable.fromJS)({
 	        pending: false, isSuccess: true, message: null, errors: {},
-	        id: action.payload.id
+	        id: action.meta.id
 	      }));
 	    case _actionTypes.UPDATE_ERROR:
 	      return state.set('update', (0, _immutable.fromJS)({
 	        pending: false, isSuccess: false, message: action.payload.message,
-	        errors: action.payload.errors, id: null
+	        errors: action.payload.errors, id: action.meta.id
 	      }));
 	    case _actionTypes.DELETE:
 	      return state.set('delete', (0, _immutable.fromJS)({
-	        pending: true, id: action.payload.id
+	        pending: true, id: action.meta.id
 	      }));
 	    case _actionTypes.DELETE_SUCCESS:
 	      return state.set('delete', (0, _immutable.fromJS)({
