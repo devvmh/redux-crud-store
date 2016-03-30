@@ -3,6 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 exports.fetchCollection = fetchCollection;
 exports.fetchRecord = fetchRecord;
 exports.createRecord = createRecord;
@@ -131,13 +134,15 @@ function clearActionStatus(model, action) {
 function apiCall(success, failure, method, path) {
   var params = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
   var data = arguments.length <= 5 || arguments[5] === undefined ? undefined : arguments[5];
+  var opts = arguments.length <= 6 || arguments[6] === undefined ? {} : arguments[6];
 
+  var meta = opts.meta || {};
   return {
     type: _actionTypes.API_CALL,
-    meta: {
+    meta: _extends({}, meta, {
       success: success,
       failure: failure
-    },
+    }),
     payload: {
       method: method,
       path: path,

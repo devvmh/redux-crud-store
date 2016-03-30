@@ -112,7 +112,7 @@ export function apiCall(success, failure, method, path, params = {}, data = unde
     meta: {
       ...meta,
       success,
-      failure,
+      failure
     },
     payload: {
       method,

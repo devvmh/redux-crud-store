@@ -9241,6 +9241,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	exports.fetchCollection = fetchCollection;
 	exports.fetchRecord = fetchRecord;
 	exports.createRecord = createRecord;
@@ -9369,13 +9372,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	function apiCall(success, failure, method, path) {
 	  var params = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 	  var data = arguments.length <= 5 || arguments[5] === undefined ? undefined : arguments[5];
+	  var opts = arguments.length <= 6 || arguments[6] === undefined ? {} : arguments[6];
 
+	  var meta = opts.meta || {};
 	  return {
 	    type: _actionTypes.API_CALL,
-	    meta: {
+	    meta: _extends({}, meta, {
 	      success: success,
 	      failure: failure
-	    },
+	    }),
 	    payload: {
 	      method: method,
 	      path: path,
@@ -9806,33 +9811,32 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	            action.meta.fetchTime = Date.now();
-	            action.meta.params = params;
 
-	            _context.prev = 10;
-	            _context.next = 13;
+	            _context.prev = 9;
+	            _context.next = 12;
 	            return (0, _effects.call)(apiClient[method], path, { params: params, data: data });
 
-	          case 13:
+	          case 12:
 	            response = _context.sent;
-	            _context.next = 16;
+	            _context.next = 15;
 	            return (0, _effects.put)(_extends({}, action, { type: success, payload: response }));
 
-	          case 16:
-	            _context.next = 22;
+	          case 15:
+	            _context.next = 21;
 	            break;
 
-	          case 18:
-	            _context.prev = 18;
-	            _context.t0 = _context['catch'](10);
-	            _context.next = 22;
+	          case 17:
+	            _context.prev = 17;
+	            _context.t0 = _context['catch'](9);
+	            _context.next = 21;
 	            return (0, _effects.put)(_extends({}, action, { type: failure, payload: _context.t0, error: true }));
 
-	          case 22:
+	          case 21:
 	          case 'end':
 	            return _context.stop();
 	        }
 	      }
-	    }, _apiGeneric, this, [[10, 18]]);
+	    }, _apiGeneric, this, [[9, 17]]);
 	  });
 	};
 
