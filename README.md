@@ -11,6 +11,8 @@ This module contains helper functions to make it easier to keep your models in s
 
 # How to use it
 
+See [docs/API.md](https://github.com/uniqueway/redux-crud-store/blob/master/docs/API.md) for usage.
+
 There are four ways to integrate redux-crud-store into your app:
 
 1. Set up a redux-saga middleware
@@ -44,7 +46,7 @@ You'll need to write an ApiClient that looks something like this, and can handle
       }
     }
 
-You don't need to use this exact code, but you must match the API. See src/sagas.js for how this client is called.
+You don't need to use this exact code, but you must match the API. See [src/sagas.js](https://github.com/uniqueway/redux-crud-store/blob/master/src/sagas.js) for how this client is called.
 
 Once you've done that, you can create a redux-saga middleware and add it to your store:
 
@@ -109,7 +111,7 @@ A given model might use very predictable endpoints, or it might need a lot of lo
       return deleteRecord(MODEL, id, `${PATH}/${id}`)
     }
 
-redux-crud-store is based on a RESTful API. If you need support for non-restful endpoints, take a look at the apiCall function in src/actionCreators.js and/or submit a pull request!
+redux-crud-store is based on a RESTful API. If you need support for non-restful endpoints, take a look at the apiCall function in [src/actionCreators.js](https://github.com/uniqueway/redux-crud-store/blob/master/src/actionCreators.js) and/or submit a pull request!
 
 ### 4. Use redux-crud-store's selectors and your action creators in your components
 
