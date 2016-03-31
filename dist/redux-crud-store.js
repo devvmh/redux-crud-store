@@ -9753,7 +9753,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return byIdReducer(s, action);
 	      }).updateIn([action.meta.model, 'collections'], modelInitialState, function (list) {
 	        return list.map(function (s) {
-	          return collectionReducer(s, action);
+	          return collectionsReducer(s, action);
 	        });
 	      }).updateIn([action.meta.model, 'actionStatus'], function (s) {
 	        return actionStatusReducer(s, action);
@@ -9777,7 +9777,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return byIdReducer(s, action);
 	      }).updateIn([action.meta.model, 'collections'], modelInitialState, function (list) {
 	        return list.map(function (s) {
-	          return collectionReducer(s, action);
+	          return collectionsReducer(s, action);
 	        });
 	      }).updateIn([action.meta.model, 'actionStatus'], function (s) {
 	        return actionStatusReducer(s, action);
