@@ -144,7 +144,15 @@ function collectionsReducer(state = collectionsInitialState, action) {
       if (entry === undefined) {
         return state.push(collectionReducer(undefined, action))
       }
-      return state.update(entry[0], s => collectionReducer(s, action))
+      // update the entry with the same params as before
+      const alteredAction = {
+        ...action,
+        meta: {
+          ...action.meta,
+          params: entry.params
+        }
+      }
+      return state.update(entry[0], s => collectionReducer(s, alteredAction))
     default:
       return state
   }
