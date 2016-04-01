@@ -9986,7 +9986,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.selectRecord = selectRecord;
 	exports.selectRecordOrEmptyObject = selectRecordOrEmptyObject;
 	exports.selectActionStatus = selectActionStatus;
-	exports.selectActionStatusErrors = selectActionStatusErrors;
+	exports.selectActionErrors = selectActionErrors;
 
 	var _immutable = __webpack_require__(116);
 
@@ -10103,7 +10103,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return status.toJS();
 	}
 
-	function selectActionStatusErrors(modelName, crud, action) {
+	function selectActionErrors(modelName, crud, action) {
 	  var status = selectActionStatus(modelName, crud, action);
 	  if (status.isSuccess === false) {
 	    return status.payload || undefined;
