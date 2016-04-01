@@ -128,5 +128,5 @@ export function selectNiceActionStatus(modelName, crud, action) {
       error: payload
     }
   }
-  throw new Error('Invalid state returned from action status selector')
+  return {}
 }
