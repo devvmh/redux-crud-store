@@ -99,7 +99,7 @@ describe('selectCollection', () => {
   })
 })
 
-describe('selectCollection with page', () => {
+describe('selectCollection with page:', () => {
   describe('page requested is not in store', () => {
     it('should return isLoading: true', () => {
       expect(selectCollection(modelName, crud, { page: 2 })).toEqual(isLoadingOutput)
