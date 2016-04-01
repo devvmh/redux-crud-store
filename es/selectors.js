@@ -96,7 +96,7 @@ function selectCollection(modelName, crud) {
   // TODO can we make this faster?
   var itemNeedsFetch = null;
   collection.get('ids', (0, _immutable.fromJS)([])).forEach(function (id) {
-    var item = model.getIn(['byId', id.toString()]);
+    var item = model.getIn(['byId', id.toString()], (0, _immutable.Map)());
     if (!recent(item.get('fetchTime'))) {
       itemNeedsFetch = item;
       return false;
