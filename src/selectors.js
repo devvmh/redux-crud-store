@@ -110,7 +110,7 @@ export function selectActionStatus(modelName, crud, action) {
   return status.toJS()
 }
 
-export function selectActionStatusErrors(modelName, crud, action) {
+export function selectActionErrors(modelName, crud, action) {
   const status = selectActionStatus(modelName, crud, action)
   if (status.isSuccess === false) {
     return status.payload || undefined
