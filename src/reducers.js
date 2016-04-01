@@ -166,46 +166,42 @@ function actionStatusReducer(state = actionStatusInitialState, action) {
       return state.set(action.payload.action, fromJS({}))
     case CREATE:
       return state.set('create', fromJS({
-        pending: true
+        pending: true,
+        id: null
       }))
     case CREATE_SUCCESS:
-      return state.set('create', fromJS({
-        pending: false, isSuccess: true, message: null, errors: {},
-        id: action.payload.id
-      }))
     case CREATE_ERROR:
       return state.set('create', fromJS({
-        pending: false, isSuccess: false, message: action.payload.message,
-        errors: action.payload.errors || {}, id: null
+        pending: false,
+        id: action.payload.id
+        isSuccess: !action.error,
+        payload: action.payload
       }))
     case UPDATE:
       return state.set('update', fromJS({
-        pending: true, id: action.meta.id
-      }))
-    case UPDATE_SUCCESS:
-      return state.set('update', fromJS({
-        pending: false, isSuccess: true, message: null, errors: {},
+        pending: true,
         id: action.meta.id
       }))
+    case UPDATE_SUCCESS:
     case UPDATE_ERROR:
       return state.set('update', fromJS({
-        pending: false, isSuccess: false, message: action.payload.message,
-        errors: action.payload.errors, id: action.meta.id
+        pending: false,
+        id: action.meta.id,
+        isSuccess: !action.error,
+        payload: action.payload
       }))
     case DELETE:
       return state.set('delete', fromJS({
-        pending: true, id: action.meta.id
-      }))
-    case DELETE_SUCCESS:
-      return state.set('delete', fromJS({
-        pending: false, isSuccess: true, message: null, errors: null,
+        pending: true,
         id: action.meta.id
       }))
+    case DELETE_SUCCESS:
     case DELETE_ERROR:
-      // probably action.payload will be null or {} but whatever!!
       return state.set('delete', fromJS({
-        pending: false, isSuccess: false, message: action.payload.message,
-        errors: action.payload.errors, id: action.meta.id
+        pending: false,
+        id: action.meta.id,
+        isSuccess: !action.error,
+        payload: action.payload // probably null...
       }))
     default:
       return state
