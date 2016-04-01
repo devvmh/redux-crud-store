@@ -4,15 +4,19 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 exports.default = crudReducer;
 
 var _immutable = require('immutable');
 
+var _lodash = require('lodash.isequal');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _actionTypes = require('./actionTypes');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /*
  * SECTION: initial states
@@ -106,25 +110,16 @@ function collectionReducer() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? collectionInitialState : arguments[0];
   var action = arguments[1];
 
-  var id = action.meta ? action.meta.id : undefined;
-  var params = (0, _immutable.fromJS)(action.meta.params);
-  if (params === undefined) {
-    return state;
-  }
   switch (action.type) {
     case _actionTypes.FETCH:
-      return state.set('params', params).set('fetchTime', 0).set('error', null);
+      return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('fetchTime', 0).set('error', null);
     case _actionTypes.FETCH_SUCCESS:
       var ids = action.payload.data.map(function (elt) {
         return elt.id;
       });
-      return state.set('params', params).set('ids', (0, _immutable.fromJS)(ids)).set('otherInfo', (0, _immutable.fromJS)(action.payload || {}).delete('data')).set('error', null).set('fetchTime', action.meta.fetchTime);
+      return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('ids', (0, _immutable.fromJS)(ids)).set('otherInfo', (0, _immutable.fromJS)(action.payload || {}).delete('data')).set('error', null).set('fetchTime', action.meta.fetchTime);
     case _actionTypes.FETCH_ERROR:
-      return state.set('params', params).set('error', action.payload);
-    case _actionTypes.CREATE_SUCCESS:
-      return state.set('params', params).set('fetchTime', null);
-    case _actionTypes.DELETE_SUCCESS:
-      return state.set('params', params).set('fetchTime', null);
+      return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('error', (0, _immutable.fromJS)(action.payload));
     default:
       return state;
   }
@@ -138,37 +133,31 @@ function collectionsReducer() {
     case _actionTypes.FETCH:
     case _actionTypes.FETCH_SUCCESS:
     case _actionTypes.FETCH_ERROR:
-    case _actionTypes.CREATE_SUCCESS:
-    case _actionTypes.DELETE_SUCCESS:
       // create the collection for the given params if needed
       // entry will be undefined or [index, existingCollection]
-      var paramsJson = JSON.stringify(action.meta.params);
+      if (action.meta.params === undefined) {
+        return state;
+      }
       var entry = state.findEntry(function (coll) {
-        return JSON.stringify(coll.toJS().params) === paramsJson;
+        return (0, _lodash2.default)(coll.toJS().params, action.meta.params);
       });
       if (entry === undefined) {
-        if (action.meta.params === undefined) {
-          return state;
-        }
         return state.push(collectionReducer(undefined, action));
       }
-      // update the entry with the same params as before
 
       var _entry = _slicedToArray(entry, 2);
 
       var index = _entry[0];
       var existingCollection = _entry[1];
 
-      var alteredAction = _extends({}, action, {
-        meta: _extends({}, action.meta, {
-          params: action.meta.params || existingCollection.params
-        })
-      });
-      if (alteredAction.meta.params === undefined) {
-        return state;
-      }
       return state.update(index, function (s) {
-        return collectionReducer(s, alteredAction);
+        return collectionReducer(s, action);
+      });
+    case _actionTypes.CREATE_SUCCESS:
+    case _actionTypes.DELETE_SUCCESS:
+      // set fetchTime on all entries to null
+      return state.map(function (item, idx) {
+        return item.set('fetchTime', null);
       });
     default:
       return state;
@@ -257,10 +246,8 @@ function crudReducer() {
     case _actionTypes.CREATE_SUCCESS:
       return state.updateIn([action.meta.model, 'byId'], function (s) {
         return byIdReducer(s, action);
-      }).updateIn([action.meta.model, 'collections'], (0, _immutable.fromJS)([]), function (list) {
-        return list.map(function (s) {
-          return collectionsReducer(s, action);
-        });
+      }).updateIn([action.meta.model, 'collections'], (0, _immutable.fromJS)([]), function (s) {
+        return collectionsReducer(s, action);
       }).updateIn([action.meta.model, 'actionStatus'], function (s) {
         return actionStatusReducer(s, action);
       });
@@ -281,10 +268,8 @@ function crudReducer() {
     case _actionTypes.DELETE_ERROR:
       return state.updateIn([action.meta.model, 'byId'], function (s) {
         return byIdReducer(s, action);
-      }).updateIn([action.meta.model, 'collections'], (0, _immutable.fromJS)([]), function (list) {
-        return list.map(function (s) {
-          return collectionsReducer(s, action);
-        });
+      }).updateIn([action.meta.model, 'collections'], (0, _immutable.fromJS)([]), function (s) {
+        return collectionsReducer(s, action);
       }).updateIn([action.meta.model, 'actionStatus'], function (s) {
         return actionStatusReducer(s, action);
       });

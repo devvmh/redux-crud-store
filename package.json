@@ -1,6 +1,6 @@
 {
   "name": "redux-crud-store",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "Store of server-side models for Redux single page applications",
   "main": "lib/index.js",
   "jsnext:main": "es/index.js",
@@ -60,6 +60,7 @@
   },
   "dependencies": {
     "immutable": ">= 3.7.6",
+    "lodash.isequal": "^4.1.2",
     "redux-saga": ">= 0.9.5"
   }
 }
