@@ -25,6 +25,43 @@ function recent(fetchTime) {
   return Date.now() - recentTimeInterval < fetchTime;
 }
 
+// thanks http://stackoverflow.com/a/16788517/5332286
+function objectEquals(x, y) {
+  if (x === null || x === undefined) {
+    return x === y;
+  }
+  if (x.constructor !== y.constructor) {
+    return false;
+  }
+  if (x instanceof Function) {
+    return x === y;
+  }
+  if (x instanceof RegExp) {
+    return x === y;
+  }
+  if (x === y || x.valueOf() === y.valueOf()) {
+    return true;
+  }
+  if (Array.isArray(x) && x.length !== y.length) {
+    return false;
+  }
+  if (x instanceof Date) {
+    return false;
+  }
+  if (!(x instanceof Object)) {
+    return false;
+  }
+  if (!(y instanceof Object)) {
+    return false;
+  }
+  var p = Object.keys(x);
+  return Object.keys(y).every(function (i) {
+    return p.indexOf(i) !== -1;
+  }) && p.every(function (i) {
+    return objectEquals(x[i], y[i]);
+  });
+}
+
 function selectCollection(modelName, crud) {
   var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
@@ -41,9 +78,8 @@ function selectCollection(modelName, crud) {
   var model = crud.getIn([modelName], (0, _immutable.Map)());
 
   // find the collection that has the same params
-  var paramsJson = JSON.stringify(params);
   var collection = model.get('collections', (0, _immutable.List)()).find(function (coll) {
-    return JSON.stringify(coll.get('params').toJS()) === paramsJson;
+    return objectEquals(coll.get('params').toJS(), params);
   });
   if (collection === undefined) {
     return isLoading({ needsFetch: true });

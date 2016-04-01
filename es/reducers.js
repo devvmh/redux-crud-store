@@ -108,6 +108,9 @@ function collectionReducer() {
 
   var id = action.meta ? action.meta.id : undefined;
   var params = (0, _immutable.fromJS)(action.meta.params);
+  if (params === undefined) {
+    return state;
+  }
   switch (action.type) {
     case _actionTypes.FETCH:
       return state.set('params', params).set('fetchTime', 0).set('error', null);
@@ -144,6 +147,9 @@ function collectionsReducer() {
         return JSON.stringify(coll.toJS().params) === paramsJson;
       });
       if (entry === undefined) {
+        if (action.meta.params === undefined) {
+          return state;
+        }
         return state.push(collectionReducer(undefined, action));
       }
       // update the entry with the same params as before
@@ -158,6 +164,9 @@ function collectionsReducer() {
           params: action.meta.params || existingCollection.params
         })
       });
+      if (alteredAction.meta.params === undefined) {
+        return state;
+      }
       return state.update(index, function (s) {
         return collectionReducer(s, alteredAction);
       });
@@ -248,7 +257,7 @@ function crudReducer() {
     case _actionTypes.CREATE_SUCCESS:
       return state.updateIn([action.meta.model, 'byId'], function (s) {
         return byIdReducer(s, action);
-      }).updateIn([action.meta.model, 'collections'], modelInitialState, function (list) {
+      }).updateIn([action.meta.model, 'collections'], (0, _immutable.fromJS)([]), function (list) {
         return list.map(function (s) {
           return collectionsReducer(s, action);
         });
@@ -272,7 +281,7 @@ function crudReducer() {
     case _actionTypes.DELETE_ERROR:
       return state.updateIn([action.meta.model, 'byId'], function (s) {
         return byIdReducer(s, action);
-      }).updateIn([action.meta.model, 'collections'], modelInitialState, function (list) {
+      }).updateIn([action.meta.model, 'collections'], (0, _immutable.fromJS)([]), function (list) {
         return list.map(function (s) {
           return collectionsReducer(s, action);
         });

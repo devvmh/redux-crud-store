@@ -9613,6 +9613,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  var id = action.meta ? action.meta.id : undefined;
 	  var params = (0, _immutable.fromJS)(action.meta.params);
+	  if (params === undefined) {
+	    return state;
+	  }
 	  switch (action.type) {
 	    case _actionTypes.FETCH:
 	      return state.set('params', params).set('fetchTime', 0).set('error', null);
@@ -9649,6 +9652,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return JSON.stringify(coll.toJS().params) === paramsJson;
 	      });
 	      if (entry === undefined) {
+	        if (action.meta.params === undefined) {
+	          return state;
+	        }
 	        return state.push(collectionReducer(undefined, action));
 	      }
 	      // update the entry with the same params as before
@@ -9663,6 +9669,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          params: action.meta.params || existingCollection.params
 	        })
 	      });
+	      if (alteredAction.meta.params === undefined) {
+	        return state;
+	      }
 	      return state.update(index, function (s) {
 	        return collectionReducer(s, alteredAction);
 	      });
@@ -9753,7 +9762,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    case _actionTypes.CREATE_SUCCESS:
 	      return state.updateIn([action.meta.model, 'byId'], function (s) {
 	        return byIdReducer(s, action);
-	      }).updateIn([action.meta.model, 'collections'], modelInitialState, function (list) {
+	      }).updateIn([action.meta.model, 'collections'], (0, _immutable.fromJS)([]), function (list) {
 	        return list.map(function (s) {
 	          return collectionsReducer(s, action);
 	        });
@@ -9777,7 +9786,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    case _actionTypes.DELETE_ERROR:
 	      return state.updateIn([action.meta.model, 'byId'], function (s) {
 	        return byIdReducer(s, action);
-	      }).updateIn([action.meta.model, 'collections'], modelInitialState, function (list) {
+	      }).updateIn([action.meta.model, 'collections'], (0, _immutable.fromJS)([]), function (list) {
 	        return list.map(function (s) {
 	          return collectionsReducer(s, action);
 	        });
@@ -10010,6 +10019,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Date.now() - recentTimeInterval < fetchTime;
 	}
 
+	// thanks http://stackoverflow.com/a/16788517/5332286
+	function objectEquals(x, y) {
+	  if (x === null || x === undefined) {
+	    return x === y;
+	  }
+	  if (x.constructor !== y.constructor) {
+	    return false;
+	  }
+	  if (x instanceof Function) {
+	    return x === y;
+	  }
+	  if (x instanceof RegExp) {
+	    return x === y;
+	  }
+	  if (x === y || x.valueOf() === y.valueOf()) {
+	    return true;
+	  }
+	  if (Array.isArray(x) && x.length !== y.length) {
+	    return false;
+	  }
+	  if (x instanceof Date) {
+	    return false;
+	  }
+	  if (!(x instanceof Object)) {
+	    return false;
+	  }
+	  if (!(y instanceof Object)) {
+	    return false;
+	  }
+	  var p = Object.keys(x);
+	  return Object.keys(y).every(function (i) {
+	    return p.indexOf(i) !== -1;
+	  }) && p.every(function (i) {
+	    return objectEquals(x[i], y[i]);
+	  });
+	}
+
 	function selectCollection(modelName, crud) {
 	  var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
@@ -10026,9 +10072,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var model = crud.getIn([modelName], (0, _immutable.Map)());
 
 	  // find the collection that has the same params
-	  var paramsJson = JSON.stringify(params);
 	  var collection = model.get('collections', (0, _immutable.List)()).find(function (coll) {
-	    return JSON.stringify(coll.get('params').toJS()) === paramsJson;
+	    return objectEquals(coll.get('params').toJS(), params);
 	  });
 	  if (collection === undefined) {
 	    return isLoading({ needsFetch: true });
