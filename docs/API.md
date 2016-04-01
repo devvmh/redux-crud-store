@@ -18,7 +18,7 @@ This is a copy of the contents of src/index.js:
       selectActionStatus
     } from './selectors'
 
-## crudSaga
+# crudSaga
 
 crudSaga uses redux-saga to intercept actions like FETCH, CREATE, API_CALL, and others. Its use is outlined in README.md section 1. In particular, you will need to provide it with an instance of an API client class that defines:
 
@@ -31,7 +31,7 @@ If you end up customizing the method on any of your action creators, your apiCli
 
 An example ApiClient class is outlined in README.md section 1.
 
-## crudReducer
+# crudReducer
 
 The crudReducer is self-contained. It is definitely worth reading through the code along with redux DevTools to see how the state is laid out, that is, quite differently than the result that will be passed to your components by the selectors.
 
@@ -45,11 +45,11 @@ API-wise, the only decision you have to make is the key you pass to combineReduc
       // other reducers go here
     })
 
-## crudActions
+# crudActions
 
 See src/crudActions.js for a full list of action types defined by this module.
 
-## Action Creators
+# Action Creators
 
 Example usage is outlined in README.md. If you are interested in advanced usage, see the API for apiCall at the bottom of this document.
 
@@ -112,11 +112,62 @@ On success, byId will be updated and all collections will be marked as needing a
 
 This function clears the actionStatus[action] key in the store, so your components can stop rendering the success/error message.
 
-## Selectors
+# Selectors
 
-TODO
+In this section, Map means an ImmutableJS Map.
 
-## API_CALL and apiCall - roll your own!
+#### selectCollection(modelName : string, crud : Map, params : object)
+
+- modelName: (required) is the key in the store
+- crud (required) is the immutable map. It should have at least one key, which should match modelName. This key should have the 'actionStatus', 'byId', and 'collections' keys for querying.
+- params (default {}) is the list of params that could be sent to the server to retrieve the collection you want.
+
+selectCollection will check crud[modelName]['collections'] for a map that contains a params key that is the same as the params object passed to this function. When it finds it, it will return an object with this shape:
+
+    {
+      other_info, # other info (e.g. paging data) that was sent by the server alongside the data object (or {})
+      data,       # an empty array or an array of the items returned by the fetchCollection api call
+      isLoading,  # false if the data array is full of usable objects
+      needsFetch  # true if you still need to dispatch a fetchCollection action
+    }
+
+#### selectRecord(modelName : string, id : number, crud : Map)
+
+- modelName (required) is the key in the store
+- id (required) is the id of the record you're looking for
+- crud (required) is the immutable map as described in selectCollection, above.
+
+selectRecord will return one of two things. In the first case, it will return the record, exactly as sent by the server. If the record is not available or is out of date, it will return an error object with the following shape:
+
+    {
+      isLoading,  # will be true if the fetchRecord call returned an error. false/undefined otherwise
+      needsFetch, # true if you still need to dispatch a fetchRecord action
+      error       # either { message: 'Loading...' } or the error returned by the server after your fetchRecord action
+    }
+
+#### selectRecordOrEmptyObject(modelName : string, id : number, crud : Map)
+
+This function calls selectRecord, but instead of returning the "error object" described above, it simply returns {} if the record is not valid. This is intended to make the logic in your components simpler.
+
+#### selectActionStatus(modelName : string, crud : Map, action : string)
+
+- modelName (required) is the key in the store
+- crud (required) is the immutable map as described in selectCollection, above
+- action (required) should be one of 'create', 'update', or 'delete'
+
+Returns an object of the following shape:
+
+    {
+      pending,   # true if the most recently dispatched action is still on its way to the server
+      isSuccess, # true if the most recently dispatched action was successful
+      message,   # an error message returned by the server
+      errors,    # error objects returned by the server (e.g. may include validation information for your forms)
+      id         # the id of the record that was created/updated/deleted.
+    }
+
+id will be null for create actions until/unless the CREATE_SUCCESS action is dispatched.
+
+# API_CALL and apiCall - roll your own!
 
 apiCall is a really versatile function. If you find you are having troubles making it do what you want, you may want to implement your own saga/reducer/actionCreator/selectors module that copies most of the code of redux-crud-store, but for your specific purpose.
 
