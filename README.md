@@ -249,10 +249,15 @@ What follows is our original notes on the functioning of this module. Someday we
                    record: { id: 15001, ... } }
         },
         actionStatus: {
-          create: { pending: false, isSuccess: true, errors: null },
-          update: { pending: false, id: 8, isSuccess: false,
-                    message: "Invalid id",
-                    errors: { "planner_id": "not a planner" } },
+          create: { pending: false, id: null, isSuccess: true, payload: null },
+          update: { pending: false,
+                    id: 8,
+                    isSuccess: false, 
+                    payload: {
+                      message: "Invalid id",
+                      errors: { "planner_id": "not a planner" }
+                    }
+                  },
           delete: { pending: true, id: 45 }
         }
       },

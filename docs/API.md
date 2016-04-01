@@ -179,13 +179,37 @@ The corresponding success/failure actions for CREATE, UPDATE, and DELETE return 
 
 id will be null for create actions until/unless the CREATE_SUCCESS action is dispatched.
 
-#### selectActionErrors(modelName : string, crud : Map, action : string)
+#### selectNiceActionStatus(modelName : string, crud : Map, action : string)
 
 - modelName (required) is the key in the store
 - crud (required) is the immutable map as described in selectCollection, above
 - action (required) should be one of 'create', 'update', or 'delete'
 
-This function returns an object containing the errors from an action status. If there are no errors (the action is pending, was sucessful, or hasn't been dispatched yet) this function returns null. If the action was unsuccessful, this function returns either the error payload from the server or undefined. You can use this function as a shorthand to check if actions were successful.
+This function returns your action status in a "nice" form. It will be in one of three forms:
+
+    {
+      id
+    }
+
+    {
+      id,
+      error: action.payload || {}
+    }
+ 
+    {
+      id,
+      response: action.payload || {}
+    }
+
+This ensures that you can run checks in your component like
+
+    if (status.error) {
+      // do something
+    } else if (status.response) {
+      // do something
+    }
+
+If you prefer, this can simplify the logic in your components
 
 # API_CALL and apiCall - roll your own!
 

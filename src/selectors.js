@@ -110,10 +110,23 @@ export function selectActionStatus(modelName, crud, action) {
   return status.toJS()
 }
 
-export function selectActionErrors(modelName, crud, action) {
-  const status = selectActionStatus(modelName, crud, action)
-  if (status.isSuccess === false) {
-    return status.payload || undefined
+export function selectNiceActionStatus(modelName, crud, action) {
+  const { pending, id, isSuccess, payload } = selectActionStatus(modelName, crud, action)
+
+  if (pending === true) {
+    return { id }
   }
-  return null
+  if (isSuccess === true) {
+    return {
+      id,
+      response: payload
+    }
+  }
+  if (isSuccess === false) {
+    return {
+      id,
+      error: payload
+    }
+  }
+  throw new Error('Invalid state returned from action status selector')
 }
