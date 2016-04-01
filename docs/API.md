@@ -125,7 +125,7 @@ In this section, Map means an ImmutableJS Map.
 selectCollection will check crud[modelName]['collections'] for a map that contains a params key that is the same as the params object passed to this function. When it finds it, it will return an object with this shape:
 
     {
-      other_info, # other info (e.g. paging data) that was sent by the server 
+      otherInfo,  # other info (e.g. paging data) that was sent by the server 
                   # alongside the data object (or {})
       data,       # an empty array or an array of the items returned by the
                   # fetchCollection api call
