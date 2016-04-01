@@ -16,7 +16,7 @@ const crud = fromJS({
         params: {
           page: 1
         },
-        other_info: {
+        otherInfo: {
           count: 3,
           page: {
             self: 1,
@@ -44,7 +44,7 @@ const crud = fromJS({
 })
 
 const expectedOutput = {
-  other_info: {
+  otherInfo: {
     count: 3,
     page: {
       self: 1,
@@ -63,7 +63,7 @@ const expectedOutput = {
 }
 
 const isLoadingOutput = {
-  other_info: {},
+  otherInfo: {},
   data: [],
   isLoading: true,
   needsFetch: true

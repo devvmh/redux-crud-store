@@ -16,7 +16,7 @@ const byIdInitialState = fromJS({})
 
 const collectionInitialState = fromJS({
   params: {},
-  other_info: {},
+  otherInfo: {},
   ids: [],
   fetchTime: null,
   error: null
@@ -111,7 +111,7 @@ function collectionReducer(state = collectionInitialState, action) {
       const ids = action.payload.data.map((elt) => elt.id)
       return state.set('params', params)
                   .set('ids', fromJS(ids))
-                  .set('other_info', fromJS(action.payload || {}).delete('data'))
+                  .set('otherInfo', fromJS(action.payload || {}).delete('data'))
                   .set('error', null)
                   .set('fetchTime', action.meta.fetchTime)
     case FETCH_ERROR:
