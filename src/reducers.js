@@ -241,7 +241,7 @@ export default function crudReducer(state = initialState, action) {
       return state.updateIn([action.meta.model, 'byId'],
                             (s) => byIdReducer(s, action))
                   .updateIn([action.meta.model, 'collections'],
-                            modelInitialState,
+                            fromJS([]),
                             (list) => list.map(s => collectionsReducer(s, action)))
                   .updateIn([action.meta.model, 'actionStatus'],
                             (s) => actionStatusReducer(s, action))
@@ -261,7 +261,7 @@ export default function crudReducer(state = initialState, action) {
       return state.updateIn([action.meta.model, 'byId'],
                             (s) => byIdReducer(s, action))
                   .updateIn([action.meta.model, 'collections'],
-                            modelInitialState,
+                            fromJS([]),
                             (list) => list.map(s => collectionsReducer(s, action)))
                   .updateIn([action.meta.model, 'actionStatus'],
                             (s) => actionStatusReducer(s, action))
