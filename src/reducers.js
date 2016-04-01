@@ -102,6 +102,9 @@ function byIdReducer(state = byIdInitialState, action) {
 function collectionReducer(state = collectionInitialState, action) {
   const id = action.meta ? action.meta.id : undefined
   const params = fromJS(action.meta.params)
+  if (params === undefined) {
+    return state
+  }
   switch (action.type) {
     case FETCH:
       return state.set('params', params)
@@ -142,6 +145,9 @@ function collectionsReducer(state = collectionsInitialState, action) {
         JSON.stringify(coll.toJS().params) === paramsJson
       ))
       if (entry === undefined) {
+        if (action.meta.params === undefined) {
+          return state
+        }
         return state.push(collectionReducer(undefined, action))
       }
       // update the entry with the same params as before
@@ -153,12 +159,14 @@ function collectionsReducer(state = collectionsInitialState, action) {
           params: action.meta.params || existingCollection.params
         }
       }
+      if (alteredAction.meta.params === undefined) {
+        return state
+      }
       return state.update(index, s => collectionReducer(s, alteredAction))
     default:
       return state
   }
 }
-
 
 function actionStatusReducer(state = actionStatusInitialState, action) {
   switch (action.type) {
