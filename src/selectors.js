@@ -101,7 +101,19 @@ export function selectRecordOrEmptyObject(modelName, id, crud) {
 
 export function selectActionStatus(modelName, crud, action) {
   const status = crud.getIn([modelName, 'actionStatus', action]) ||
-                 fromJS({ pending: false, isSuccess: null, message: null,
-                          errors: {}, id: null })
+                 fromJS({
+                   pending: false,
+                   id: null,
+                   isSuccess: null,
+                   payload: null
+                 })
   return status.toJS()
+}
+
+export function selectActionStatusErrors(modelName, crud, action) {
+  const status = selectActionStatus(modelName, crud, action)
+  if (status.isSuccess === false) {
+    return status.payload || undefined
+  }
+  return null
 }
