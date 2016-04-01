@@ -9399,7 +9399,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.selectActionStatus = exports.selectRecordOrEmptyObject = exports.selectRecord = exports.selectCollection = exports.apiCall = exports.clearActionStatus = exports.deleteRecord = exports.updateRecord = exports.createRecord = exports.fetchRecord = exports.fetchCollection = exports.crudActions = exports.crudReducer = exports.crudSaga = undefined;
+	exports.selectNiceActionStatus = exports.selectActionStatus = exports.selectRecordOrEmptyObject = exports.selectRecord = exports.selectCollection = exports.apiCall = exports.clearActionStatus = exports.deleteRecord = exports.updateRecord = exports.createRecord = exports.fetchRecord = exports.fetchCollection = exports.crudActions = exports.crudReducer = exports.crudSaga = undefined;
 
 	var _actionCreators = __webpack_require__(120);
 
@@ -9470,6 +9470,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  enumerable: true,
 	  get: function get() {
 	    return _selectors.selectActionStatus;
+	  }
+	});
+	Object.defineProperty(exports, 'selectNiceActionStatus', {
+	  enumerable: true,
+	  get: function get() {
+	    return _selectors.selectNiceActionStatus;
 	  }
 	});
 
