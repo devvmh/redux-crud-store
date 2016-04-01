@@ -1,4 +1,5 @@
 import { fromJS, List, Map } from 'immutable'
+import isEqual from 'lodash.isequal'
 
 const recentTimeInterval = 10 * 60 * 1000 // ten minutes
 
@@ -14,24 +15,6 @@ function recent(fetchTime) {
   return Date.now() - recentTimeInterval < fetchTime
 }
 
-// thanks http://stackoverflow.com/a/16788517/5332286
-function objectEquals(x, y) {
-  if (x === null || x === undefined) {
-    return x === y
-  }
-  if (x.constructor !== y.constructor) { return false }
-  if (x instanceof Function) { return x === y }
-  if (x instanceof RegExp) { return x === y }
-  if (x === y || x.valueOf() === y.valueOf()) { return true }
-  if (Array.isArray(x) && x.length !== y.length) { return false }
-  if (x instanceof Date) { return false }
-  if (!(x instanceof Object)) { return false }
-  if (!(y instanceof Object)) { return false }
-  const p = Object.keys(x)
-  return Object.keys(y).every(i => p.indexOf(i) !== -1) &&
-         p.every(i => objectEquals(x[i], y[i]))
-}
-
 export function selectCollection(modelName, crud, params = {}) {
   const isLoading = ({ needsFetch }) => ({
     otherInfo: {},
@@ -44,7 +27,7 @@ export function selectCollection(modelName, crud, params = {}) {
 
   // find the collection that has the same params
   const collection = model.get('collections', List()).find(coll => {
-    return objectEquals(coll.get('params').toJS(), params)
+    return isEqual(coll.get('params').toJS(), params)
   })
   if (collection === undefined) {
     return isLoading({ needsFetch: true })

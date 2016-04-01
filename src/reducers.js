@@ -1,4 +1,5 @@
 import { fromJS } from 'immutable'
+import isEqual from 'lodash.isequal'
 import {
   FETCH, FETCH_SUCCESS, FETCH_ERROR,
   FETCH_ONE, FETCH_ONE_SUCCESS, FETCH_ONE_ERROR,
@@ -100,32 +101,21 @@ function byIdReducer(state = byIdInitialState, action) {
  * Note: fetchTime of null means "needs fetch"
  */
 function collectionReducer(state = collectionInitialState, action) {
-  const id = action.meta ? action.meta.id : undefined
-  const params = fromJS(action.meta.params)
-  if (params === undefined) {
-    return state
-  }
   switch (action.type) {
     case FETCH:
-      return state.set('params', params)
+      return state.set('params', fromJS(action.meta.params))
                   .set('fetchTime', 0)
                   .set('error', null)
     case FETCH_SUCCESS:
       const ids = action.payload.data.map((elt) => elt.id)
-      return state.set('params', params)
+      return state.set('params', fromJS(action.meta.params))
                   .set('ids', fromJS(ids))
                   .set('otherInfo', fromJS(action.payload || {}).delete('data'))
                   .set('error', null)
                   .set('fetchTime', action.meta.fetchTime)
     case FETCH_ERROR:
-      return state.set('params', params)
-                  .set('error', action.payload)
-    case CREATE_SUCCESS:
-      return state.set('params', params)
-                  .set('fetchTime', null)
-    case DELETE_SUCCESS:
-      return state.set('params', params)
-                  .set('fetchTime', null)
+      return state.set('params', fromJS(action.meta.params))
+                  .set('error', fromJS(action.payload))
     default:
       return state
   }
@@ -136,33 +126,25 @@ function collectionsReducer(state = collectionsInitialState, action) {
     case FETCH:
     case FETCH_SUCCESS:
     case FETCH_ERROR:
-    case CREATE_SUCCESS:
-    case DELETE_SUCCESS:
       // create the collection for the given params if needed
       // entry will be undefined or [index, existingCollection]
-      const paramsJson = JSON.stringify(action.meta.params)
-      const entry = state.findEntry(coll => (
-        JSON.stringify(coll.toJS().params) === paramsJson
-      ))
-      if (entry === undefined) {
-        if (action.meta.params === undefined) {
-          return state
-        }
-        return state.push(collectionReducer(undefined, action))
-      }
-      // update the entry with the same params as before
-      const [index, existingCollection] = entry
-      const alteredAction = {
-        ...action,
-        meta: {
-          ...action.meta,
-          params: action.meta.params || existingCollection.params
-        }
-      }
-      if (alteredAction.meta.params === undefined) {
+      if (action.meta.params === undefined) {
         return state
       }
-      return state.update(index, s => collectionReducer(s, alteredAction))
+      const entry = state.findEntry(coll => (
+        isEqual(coll.toJS().params, action.meta.params)
+      ))
+      if (entry === undefined) {
+        return state.push(collectionReducer(undefined, action))
+      }
+      const [index, existingCollection] = entry
+      return state.update(index, s => collectionReducer(s, action))
+    case CREATE_SUCCESS:
+    case DELETE_SUCCESS:
+      // set fetchTime on all entries to null
+      return state.map((item, idx) => (
+        item.set('fetchTime', null)
+      ))
     default:
       return state
   }
