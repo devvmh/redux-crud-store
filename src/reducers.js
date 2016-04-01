@@ -173,7 +173,7 @@ function actionStatusReducer(state = actionStatusInitialState, action) {
     case CREATE_ERROR:
       return state.set('create', fromJS({
         pending: false,
-        id: action.payload.id
+        id: action.payload.id,
         isSuccess: !action.error,
         payload: action.payload
       }))
