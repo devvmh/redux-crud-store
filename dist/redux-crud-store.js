@@ -9986,7 +9986,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.selectRecord = selectRecord;
 	exports.selectRecordOrEmptyObject = selectRecordOrEmptyObject;
 	exports.selectActionStatus = selectActionStatus;
-	exports.selectActionErrors = selectActionErrors;
+	exports.selectNiceActionStatus = selectNiceActionStatus;
 
 	var _immutable = __webpack_require__(116);
 
@@ -10103,12 +10103,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return status.toJS();
 	}
 
-	function selectActionErrors(modelName, crud, action) {
-	  var status = selectActionStatus(modelName, crud, action);
-	  if (status.isSuccess === false) {
-	    return status.payload || undefined;
+	function selectNiceActionStatus(modelName, crud, action) {
+	  var _selectActionStatus = selectActionStatus(modelName, crud, action);
+
+	  var pending = _selectActionStatus.pending;
+	  var id = _selectActionStatus.id;
+	  var isSuccess = _selectActionStatus.isSuccess;
+	  var payload = _selectActionStatus.payload;
+
+
+	  if (pending === true) {
+	    return { id: id };
 	  }
-	  return null;
+	  if (isSuccess === true) {
+	    return {
+	      id: id,
+	      response: payload
+	    };
+	  }
+	  if (isSuccess === false) {
+	    return {
+	      id: id,
+	      error: payload
+	    };
+	  }
+	  throw new Error('Invalid state returned from action status selector');
 	}
 
 /***/ },
