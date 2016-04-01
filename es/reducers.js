@@ -22,7 +22,7 @@ var byIdInitialState = (0, _immutable.fromJS)({});
 
 var collectionInitialState = (0, _immutable.fromJS)({
   params: {},
-  other_info: {},
+  otherInfo: {},
   ids: [],
   fetchTime: null,
   error: null
@@ -115,7 +115,7 @@ function collectionReducer() {
       var ids = action.payload.data.map(function (elt) {
         return elt.id;
       });
-      return state.set('params', params).set('ids', (0, _immutable.fromJS)(ids)).set('other_info', (0, _immutable.fromJS)(action.payload || {}).delete('data')).set('error', null).set('fetchTime', action.meta.fetchTime);
+      return state.set('params', params).set('ids', (0, _immutable.fromJS)(ids)).set('otherInfo', (0, _immutable.fromJS)(action.payload || {}).delete('data')).set('error', null).set('fetchTime', action.meta.fetchTime);
     case _actionTypes.FETCH_ERROR:
       return state.set('params', params).set('error', action.payload);
     case _actionTypes.CREATE_SUCCESS:
@@ -175,46 +175,42 @@ function actionStatusReducer() {
       return state.set(action.payload.action, (0, _immutable.fromJS)({}));
     case _actionTypes.CREATE:
       return state.set('create', (0, _immutable.fromJS)({
-        pending: true
+        pending: true,
+        id: null
       }));
     case _actionTypes.CREATE_SUCCESS:
-      return state.set('create', (0, _immutable.fromJS)({
-        pending: false, isSuccess: true, message: null, errors: {},
-        id: action.payload.id
-      }));
     case _actionTypes.CREATE_ERROR:
       return state.set('create', (0, _immutable.fromJS)({
-        pending: false, isSuccess: false, message: action.payload.message,
-        errors: action.payload.errors || {}, id: null
+        pending: false,
+        id: action.payload.id,
+        isSuccess: !action.error,
+        payload: action.payload
       }));
     case _actionTypes.UPDATE:
       return state.set('update', (0, _immutable.fromJS)({
-        pending: true, id: action.meta.id
-      }));
-    case _actionTypes.UPDATE_SUCCESS:
-      return state.set('update', (0, _immutable.fromJS)({
-        pending: false, isSuccess: true, message: null, errors: {},
+        pending: true,
         id: action.meta.id
       }));
+    case _actionTypes.UPDATE_SUCCESS:
     case _actionTypes.UPDATE_ERROR:
       return state.set('update', (0, _immutable.fromJS)({
-        pending: false, isSuccess: false, message: action.payload.message,
-        errors: action.payload.errors, id: action.meta.id
+        pending: false,
+        id: action.meta.id,
+        isSuccess: !action.error,
+        payload: action.payload
       }));
     case _actionTypes.DELETE:
       return state.set('delete', (0, _immutable.fromJS)({
-        pending: true, id: action.meta.id
-      }));
-    case _actionTypes.DELETE_SUCCESS:
-      return state.set('delete', (0, _immutable.fromJS)({
-        pending: false, isSuccess: true, message: null, errors: null,
+        pending: true,
         id: action.meta.id
       }));
+    case _actionTypes.DELETE_SUCCESS:
     case _actionTypes.DELETE_ERROR:
-      // probably action.payload will be null or {} but whatever!!
       return state.set('delete', (0, _immutable.fromJS)({
-        pending: false, isSuccess: false, message: action.payload.message,
-        errors: action.payload.errors, id: action.meta.id
+        pending: false,
+        id: action.meta.id,
+        isSuccess: !action.error,
+        payload: action.payload // probably null...
       }));
     default:
       return state;

@@ -16,7 +16,7 @@ function recent(fetchTime) {
 
 export function selectCollection(modelName, crud, params = {}) {
   const isLoading = ({ needsFetch }) => ({
-    other_info: {},
+    otherInfo: {},
     data: [],
     isLoading: true,
     needsFetch
@@ -62,7 +62,7 @@ export function selectCollection(modelName, crud, params = {}) {
   ).toJS()
 
   return {
-    other_info: collection.get('other_info', Map()).toJS(),
+    otherInfo: collection.get('otherInfo', Map()).toJS(),
     data,
     isLoading: false,
     needsFetch: false

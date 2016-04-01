@@ -125,8 +125,10 @@ In this section, Map means an ImmutableJS Map.
 selectCollection will check crud[modelName]['collections'] for a map that contains a params key that is the same as the params object passed to this function. When it finds it, it will return an object with this shape:
 
     {
-      other_info, # other info (e.g. paging data) that was sent by the server alongside the data object (or {})
-      data,       # an empty array or an array of the items returned by the fetchCollection api call
+      otherInfo,  # other info (e.g. paging data) that was sent by the server 
+                  # alongside the data object (or {})
+      data,       # an empty array or an array of the items returned by the
+                  # fetchCollection api call
       isLoading,  # false if the data array is full of usable objects
       needsFetch  # true if you still need to dispatch a fetchCollection action
     }
@@ -140,9 +142,11 @@ selectCollection will check crud[modelName]['collections'] for a map that contai
 selectRecord will return one of two things. In the first case, it will return the record, exactly as sent by the server. If the record is not available or is out of date, it will return an error object with the following shape:
 
     {
-      isLoading,  # will be true if the fetchRecord call returned an error. false/undefined otherwise
+      isLoading,  # will be true if the fetchRecord call returned an error.
+                  # false/undefined otherwise
       needsFetch, # true if you still need to dispatch a fetchRecord action
-      error       # either { message: 'Loading...' } or the error returned by the server after your fetchRecord action
+      error       # either { message: 'Loading...' } or the error returned by
+                  # the server after your fetchRecord action
     }
 
 #### selectRecordOrEmptyObject(modelName : string, id : number, crud : Map)
@@ -155,14 +159,22 @@ This function calls selectRecord, but instead of returning the "error object" de
 - crud (required) is the immutable map as described in selectCollection, above
 - action (required) should be one of 'create', 'update', or 'delete'
 
-Returns an object of the following shape:
+CREATE, UPDATE, and DELETE will set this to an object of this shape:
 
     {
-      pending,   # true if the most recently dispatched action is still on its way to the server
-      isSuccess, # true if the most recently dispatched action was successful
-      message,   # an error message returned by the server
-      errors,    # error objects returned by the server (e.g. may include validation information for your forms)
-      id         # the id of the record that was created/updated/deleted.
+      pending: true,
+      id
+    }
+
+The corresponding success/failure actions for CREATE, UPDATE, and DELETE return this shape instead:
+
+    {
+      pending: false,   # true if the most recently dispatched action is still
+                        #  on its way to the server
+      id                # the id of the record that was created/updated/deleted.
+      isSuccess,        # true if the action was successful
+      payload,          # for create/update success, this is the object.
+                        # for failure, this is the error message
     }
 
 id will be null for create actions until/unless the CREATE_SUCCESS action is dispatched.
