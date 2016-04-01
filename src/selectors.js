@@ -61,7 +61,7 @@ export function selectCollection(modelName, crud, params = {}) {
   // TODO can we make this faster?
   let itemNeedsFetch = null
   collection.get('ids', fromJS([])).forEach((id) => {
-    const item = model.getIn(['byId', id.toString()])
+    const item = model.getIn(['byId', id.toString()], Map())
     if (!recent(item.get('fetchTime'))) {
       itemNeedsFetch = item
       return false
