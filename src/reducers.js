@@ -6,7 +6,7 @@ import {
   CREATE, CREATE_SUCCESS, CREATE_ERROR,
   UPDATE, UPDATE_SUCCESS, UPDATE_ERROR,
   DELETE, DELETE_SUCCESS, DELETE_ERROR,
-  CLEAR_ACTION_STATUS, API_CALL
+  CLEAR_ACTION_STATUS, API_CALL, GARBAGE_COLLECT
 } from './actionTypes'
 
 /*
@@ -92,6 +92,12 @@ function byIdReducer(state = byIdInitialState, action) {
       return state.setIn([id.toString(), 'error'], fromJS(action.payload))
     case DELETE_SUCCESS:
       return state.delete(id.toString())
+    case GARBAGE_COLLECT:
+      const tenMinutesAgo = action.meta.now - 10 * 60 * 1000
+      return state.filter(collection => (
+        collection.get('fetchTime') > tenMinutesAgo ||
+          collection.get('fetchTime') === null
+      ))
     default:
       return state
   }
@@ -144,6 +150,13 @@ function collectionsReducer(state = collectionsInitialState, action) {
       // set fetchTime on all entries to null
       return state.map((item, idx) => (
         item.set('fetchTime', null)
+      ))
+
+    case GARBAGE_COLLECT:
+      const tenMinutesAgo = action.meta.now - 10 * 60 * 1000
+      return state.filter(collection => (
+        collection.get('fetchTime') > tenMinutesAgo ||
+          collection.get('fetchTime') === null
       ))
     default:
       return state
@@ -204,6 +217,13 @@ export default function crudReducer(state = initialState, action) {
     case CLEAR_ACTION_STATUS:
       return state.updateIn([action.payload.model, 'actionStatus'],
                           (s) => actionStatusReducer(s, action))
+    case GARBAGE_COLLECT:
+      return state.map(model => (
+               model.update('collections',
+                            (s) => collectionsReducer(s, action))
+                    .update('byId',
+                            (s) => byIdReducer(s, action))
+             )
     case FETCH:
     case FETCH_SUCCESS:
     case FETCH_ERROR:

@@ -3,8 +3,18 @@ import { takeEvery } from 'redux-saga'
 import { fork, put, call } from 'redux-saga/effects'
 
 import {
-  FETCH, FETCH_ONE, CREATE, UPDATE, DELETE, API_CALL
+  FETCH, FETCH_ONE, CREATE, UPDATE, DELETE, API_CALL, GARBAGE_COLLECT
 } from './actionTypes'
+
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+function* garbageCollector() {
+  yield call(delay, 10 * 60 * 1000) // initial 10 minute delay
+  while(true) {
+    yield call(delay, 5 * 60 * 1000) // every 5 minutes thereafter
+    yield put({ type: GARBAGE_COLLECT, meta: { now: Date.now() } })
+  }
+}
 
 const apiGeneric = (apiClient) => function* _apiGeneric(action) {
   const { method, path, params, data } = action.payload
@@ -52,7 +62,8 @@ export default function crudSaga(apiClient) {
       fork(watchCreate(apiClient)),
       fork(watchUpdate(apiClient)),
       fork(watchDelete(apiClient)),
-      fork(watchApiCall(apiClient))
+      fork(watchApiCall(apiClient)),
+      fork(garbageCollector)
     ]
   }
 }
