@@ -223,7 +223,7 @@ export default function crudReducer(state = initialState, action) {
                             (s) => collectionsReducer(s, action))
                     .update('byId',
                             (s) => byIdReducer(s, action))
-             )
+             ))
     case FETCH:
     case FETCH_SUCCESS:
     case FETCH_ERROR:
