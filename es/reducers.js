@@ -98,6 +98,11 @@ function byIdReducer() {
       return state.setIn([id.toString(), 'error'], (0, _immutable.fromJS)(action.payload));
     case _actionTypes.DELETE_SUCCESS:
       return state.delete(id.toString());
+    case _actionTypes.GARBAGE_COLLECT:
+      var tenMinutesAgo = action.meta.now - 10 * 60 * 1000;
+      return state.filter(function (collection) {
+        return collection.get('fetchTime') > tenMinutesAgo || collection.get('fetchTime') === null;
+      });
     default:
       return state;
   }
@@ -158,6 +163,12 @@ function collectionsReducer() {
       // set fetchTime on all entries to null
       return state.map(function (item, idx) {
         return item.set('fetchTime', null);
+      });
+
+    case _actionTypes.GARBAGE_COLLECT:
+      var tenMinutesAgo = action.meta.now - 10 * 60 * 1000;
+      return state.filter(function (collection) {
+        return collection.get('fetchTime') > tenMinutesAgo || collection.get('fetchTime') === null;
       });
     default:
       return state;
@@ -224,6 +235,14 @@ function crudReducer() {
     case _actionTypes.CLEAR_ACTION_STATUS:
       return state.updateIn([action.payload.model, 'actionStatus'], function (s) {
         return actionStatusReducer(s, action);
+      });
+    case _actionTypes.GARBAGE_COLLECT:
+      return state.map(function (model) {
+        return model.update('collections', function (s) {
+          return collectionsReducer(s, action);
+        }).update('byId', function (s) {
+          return byIdReducer(s, action);
+        });
       });
     case _actionTypes.FETCH:
     case _actionTypes.FETCH_SUCCESS:

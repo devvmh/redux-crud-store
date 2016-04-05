@@ -1521,6 +1521,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var DELETE_ERROR = exports.DELETE_ERROR = 'redux-crud-store/crud/DELETE_ERROR';
 	var CLEAR_ACTION_STATUS = exports.CLEAR_ACTION_STATUS = 'redux-crud-store/crud/CLEAR_ACTION_STATUS';
 	var API_CALL = exports.API_CALL = 'redux-crud-store/crud/API_CALL';
+	var GARBAGE_COLLECT = exports.GARBAGE_COLLECT = 'redux-crud-store/crud/GARBAGE_COLLECT';
 
 /***/ },
 /* 51 */
@@ -10370,6 +10371,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return state.setIn([id.toString(), 'error'], (0, _immutable.fromJS)(action.payload));
 	    case _actionTypes.DELETE_SUCCESS:
 	      return state.delete(id.toString());
+	    case _actionTypes.GARBAGE_COLLECT:
+	      var tenMinutesAgo = action.meta.now - 10 * 60 * 1000;
+	      return state.filter(function (collection) {
+	        return collection.get('fetchTime') > tenMinutesAgo || collection.get('fetchTime') === null;
+	      });
 	    default:
 	      return state;
 	  }
@@ -10430,6 +10436,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // set fetchTime on all entries to null
 	      return state.map(function (item, idx) {
 	        return item.set('fetchTime', null);
+	      });
+
+	    case _actionTypes.GARBAGE_COLLECT:
+	      var tenMinutesAgo = action.meta.now - 10 * 60 * 1000;
+	      return state.filter(function (collection) {
+	        return collection.get('fetchTime') > tenMinutesAgo || collection.get('fetchTime') === null;
 	      });
 	    default:
 	      return state;
@@ -10496,6 +10508,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    case _actionTypes.CLEAR_ACTION_STATUS:
 	      return state.updateIn([action.payload.model, 'actionStatus'], function (s) {
 	        return actionStatusReducer(s, action);
+	      });
+	    case _actionTypes.GARBAGE_COLLECT:
+	      return state.map(function (model) {
+	        return model.update('collections', function (s) {
+	          return collectionsReducer(s, action);
+	        }).update('byId', function (s) {
+	          return byIdReducer(s, action);
+	        });
 	      });
 	    case _actionTypes.FETCH:
 	    case _actionTypes.FETCH_SUCCESS:
@@ -10572,13 +10592,54 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _actionTypes = __webpack_require__(50);
 
+	var _marked = [garbageCollector].map(regeneratorRuntime.mark);
+
+	var delay = function delay(ms) {
+	  return new Promise(function (resolve) {
+	    return setTimeout(resolve, ms);
+	  });
+	};
+
+	function garbageCollector() {
+	  return regeneratorRuntime.wrap(function garbageCollector$(_context) {
+	    while (1) {
+	      switch (_context.prev = _context.next) {
+	        case 0:
+	          _context.next = 2;
+	          return (0, _effects.call)(delay, 10 * 60 * 1000);
+
+	        case 2:
+	          if (false) {
+	            _context.next = 9;
+	            break;
+	          }
+
+	          _context.next = 5;
+	          return (0, _effects.call)(delay, 5 * 60 * 1000);
+
+	        case 5:
+	          _context.next = 7;
+	          return (0, _effects.put)({ type: _actionTypes.GARBAGE_COLLECT, meta: { now: Date.now() } });
+
+	        case 7:
+	          _context.next = 2;
+	          break;
+
+	        case 9:
+	        case 'end':
+	          return _context.stop();
+	      }
+	    }
+	  }, _marked[0], this);
+	}
+
 	var apiGeneric = function apiGeneric(apiClient) {
 	  return regeneratorRuntime.mark(function _apiGeneric(action) {
 	    var _action$payload, method, path, params, data, _action$meta, success, failure, response;
 
-	    return regeneratorRuntime.wrap(function _apiGeneric$(_context) {
+	    return regeneratorRuntime.wrap(function _apiGeneric$(_context2) {
 	      while (1) {
-	        switch (_context.prev = _context.next) {
+	        switch (_context2.prev = _context2.next) {
 	          case 0:
 	            _action$payload = action.payload;
 	            method = _action$payload.method;
@@ -10592,28 +10653,28 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            action.meta.fetchTime = Date.now();
 
-	            _context.prev = 9;
-	            _context.next = 12;
+	            _context2.prev = 9;
+	            _context2.next = 12;
 	            return (0, _effects.call)(apiClient[method], path, { params: params, data: data });
 
 	          case 12:
-	            response = _context.sent;
-	            _context.next = 15;
+	            response = _context2.sent;
+	            _context2.next = 15;
 	            return (0, _effects.put)(_extends({}, action, { type: success, payload: response }));
 
 	          case 15:
-	            _context.next = 21;
+	            _context2.next = 21;
 	            break;
 
 	          case 17:
-	            _context.prev = 17;
-	            _context.t0 = _context['catch'](9);
-	            _context.next = 21;
-	            return (0, _effects.put)(_extends({}, action, { type: failure, payload: _context.t0, error: true }));
+	            _context2.prev = 17;
+	            _context2.t0 = _context2['catch'](9);
+	            _context2.next = 21;
+	            return (0, _effects.put)(_extends({}, action, { type: failure, payload: _context2.t0, error: true }));
 
 	          case 21:
 	          case 'end':
-	            return _context.stop();
+	            return _context2.stop();
 	        }
 	      }
 	    }, _apiGeneric, this, [[9, 17]]);
@@ -10622,15 +10683,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var watchFetch = function watchFetch(apiClient) {
 	  return regeneratorRuntime.mark(function _watchFetch() {
-	    return regeneratorRuntime.wrap(function _watchFetch$(_context2) {
+	    return regeneratorRuntime.wrap(function _watchFetch$(_context3) {
 	      while (1) {
-	        switch (_context2.prev = _context2.next) {
+	        switch (_context3.prev = _context3.next) {
 	          case 0:
-	            return _context2.delegateYield((0, _reduxSaga.takeEvery)(_actionTypes.FETCH, apiGeneric(apiClient)), 't0', 1);
+	            return _context3.delegateYield((0, _reduxSaga.takeEvery)(_actionTypes.FETCH, apiGeneric(apiClient)), 't0', 1);
 
 	          case 1:
 	          case 'end':
-	            return _context2.stop();
+	            return _context3.stop();
 	        }
 	      }
 	    }, _watchFetch, this);
@@ -10639,15 +10700,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var watchFetchOne = function watchFetchOne(apiClient) {
 	  return regeneratorRuntime.mark(function _watchFetchOne() {
-	    return regeneratorRuntime.wrap(function _watchFetchOne$(_context3) {
+	    return regeneratorRuntime.wrap(function _watchFetchOne$(_context4) {
 	      while (1) {
-	        switch (_context3.prev = _context3.next) {
+	        switch (_context4.prev = _context4.next) {
 	          case 0:
-	            return _context3.delegateYield((0, _reduxSaga.takeEvery)(_actionTypes.FETCH_ONE, apiGeneric(apiClient)), 't0', 1);
+	            return _context4.delegateYield((0, _reduxSaga.takeEvery)(_actionTypes.FETCH_ONE, apiGeneric(apiClient)), 't0', 1);
 
 	          case 1:
 	          case 'end':
-	            return _context3.stop();
+	            return _context4.stop();
 	        }
 	      }
 	    }, _watchFetchOne, this);
@@ -10656,15 +10717,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var watchCreate = function watchCreate(apiClient) {
 	  return regeneratorRuntime.mark(function _watchCreate() {
-	    return regeneratorRuntime.wrap(function _watchCreate$(_context4) {
+	    return regeneratorRuntime.wrap(function _watchCreate$(_context5) {
 	      while (1) {
-	        switch (_context4.prev = _context4.next) {
+	        switch (_context5.prev = _context5.next) {
 	          case 0:
-	            return _context4.delegateYield((0, _reduxSaga.takeEvery)(_actionTypes.CREATE, apiGeneric(apiClient)), 't0', 1);
+	            return _context5.delegateYield((0, _reduxSaga.takeEvery)(_actionTypes.CREATE, apiGeneric(apiClient)), 't0', 1);
 
 	          case 1:
 	          case 'end':
-	            return _context4.stop();
+	            return _context5.stop();
 	        }
 	      }
 	    }, _watchCreate, this);
@@ -10673,15 +10734,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var watchUpdate = function watchUpdate(apiClient) {
 	  return regeneratorRuntime.mark(function _watchUpdate() {
-	    return regeneratorRuntime.wrap(function _watchUpdate$(_context5) {
+	    return regeneratorRuntime.wrap(function _watchUpdate$(_context6) {
 	      while (1) {
-	        switch (_context5.prev = _context5.next) {
+	        switch (_context6.prev = _context6.next) {
 	          case 0:
-	            return _context5.delegateYield((0, _reduxSaga.takeEvery)(_actionTypes.UPDATE, apiGeneric(apiClient)), 't0', 1);
+	            return _context6.delegateYield((0, _reduxSaga.takeEvery)(_actionTypes.UPDATE, apiGeneric(apiClient)), 't0', 1);
 
 	          case 1:
 	          case 'end':
-	            return _context5.stop();
+	            return _context6.stop();
 	        }
 	      }
 	    }, _watchUpdate, this);
@@ -10690,15 +10751,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var watchDelete = function watchDelete(apiClient) {
 	  return regeneratorRuntime.mark(function _watchDelete() {
-	    return regeneratorRuntime.wrap(function _watchDelete$(_context6) {
+	    return regeneratorRuntime.wrap(function _watchDelete$(_context7) {
 	      while (1) {
-	        switch (_context6.prev = _context6.next) {
+	        switch (_context7.prev = _context7.next) {
 	          case 0:
-	            return _context6.delegateYield((0, _reduxSaga.takeEvery)(_actionTypes.DELETE, apiGeneric(apiClient)), 't0', 1);
+	            return _context7.delegateYield((0, _reduxSaga.takeEvery)(_actionTypes.DELETE, apiGeneric(apiClient)), 't0', 1);
 
 	          case 1:
 	          case 'end':
-	            return _context6.stop();
+	            return _context7.stop();
 	        }
 	      }
 	    }, _watchDelete, this);
@@ -10707,15 +10768,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var watchApiCall = function watchApiCall(apiClient) {
 	  return regeneratorRuntime.mark(function _watchApiCall() {
-	    return regeneratorRuntime.wrap(function _watchApiCall$(_context7) {
+	    return regeneratorRuntime.wrap(function _watchApiCall$(_context8) {
 	      while (1) {
-	        switch (_context7.prev = _context7.next) {
+	        switch (_context8.prev = _context8.next) {
 	          case 0:
-	            return _context7.delegateYield((0, _reduxSaga.takeEvery)(_actionTypes.API_CALL, apiGeneric(apiClient)), 't0', 1);
+	            return _context8.delegateYield((0, _reduxSaga.takeEvery)(_actionTypes.API_CALL, apiGeneric(apiClient)), 't0', 1);
 
 	          case 1:
 	          case 'end':
-	            return _context7.stop();
+	            return _context8.stop();
 	        }
 	      }
 	    }, _watchApiCall, this);
@@ -10724,16 +10785,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function crudSaga(apiClient) {
 	  return regeneratorRuntime.mark(function _crudSaga() {
-	    return regeneratorRuntime.wrap(function _crudSaga$(_context8) {
+	    return regeneratorRuntime.wrap(function _crudSaga$(_context9) {
 	      while (1) {
-	        switch (_context8.prev = _context8.next) {
+	        switch (_context9.prev = _context9.next) {
 	          case 0:
-	            _context8.next = 2;
-	            return [(0, _effects.fork)(watchFetch(apiClient)), (0, _effects.fork)(watchFetchOne(apiClient)), (0, _effects.fork)(watchCreate(apiClient)), (0, _effects.fork)(watchUpdate(apiClient)), (0, _effects.fork)(watchDelete(apiClient)), (0, _effects.fork)(watchApiCall(apiClient))];
+	            _context9.next = 2;
+	            return [(0, _effects.fork)(watchFetch(apiClient)), (0, _effects.fork)(watchFetchOne(apiClient)), (0, _effects.fork)(watchCreate(apiClient)), (0, _effects.fork)(watchUpdate(apiClient)), (0, _effects.fork)(watchDelete(apiClient)), (0, _effects.fork)(watchApiCall(apiClient)), (0, _effects.fork)(garbageCollector)];
 
 	          case 2:
 	          case 'end':
-	            return _context8.stop();
+	            return _context9.stop();
 	        }
 	      }
 	    }, _crudSaga, this);
