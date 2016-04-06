@@ -198,19 +198,18 @@ If you ever worry about your cache getting out of sync, it's easy to manually sy
 
 ### What's still missing (TODO)
 
- - default fetch client could be included, to make saga setup easier
- - expand support for the generic API_CALL action
- - allow dispatching multiple actions for API_CALL
- - consider allowing dispatching multiple actions for CREATE/UPDATE/DELETE
- - it would be great to support nested models - automatically stripping the models out of a parent object, moving them into their own store, and storing the parent with just an id reference. This might make component logic kind of intense if we aren't careful.
-
-# The original documentation
-
-What follows is our original notes on the functioning of this module. Someday we'll clean this up. Pull requests are welcome!
+- default fetch client could be included, to make saga setup easier
+- allow dispatching multiple actions for API_CALL
+- consider allowing dispatching multiple actions for CREATE/UPDATE/DELETE
+- it would be great to support nested models - automatically stripping the models out of a parent object, moving them into their own store, and storing the parent with just an id reference. This might make component logic kind of intense if we aren't careful.
+- configurable keys: This module is still mostly agnostic about the format your data comes in from the server as, but in particular it expects records to live in response.data when running FETCH, and it expects all records to have an id attribute. It would be great to analyze this further and make those keys configurable.
+- tests for every public function
+- tests for every private function too
 
 ### Brief layout of what state.models should look like
 
-    // note: uses Immutable.js in reality
+This is a slightly airbrushed representation of what the state.models key in your store might look like, if it were represented as JSON instead of with Immutable JS.
+
     state.models : {
       posts: {
         collections: [
@@ -218,7 +217,7 @@ What follows is our original notes on the functioning of this module. Someday we
             params: {
               no_pagination: true
             },
-            other_info: null,
+            otherInfo: null,
             ids: [ 15000, 15001, ... ],
             fetchTime: 1325355325,
             error: null
@@ -227,11 +226,12 @@ What follows is our original notes on the functioning of this module. Someday we
             params: {
               page: 1
             },
-            other_info: {
-              self: 1,
-              next: 2,
-              prev: 0,
-              ...
+            otherInfo: {
+              page: {
+                self: 1,
+                next: 2,
+                prev: 0
+              }
             },
             ids: [ 15000, 15001, ... ],
             fetchTime: 1325355325,
@@ -264,50 +264,7 @@ What follows is our original notes on the functioning of this module. Someday we
       },
     }
 
-### Fetch Time
-
- - state.models.posts.collections[n].fetchTime is used for refreshing current page if desired
- - state.models.posts.byId.15000.fetchTime is used for refreshing current record if desired
- - getting a collection and then a record: getting the record should be intantaneous.
- - fetching 25 records and then the corresponding collection, sadly, is not.
- - fetchTime === 0 indicates loading
- - fetchTime === null indicates it needs to be loaded, but isn't currently.
- - fetchTime > 10 minutes ago leads to a re-fetch
-
-### selector function design
-
-#### these functions are DUMB - they can't dispatch actions
-- selectCollection: loads results for a certain set of params - store in byId array
-  first call returns an error object
-  call again on FETCHED and it returns a list of count/page/data
-  store a retrieved-at key with each model in byId
-  if a collection times out - (const... 10 minutes?), fetch the new page
-- selectRecord: loads a single record into byId, then returns it.
-  - returns "Loading" if byId record doesn't exist. dispatches action.
-  - returns "Loading" if byId record's fetchTime is too old. dispatches action.
-  - returns error object if byId record's error is not null. TODO how do I know when to re-dispatch action?
-  - returns record otherwise
-
-#### these functions are action creators
-- addRecord: creates a post request, but doesn't update byId until the response from the server
-  - let component handle showing "save status" state
-  - calling this function stores the new model in an action
-  - return a promise with success/error TODO is this ok? is there a better way?
-  - update byId on success, return new object
-  - don't update byId on error, return error + unpersisted object
-- updateRecord: creates a put request, but doesn't update byId until the response from the server
-  - let component handle showing update button as clickable or not
-  - calling this function stores the updated model in an action
-  - return a promise with success/error TODO is this ok? is there a better way?
-  - update byId on success, return new object
-  - don't update byId on error, return error + unpersisted object
-- deleteRecord: creates a delete request, but doesn't update byId until the response from the server
-  - calling this function stores the id in the action
-  - return a promise with success/error TODO is this ok? is there a better way?
-  - remove element from byId on success, return "Success"
-  - don't remove element from byId on error, return error + attempted id
-
-### Definitions:
+### Glossary of frequently used terms:
 
  - Model is an abstract type like "posts" or "comments"
    - it also refers to an object in state.models
@@ -316,4 +273,4 @@ What follows is our original notes on the functioning of this module. Someday we
    - state.posts.collections refers to previously executed queries
    - a single collection is made up of params, the returned ids, and then metadata
  - fetch means to go to the server
- - select means to get the existing models from the state, or an object saying "please fetch this object!!"
+ - select means to get the existing models from the state, or an object that communicates to the component that it should dispatch a fetch action
