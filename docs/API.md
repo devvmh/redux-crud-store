@@ -2,48 +2,48 @@ The API for redux-crud-store is quite varied, and leaves you a lot of options fo
 
 This is a copy of the contents of src/index.js:
 
-    import crudSaga from './sagas'
-    import crudReducer from './reducers'
-    import * as crudActions from './actionTypes'
+import crudSaga from './sagas'
+import crudReducer from './reducers'
+import * as crudActions from './actionTypes'
 
-    export { crudSaga, crudReducer, crudActions }
+export { crudSaga, crudReducer, crudActions }
 
-    export {
-      fetchCollection, fetchRecord, createRecord, updateRecord, deleteRecord,
-      clearActionStatus, apiCall
-    } from './actionCreators'
+export {
+  fetchCollection, fetchRecord, createRecord, updateRecord, deleteRecord,
+    clearActionStatus, apiCall
+} from './actionCreators'
 
-    export {
-      selectCollection, selectRecord, selectRecordOrEmptyObject,
-      selectActionStatus
-    } from './selectors'
+export {
+  selectCollection, selectRecord, selectRecordOrEmptyObject,
+    selectActionStatus
+} from './selectors'
 
 # crudSaga
 
 crudSaga uses redux-saga to intercept actions like FETCH, CREATE, API_CALL, and others. Its use is outlined in README.md section 1. In particular, you will need to provide it with an instance of an API client class that defines:
 
-    apiClient['get'](path, { params, data })
-    apiClient['post'](path, { params, data })
-    apiClient['put'](path, { params, data })
-    apiClient['del'](path, { params, data })
+  apiClient['get'](path, { params, data })
+  apiClient['post'](path, { params, data })
+  apiClient['put'](path, { params, data })
+  apiClient['del'](path, { params, data })
 
-If you end up customizing the method on any of your action creators, your apiClient will also need to implement these methods.
+  If you end up customizing the method on any of your action creators, your apiClient will also need to implement these methods.
 
-An example ApiClient class is outlined in README.md section 1.
+  An example ApiClient class is outlined in README.md section 1.
 
 # crudReducer
 
-The crudReducer is self-contained. It is definitely worth reading through the code along with redux DevTools to see how the state is laid out, that is, quite differently than the result that will be passed to your components by the selectors.
+  The crudReducer is self-contained. It is definitely worth reading through the code along with redux DevTools to see how the state is laid out, that is, quite differently than the result that will be passed to your components by the selectors.
 
-API-wise, the only decision you have to make is the key you pass to combineReducers. In this repository's documentation, "models" is used as the key, but you can use any key, as long as you pass state["your key"] to the selector functions from your components.
+  API-wise, the only decision you have to make is the key you pass to combineReducers. In this repository's documentation, "models" is used as the key, but you can use any key, as long as you pass state["your key"] to the selector functions from your components.
 
-    import { combineReducers } from 'redux'
-    import { crudReducer } from 'redux-crud-store'
-    
-    export default combineReducers({
-      models: crudReducer,
-      // other reducers go here
-    })
+  import { combineReducers } from 'redux'
+  import { crudReducer } from 'redux-crud-store'
+
+  export default combineReducers({
+models: crudReducer,
+// other reducers go here
+})
 
 # crudActions
 
@@ -59,7 +59,7 @@ Example usage is outlined in README.md. If you are interested in advanced usage,
 - path (required) is the path that will be passed to your API cient
 - params (default {}) are the query params that will be passed to your API client
 - opts (default {}) can have any of the following keys, with the stated effect:
-  - 'method': overrides the method of the request from the default of 'get'
+- 'method': overrides the method of the request from the default of 'get'
 
 The resulting payload will be split up, with the actual data being stored in the byId section, and the ids of the data being stored along with the passed params in the collections section.
 
@@ -69,8 +69,8 @@ The resulting payload will be split up, with the actual data being stored in the
 - path (required) is the path that will be passed to your API cient
 - params (default {}) are the query params that will be passed to your API client
 - opts (default {}) can have any of the following keys, with the stated effect:
-  - 'method': overrides the method of the request from the default of 'get'
-    
+- 'method': overrides the method of the request from the default of 'get'
+
 The payload will be stored directly in the byId section of the store.
 
 #### createRecord(model : string, path : string, params : object, data : object, opts : object)
@@ -80,8 +80,8 @@ The payload will be stored directly in the byId section of the store.
 - data (default {}) is the POST data that will be passed to your API client
 - params (default {}) are the query params that will be passed to your API client
 - opts (default {}) can have any of the following keys, with the stated effect:
-  - 'method': overrides the method of the request from the default of 'post'
-    
+- 'method': overrides the method of the request from the default of 'post'
+
 On success, byId will be updated and all collections will be marked as needing a refresh. Additionally, actionStatus['create'] will be set.
 
 #### updateRecord(model : string, path : string, params : object, data : object, opts : object)
@@ -91,8 +91,8 @@ On success, byId will be updated and all collections will be marked as needing a
 - data (default {}) is the PUT data that will be passed to your API client
 - params (default {}) are the query params that will be passed to your API client
 - opts (default {}) can have any of the following keys, with the stated effect:
-  - 'method': overrides the method of the request from the default of 'put'
-    
+- 'method': overrides the method of the request from the default of 'put'
+
 On success, byId will be updated. Additionally, actionStatus['update'] will be set.
 
 #### deleteRecord(model : string, path : string, params : object, opts : object)
@@ -101,8 +101,8 @@ On success, byId will be updated. Additionally, actionStatus['update'] will be s
 - path (required) is the path that will be passed to your API cient
 - params (default {}) are the query params that will be passed to your API client
 - opts (default {}) can have any of the following keys, with the stated effect:
-  - 'method': overrides the method of the request from the default of 'del'
-    
+- 'method': overrides the method of the request from the default of 'del'
+
 On success, byId will be updated and all collections will be marked as needing a refresh. Additionally, actionStatus['delete'] will be set.
 
 #### clearActionStatus(model : string, action : string)
@@ -124,14 +124,14 @@ In this section, Map means an ImmutableJS Map.
 
 selectCollection will check crud[modelName]['collections'] for a map that contains a params key that is the same as the params object passed to this function. When it finds it, it will return an object with this shape:
 
-    {
-      otherInfo,  # other info (e.g. paging data) that was sent by the server 
-                  # alongside the data object (or {})
-      data,       # an empty array or an array of the items returned by the
-                  # fetchCollection api call
-      isLoading,  # false if the data array is full of usable objects
-      needsFetch  # true if you still need to dispatch a fetchCollection action
-    }
+{
+  otherInfo,  # other info (e.g. paging data) that was sent by the server 
+# alongside the data object (or {})
+    data,       # an empty array or an array of the items returned by the
+# fetchCollection api call
+    isLoading,  # false if the data array is full of usable objects
+    needsFetch  # true if you still need to dispatch a fetchCollection action
+}
 
 #### selectRecord(modelName : string, id : number, crud : Map)
 
@@ -141,13 +141,13 @@ selectCollection will check crud[modelName]['collections'] for a map that contai
 
 selectRecord will return one of two things. In the first case, it will return the record, exactly as sent by the server. If the record is not available or is out of date, it will return an error object with the following shape:
 
-    {
-      isLoading,  # will be true if the fetchRecord call returned an error.
-                  # false/undefined otherwise
-      needsFetch, # true if you still need to dispatch a fetchRecord action
-      error       # either { message: 'Loading...' } or the error returned by
-                  # the server after your fetchRecord action
-    }
+{
+  isLoading,  # will be true if the fetchRecord call returned an error.
+# false/undefined otherwise
+    needsFetch, # true if you still need to dispatch a fetchRecord action
+    error       # either { message: 'Loading...' } or the error returned by
+# the server after your fetchRecord action
+}
 
 #### selectRecordOrEmptyObject(modelName : string, id : number, crud : Map)
 
@@ -171,11 +171,11 @@ The corresponding success/failure actions for CREATE, UPDATE, and DELETE return 
     {
       pending: false,   # true if the most recently dispatched action is still
                         #  on its way to the server
-      id                # the id of the record that was created/updated/deleted.
+      id,               # the id of the created/updated/deleted record
       isSuccess,        # true if the action was successful
-      payload,          # for create/update success, this is the object.
+      payload           # for create/update success, this is the object.
                         # for failure, this is the error message
-    }
+}
 
 id will be null for create actions until/unless the CREATE_SUCCESS action is dispatched.
 
@@ -188,17 +188,20 @@ id will be null for create actions until/unless the CREATE_SUCCESS action is dis
 This function returns your action status in a "nice" form. It will be in one of three forms:
 
     {
-      id
+      id,
+      pending: true
     }
 
     {
       id,
-      error: action.payload || {}
+      error: action.payload || {},
+      pending: false
     }
  
     {
       id,
-      response: action.payload || {}
+      response: action.payload || {},
+      pending: false
     }
 
 This ensures that you can run checks in your component like

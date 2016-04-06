@@ -114,18 +114,20 @@ export function selectNiceActionStatus(modelName, crud, action) {
   const { pending, id, isSuccess, payload } = selectActionStatus(modelName, crud, action)
 
   if (pending === true) {
-    return { id }
+    return { id, pending }
   }
   if (isSuccess === true) {
     return {
       id,
-      response: payload
+      response: payload,
+      pending
     }
   }
   if (isSuccess === false) {
     return {
       id,
-      error: payload
+      error: payload,
+      pending
     }
   }
   return {}
