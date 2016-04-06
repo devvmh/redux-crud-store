@@ -33,23 +33,18 @@ function garbageCollector() {
           return (0, _effects.call)(delay, 10 * 60 * 1000);
 
         case 2:
-          if (!true) {
-            _context.next = 9;
-            break;
-          }
-
-          _context.next = 5;
+          _context.next = 4;
           return (0, _effects.call)(delay, 5 * 60 * 1000);
 
-        case 5:
-          _context.next = 7;
+        case 4:
+          _context.next = 6;
           return (0, _effects.put)({ type: _actionTypes.GARBAGE_COLLECT, meta: { now: Date.now() } });
 
-        case 7:
+        case 6:
           _context.next = 2;
           break;
 
-        case 9:
+        case 8:
         case 'end':
           return _context.stop();
       }
