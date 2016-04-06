@@ -88,8 +88,6 @@ function byIdReducer(state = byIdInitialState, action) {
         fetchTime: action.meta.fetchTime,
         error: null
       }))
-    case UPDATE_ERROR:
-      return state.setIn([id.toString(), 'error'], fromJS(action.payload))
     case DELETE_SUCCESS:
       return state.delete(id.toString())
     case GARBAGE_COLLECT:
