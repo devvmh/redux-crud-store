@@ -10,7 +10,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 function* garbageCollector() {
   yield call(delay, 10 * 60 * 1000) // initial 10 minute delay
-  while (true) {
+  for (;;) {
     yield call(delay, 5 * 60 * 1000) // every 5 minutes thereafter
     yield put({ type: GARBAGE_COLLECT, meta: { now: Date.now() } })
   }
