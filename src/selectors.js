@@ -3,6 +3,9 @@
 
 import { fromJS, List, Map } from 'immutable'
 import isEqual from 'lodash.isequal'
+import {
+  FETCH, FETCH_ONE, CREATE, UPDATE, DELETE
+} from './actionTypes'
 
 import type { CrudAction, ID, Model } from './actionTypes'
 
@@ -15,6 +18,7 @@ export type Selection<T> = {
   isLoading: boolean,
   needsFetch: boolean,
   error?: Error | { message: string },
+  fetch?: CrudAction<T>,
 }
 
 const recentTimeInterval = 10 * 60 * 1000 // ten minutes
@@ -31,6 +35,47 @@ function recent(fetchTime) {
   return Date.now() - recentTimeInterval < fetchTime
 }
 
+export function select<T>(action: CrudAction<T>, crud: State): Selection<T> {
+  const model = action.meta.model
+  const params = action.payload.params
+  let id
+  let selection
+  switch (action.type) {
+    case FETCH:
+      selection = selectCollection(model, crud, params)
+      break
+    case FETCH_ONE:
+      id = action.meta.id
+      if (id == null) {
+        throw new Error('Selecting a record, but no ID was given')
+      }
+      selection = selectRecord(model, id, crud)
+      break
+    default:
+      throw new Error(`Action type '${action.type}' is not a fetch action.`)
+  }
+  selection.fetch = action
+  return selection
+}
+
+export function selectStatus<T>(action: CrudAction<T>, crud: State): NiceActionStatus<T> {
+  let actionType
+  switch (action.type) {
+    case CREATE:
+      actionType = 'create'
+      break
+    case UPDATE:
+      actionType = 'update'
+      break
+    case DELETE:
+      actionType = 'delete'
+      break
+    default:
+      throw new Error(`Action type '${action.type}' is not a create, update, or delete action.`)
+  }
+  return selectNiceActionStatus(action.meta.model, crud, actionType)
+}
+
 export function selectCollection<T>(modelName: Model, crud: State, params: Object = {}
                                                  ): Selection<T> {
   const isLoading = ({ needsFetch }) => ({
@@ -43,9 +88,9 @@ export function selectCollection<T>(modelName: Model, crud: State, params: Objec
   const model = crud.getIn([modelName], Map())
 
   // find the collection that has the same params
-  const collection = model.get('collections', List()).find(coll => {
-    return isEqual(coll.get('params').toJS(), params)
-  })
+  const collection = model.get('collections', List()).find(coll => (
+    isEqual(coll.get('params').toJS(), params)
+  ))
   if (collection === undefined) {
     return isLoading({ needsFetch: true })
   }
@@ -60,7 +105,7 @@ export function selectCollection<T>(modelName: Model, crud: State, params: Objec
   // search the records to ensure they're all recent
   // TODO can we make this faster?
   let itemNeedsFetch = null
-  collection.get('ids', fromJS([])).forEach((id) => {
+  collection.get('ids', fromJS([])).forEach((id) => {  // eslint-disable-line consistent-return
     const item = model.getIn(['byId', id.toString()], Map())
     if (!recent(item.get('fetchTime'))) {
       itemNeedsFetch = item
@@ -118,12 +163,13 @@ export function selectRecordOrEmptyObject<T>(modelName: Model, id: ID, crud: Sta
 
 type ActionStatusSelection<T> = {
   isSuccess: ?boolean,
-  pending:   boolean,
-  id:        ?ID,
-  payload:   ?(T|Error)
+  pending: boolean,
+  id: ?ID,
+  payload: ?(T|Error)
 }
 
-export function selectActionStatus<T>(modelName: Model, crud: State, action: 'create' | 'update' | 'delete'
+export function selectActionStatus<T>(modelName: Model, crud: State,
+                                      action: 'create' | 'update' | 'delete'
                                      ): ActionStatusSelection<T> {
   const status = crud.getIn([modelName, 'actionStatus', action]) ||
                  fromJS({
@@ -136,13 +182,14 @@ export function selectActionStatus<T>(modelName: Model, crud: State, action: 'cr
 }
 
 type NiceActionStatus<T> = {
-  id?:       ?ID,
-  pending?:  boolean,
+  id?: ?ID,
+  pending?: boolean,
   response?: T,
-  error?:    Error,
+  error?: Error,
 }
 
-export function selectNiceActionStatus<T>(modelName: Model, crud: State, action: 'create' | 'update' | 'delete'
+export function selectNiceActionStatus<T>(modelName: Model, crud: State,
+                                          action: 'create' | 'update' | 'delete'
                                          ): NiceActionStatus<T> {
   const { pending, id, isSuccess, payload } = selectActionStatus(modelName, crud, action)
 
