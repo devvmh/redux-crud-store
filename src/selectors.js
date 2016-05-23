@@ -1,5 +1,21 @@
+/* @flow */
+/* eslint no-use-before-define: 0 */
+
 import { fromJS, List, Map } from 'immutable'
 import isEqual from 'lodash.isequal'
+
+import type { CrudAction, ID, Model } from './actionTypes'
+
+// TODO: `State` is not actually defined yet
+import type { State } from './reducers'
+
+export type Selection<T> = {
+  otherInfo?: Object,
+  data?: T,
+  isLoading: boolean,
+  needsFetch: boolean,
+  error?: Error | { message: string },
+}
 
 const recentTimeInterval = 10 * 60 * 1000 // ten minutes
 
@@ -15,10 +31,11 @@ function recent(fetchTime) {
   return Date.now() - recentTimeInterval < fetchTime
 }
 
-export function selectCollection(modelName, crud, params = {}) {
+export function selectCollection<T>(modelName: Model, crud: State, params: Object = {}
+                                                 ): Selection<T> {
   const isLoading = ({ needsFetch }) => ({
     otherInfo: {},
-    data: [],
+    data: ([]:any),
     isLoading: true,
     needsFetch
   })
@@ -69,7 +86,7 @@ export function selectCollection(modelName, crud, params = {}) {
   }
 }
 
-export function selectRecord(modelName, id, crud) {
+export function selectRecord<T>(modelName: Model, id: ID, crud: State): Selection<T> {
   const id_str = id ? id.toString() : undefined
   const model = crud.getIn([modelName, 'byId', id_str])
 
@@ -91,7 +108,7 @@ export function selectRecord(modelName, id, crud) {
   return model.get('record').toJS()
 }
 
-export function selectRecordOrEmptyObject(modelName, id, crud) {
+export function selectRecordOrEmptyObject<T>(modelName: Model, id: ID, crud: State): T|{} {
   const record = selectRecord(modelName, id, crud)
   if (record.isLoading || record.error) {
     return {}
@@ -99,7 +116,15 @@ export function selectRecordOrEmptyObject(modelName, id, crud) {
   return record
 }
 
-export function selectActionStatus(modelName, crud, action) {
+type ActionStatusSelection<T> = {
+  isSuccess: ?boolean,
+  pending:   boolean,
+  id:        ?ID,
+  payload:   ?(T|Error)
+}
+
+export function selectActionStatus<T>(modelName: Model, crud: State, action: 'create' | 'update' | 'delete'
+                                     ): ActionStatusSelection<T> {
   const status = crud.getIn([modelName, 'actionStatus', action]) ||
                  fromJS({
                    pending: false,
@@ -110,7 +135,15 @@ export function selectActionStatus(modelName, crud, action) {
   return status.toJS()
 }
 
-export function selectNiceActionStatus(modelName, crud, action) {
+type NiceActionStatus<T> = {
+  id?:       ?ID,
+  pending?:  boolean,
+  response?: T,
+  error?:    Error,
+}
+
+export function selectNiceActionStatus<T>(modelName: Model, crud: State, action: 'create' | 'update' | 'delete'
+                                         ): NiceActionStatus<T> {
   const { pending, id, isSuccess, payload } = selectActionStatus(modelName, crud, action)
 
   if (pending === true) {
@@ -119,14 +152,14 @@ export function selectNiceActionStatus(modelName, crud, action) {
   if (isSuccess === true) {
     return {
       id,
-      response: payload,
+      response: (payload:any),
       pending
     }
   }
   if (isSuccess === false) {
     return {
       id,
-      error: payload,
+      error: (payload:any),
       pending
     }
   }
