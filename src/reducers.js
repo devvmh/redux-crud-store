@@ -1,3 +1,5 @@
+/* eslint no-case-declarations: 0 */
+
 import { fromJS } from 'immutable'
 import isEqual from 'lodash.isequal'
 import {
