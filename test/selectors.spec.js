@@ -2,7 +2,11 @@ import expect from 'expect'
 import { fromJS } from 'immutable'
 
 import {
-  selectCollection, selectRecord
+  fetchCollection, fetchRecord, createRecord, updateRecord, deleteRecord
+} from '../src/actionCreators'
+
+import {
+  select, selectStatus, selectCollection, selectRecord, selectNiceActionStatus
 } from '../src/selectors'
 
 const now = Date.now()
@@ -68,6 +72,69 @@ const isLoadingOutput = {
   isLoading: true,
   needsFetch: true
 }
+
+/* action creators */
+function fetchWidgets(page) {
+  return fetchCollection(modelName, '/widgets', { page })
+}
+function fetchWidget(id) {
+  return fetchRecord(modelName, id, `/widgets/${id}`)
+}
+function createWidget(w) {
+  return createRecord(modelName, '/widgets', w)
+}
+function updateWidget(id, w) {
+  return updateRecord(modelName, id, `/widgets/${id}`, w)
+}
+function deleteWidget(id) {
+  return deleteRecord(modelName, id, `/widgets/${id}`)
+}
+
+describe('select', () => {
+  it('selects collections', () => {
+    const selection = select(fetchWidgets(1), crud)
+    delete selection.fetch
+    expect(selection).toEqual(
+      selectCollection(modelName, crud, { page: 1 })
+    )
+  })
+  it('selects records', () => {
+    const selection = select(fetchWidget(3), crud)
+    delete selection.fetch
+    expect(selection).toEqual(
+      selectRecord(modelName, 3, crud)
+    )
+  })
+  it('exposes underlying action', () => {
+    const action = fetchWidgets(1)
+    const selection = select(action, crud)
+    expect(selection.fetch).toEqual(action)
+  })
+})
+
+describe('selectStatus', () => {
+  it('selects status of "create" action', () => {
+    const action = createWidget({ name: 'four' })
+    const status = selectStatus(action, crud)
+    expect(status).toEqual(
+      selectNiceActionStatus(modelName, crud, 'create')
+    )
+  })
+  it('selects status of "update" action', () => {
+    const action = updateWidget(3, { id: 3, name: 'three!' })
+    const status = selectStatus(action, crud)
+    expect(status).toEqual(
+      selectNiceActionStatus(modelName, crud, 'update')
+    )
+  })
+  it('selects status of "delete" action', () => {
+    const action = deleteWidget(4)
+    const status = selectStatus(action, crud)
+    expect(status).toEqual(
+      selectNiceActionStatus(modelName, crud, 'delete')
+    )
+  })
+})
 
 describe('selectCollection', () => {
   describe('store has valid, up-to-date models', () => {
