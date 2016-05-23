@@ -1,5 +1,8 @@
 {
   "parser": "babel-eslint",
+  "plugins": [
+    "flowtype"
+  ],
   "extends": "eslint-config-airbnb",
   "globals": {
     "describe": false,
@@ -12,9 +15,17 @@
     id-length: 0,
     no-unused-vars: 0,
     camelcase: 0,
-    new-cap: 0
+    new-cap: 0,
+    "no-duplicate-imports": 0,  // type imports require duplicate imports
+    "import/no-duplicates": 0,  // type imports require duplicate imports
+    "react/jsx-first-prop-new-line": 0,
   },
   "ecmaFeatures": {
     "experimentalObjectRestSpread": true
-  }
+  },
+  "settings": {
+    "flowtype": {
+      "onlyFilesWithFlowAnnotation": true
+    }
+  },
 }
