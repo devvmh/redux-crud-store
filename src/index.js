@@ -16,3 +16,11 @@ export {
   selectCollection, selectRecord, selectRecordOrEmptyObject,
   selectActionStatus, selectNiceActionStatus
 } from './selectors'
+
+export type {
+  Action, CrudAction
+} from './actionTypes'
+
+export type {
+  Selection
+} from './selectors'
