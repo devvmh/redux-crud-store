@@ -41,6 +41,8 @@ The first step is to import ApiClient and crudSaga from redux-crud-store, which 
 
     // then use createStoreWithMiddleware as you like
 
+This requires fetch API support. If your clients won't support the fetch API, you will need to [write your own ApiClient](https://github.com/uniqueway/redux-crud-store/blob/feature/api-client/docs/Sample-Api-Client-with-Superagent.md).
+
 ### 2. Add the reducer to your store
 
 If you like combining your reducers in one file, here's what that file might look like:
