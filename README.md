@@ -22,10 +22,12 @@ There are four ways to integrate redux-crud-store into your app:
 
 ### 1. Set up a redux-saga middleware
 
-You'll need to write an ApiClient that looks something like this, and can handle 'get', 'post', 'put', and 'del' methods:
+You'll need to write an ApiClient that looks something like this:
 
     import superagent from 'superagent'
+
     const base_path = 'https://example.com/api/v3'
+    const methods = ['get', 'post', 'put', 'patch', 'del']
 
     class _ApiClient {
       constructor(req) {
