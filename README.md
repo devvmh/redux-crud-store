@@ -22,43 +22,14 @@ There are four ways to integrate redux-crud-store into your app:
 
 ### 1. Set up a redux-saga middleware
 
-You'll need to write an ApiClient that looks something like this:
-
-    import superagent from 'superagent'
-
-    const base_path = 'https://example.com/api/v3'
-    const methods = ['get', 'post', 'put', 'patch', 'del']
-
-    class _ApiClient {
-      constructor(req) {
-        methods.forEach((method) =>
-          this[method] = (path, { params, data } = {}) => new Promise((resolve, reject) => {
-            const request = superagent[method](base_path + path)
-
-            if (params) {
-              request.query(params)
-            }
-
-            if (data) {
-              request.send(data)
-            }
-
-            request.withCredentials().end((err, { body } = {}) => err ? reject(body || err) : resolve(body))
-          }))
-      }
-    }
-
-You don't need to use this exact code, but you must match the API. See [src/sagas.js](https://github.com/uniqueway/redux-crud-store/blob/master/src/sagas.js) for how this client is called.
-
-Once you've done that, you can create a redux-saga middleware and add it to your store:
+The first step is to import ApiClient and crudSaga from redux-crud-store, which will automate async tasks for you. All you need to do for now is provide a basePath for the ApiClient, which will be prepended to all of your requests. Once you've done that, you can create a redux-saga middleware and add it to your redux store using this code:
 
     import { createStore, applyMiddleware, compose } from 'redux'
     import createSagaMiddleware from 'redux-saga'
 
-    import { crudSaga } from 'redux-crud-store'
-    import { ApiClient } from './util/ApiClient' // write this yourself!
+    import { crudSaga, ApiClient } from 'redux-crud-store'
 
-    const client = new ApiClient()
+    const client = new ApiClient({ basePath: 'https://example.com/api/v3/' })
     const crudMiddleware = createSagaMiddleware(crudSaga(client))
 
     const createStoreWithMiddleware = compose(
@@ -72,7 +43,7 @@ Once you've done that, you can create a redux-saga middleware and add it to your
 
 ### 2. Add the reducer to your store
 
-This step is a bit easier! If you like combining your reducers in one file, here's what that file might look like:
+If you like combining your reducers in one file, here's what that file might look like:
 
     import { combineReducers } from 'redux'
     import { crudReducer } from 'redux-crud-store'
@@ -84,7 +55,7 @@ This step is a bit easier! If you like combining your reducers in one file, here
 
 ### 3. Create action creators for your specific models
 
-A given model might use very predictable endpoints, or it might need a lot of logic. You can make your action creators very quickly by basing them off of redux-crud-store's API:
+Now that the boilerplate is out of the way, you can start being productive with your own API. A given model might use very predictable endpoints, or it might need a lot of logic. You can make your action creators very quickly by basing them off of redux-crud-store's API:
 
     import {
       fetchCollection, fetchRecord, createRecord, updateRecord, deleteRecord
