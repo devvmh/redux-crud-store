@@ -58,24 +58,6 @@ export function select<T>(action: CrudAction<T>, crud: State): Selection<T> {
   return selection
 }
 
-export function selectStatus<T>(action: CrudAction<T>, crud: State): NiceActionStatus<T> {
-  let actionType
-  switch (action.type) {
-    case CREATE:
-      actionType = 'create'
-      break
-    case UPDATE:
-      actionType = 'update'
-      break
-    case DELETE:
-      actionType = 'delete'
-      break
-    default:
-      throw new Error(`Action type '${action.type}' is not a create, update, or delete action.`)
-  }
-  return selectNiceActionStatus(action.meta.model, crud, actionType)
-}
-
 export function selectCollection<T>(modelName: Model, crud: State, params: Object = {}
                                                  ): Selection<T> {
   const isLoading = ({ needsFetch }) => ({
