@@ -101,8 +101,22 @@ describe('select', () => {
   it('selects records', () => {
     const selection = select(fetchWidget(3), crud)
     delete selection.fetch
-    expect(selection).toEqual(
+    expect(selection.data).toEqual(
       selectRecord(modelName, 3, crud)
+    )
+  })
+  it('provides selection data when selecting a collection', () => {
+    const selection = select(fetchWidgets(1), crud)
+    expect(selection.needsFetch).toBe(false)
+    expect(selection.data).toEqual(
+      expectedOutput.data
+    )
+  })
+  it('provides selection data when selecting a record', () => {
+    const selection = select(fetchWidget(3), crud)
+    expect(selection.needsFetch).toBe(false)
+    expect(selection.data).toEqual(
+      expectedOutput.data[2]
     )
   })
   it('exposes underlying action', () => {

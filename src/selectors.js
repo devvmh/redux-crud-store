@@ -49,7 +49,7 @@ export function select<T>(action: CrudAction<T>, crud: State): Selection<T> {
       if (id == null) {
         throw new Error('Selecting a record, but no ID was given')
       }
-      selection = selectRecord(model, id, crud)
+      selection = getRecordSelection(model, id, crud)
       break
     default:
       throw new Error(`Action type '${action.type}' is not a fetch action.`)
@@ -113,7 +113,7 @@ export function selectCollection<T>(modelName: Model, crud: State, params: Objec
   }
 }
 
-export function selectRecord<T>(modelName: Model, id: ID, crud: State): Selection<T> {
+function getRecordSelection<T>(modelName: Model, id: ID, crud: State): Selection<T> {
   const id_str = id ? id.toString() : undefined
   const model = crud.getIn([modelName, 'byId', id_str])
 
@@ -132,7 +132,19 @@ export function selectRecord<T>(modelName: Model, id: ID, crud: State): Selectio
       error: model.get('error').toJS()
     }
   }
-  return model.get('record').toJS()
+  return {
+    isLoading: false,
+    needsFetch: false,
+    data: model.get('record').toJS()
+  }
+}
+
+export function selectRecord<T>(modelName: Model, id: ID, crud: State): T | Selection<T> {
+  const sel = getRecordSelection(modelName, id, crud)
+  if (sel.data) {
+    return sel.data
+  }
+  return sel
 }
 
 export function selectRecordOrEmptyObject<T>(modelName: Model, id: ID, crud: State): T|{} {
