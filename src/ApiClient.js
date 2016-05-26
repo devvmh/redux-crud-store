@@ -7,10 +7,11 @@ class ApiClient {
     const defaultConfig = {
       methods: ['get', 'post', 'put', 'patch', 'delete'],
       credentials: 'same-origin',
-      headers: {
+      defaultHeaders: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
-      }
+      },
+      format: 'json' // json, blob, text, arrayBuffer, ...
     }
 
     const config = {
@@ -24,18 +25,22 @@ class ApiClient {
     }
 
     config.methods.forEach(method => {
-      this[method] = (path, { params, data } = {}) => {
+      this[method] = (path, { params, data, otherConfig } = {}) => {
         const queryString = this.queryString(params)
-        const headers = this.getHeaders(config.headers, data)
-        const { basePath, credentials } = config
+        const { basePath, defaultHeaders, format, ...fetchConfig } = config
+        const headers = {
+          this.getHeaders(defaultHeaders, data),
+          ...fetchConfig.headers
+        }
 
         return new Promise((resolve, reject) => {
           fetch(basePath + path + this.queryString(), {
+            ...fetchConfig,
+            ...otherConfig,
             method,
-            credentials,
             headers
           }).then(response => {
-            return response.json()
+            return response[format]()
           }).then(payload => {
             resolve(payload)
           }).catch(error => {
