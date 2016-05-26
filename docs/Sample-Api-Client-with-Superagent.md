@@ -1,4 +1,4 @@
-The ApiClient class is fully customizable. You can write your own and drop it in as a replacement. You just need to ensure you provide get, post, put, and del requests at a minimum (plus any other methods your code uses). Here is an alternative implementation using the [superagent](https://github.com/visionmedia/superagent) library.
+The ApiClient class is fully customizable. You can write your own and drop it in as a replacement. You just need to ensure you provide get, post, put, and delete requests at a minimum (plus any other methods your code uses). Here is an alternative implementation using the [superagent](https://github.com/visionmedia/superagent) library.
 
     import superagent from 'superagent'
 
@@ -7,7 +7,7 @@ The ApiClient class is fully customizable. You can write your own and drop it in
 
     const methods = ['get', 'post', 'put', 'patch', 'delete']
 
-    class _ApiClient {
+    class ApiClient {
       constructor(req) {
         methods.forEach((method) =>
           this[method] = (path, { params, data } = {}) => new Promise((resolve, reject) => {
