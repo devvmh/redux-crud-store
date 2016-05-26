@@ -12,7 +12,7 @@ export {
 } from './actionCreators'
 
 export {
-  select, selectStatus,
+  select,
   selectCollection, selectRecord, selectRecordOrEmptyObject,
   selectActionStatus, selectNiceActionStatus
 } from './selectors'

@@ -6,7 +6,7 @@ import {
 } from '../src/actionCreators'
 
 import {
-  select, selectStatus, selectCollection, selectRecord, selectNiceActionStatus
+  select, selectCollection, selectRecord, selectNiceActionStatus
 } from '../src/selectors'
 
 const now = Date.now()
@@ -109,30 +109,6 @@ describe('select', () => {
     const action = fetchWidgets(1)
     const selection = select(action, crud)
     expect(selection.fetch).toEqual(action)
-  })
-})
-
-describe('selectStatus', () => {
-  it('selects status of "create" action', () => {
-    const action = createWidget({ name: 'four' })
-    const status = selectStatus(action, crud)
-    expect(status).toEqual(
-      selectNiceActionStatus(modelName, crud, 'create')
-    )
-  })
-  it('selects status of "update" action', () => {
-    const action = updateWidget(3, { id: 3, name: 'three!' })
-    const status = selectStatus(action, crud)
-    expect(status).toEqual(
-      selectNiceActionStatus(modelName, crud, 'update')
-    )
-  })
-  it('selects status of "delete" action', () => {
-    const action = deleteWidget(4)
-    const status = selectStatus(action, crud)
-    expect(status).toEqual(
-      selectNiceActionStatus(modelName, crud, 'delete')
-    )
   })
 })
 
