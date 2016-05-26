@@ -123,58 +123,82 @@ A typical component to render page 1 of a collection might look like this:
     import { mapStoteToProps, mapDispatchToProps, connect } from 'react-redux'
 
     import { fetchPosts } from '../../redux/modules/posts'
-    import { selectCollection } from 'redux-crud-store'
+    import { select } from 'redux-crud-store'
 
     class List extends React.Component {
       componentWillMount() {
-        if (this.props.posts.needsFetch) {
-          this.props.actions.fetchPosts({ page: 1 })
+        const { posts, dispatch } = this.props
+        if (posts.needsFetch) {
+          dispatch(posts.fetch)
         }
       }
 
       componentWillReceiveProps(nextProps) {
-        if (nextProps.posts.needsFetch) {
-          this.props.actions.fetchPosts({ page: 1 })
+        const { posts } = nextProps
+        const { dispatch } = this.props
+        if (posts.needsFetch) {
+          dispatch(posts.fetch)
         }
       }
 
-      render() {...}
+      render() {
+        const { posts } = this.props
+        if (posts.isLoading) {
+          return <div>
+            <p>loading...</p>
+          </div>
+        } else {
+          return <div>
+            {posts.data.map(post => <li key={post.id}>{post.title}</li>)}
+          </div>
+        }
+      }
     }
 
     function mapStateToProps(state, ownProps) {
-      return { posts: selectCollection('posts', state.models, { page: 1 }) }
-
-
-    function mapDispatchToProps(dispatch) {
-      return { actions: bindActionCreators(Object.assign({}, { fetchPosts }), dispatch) }
+      return { posts: select(fetchPosts({ page: 1 }), state.models) }
     }
 
-    export default connect(mapStateToProps, mapDispatchToProps)(List)
+    export default connect(mapStateToProps)(List)
 
 Fetching a single record is very similar. A typical component for editing a single record might implement these functions:
 
+    import { fetchPost } from '../../redux/modules/posts'
+    import {
+      clearActionStatus, select, selectActionStatus
+    } from 'redux-crud-store'
+
+    ....
+
     componentWillMount() {
-      if (this.props.post.needsFetch) this.props.actions.fetchPost(this.props.id)
+      const { posts, dispatch } = this.props
+      if (posts.needsFetch) {
+        dispatch(posts.fetch)
+      }
     }
 
     componentWillReceiveProps(nextProps) {
-      if (nextProps.post.needsFetch) nextProps.actions.fetchPost(nextProps.id)
-      if (nextProps.status.isSuccess) {
-        this.props.actions.clearActionStatus('post', 'update')
+      const { posts, status } = nextProps
+      const { dispatch } = this.props
+      if (posts.needsFetch) {
+        dispatch(posts.fetch)
+      }
+      if (status.isSuccess) {
+        dispatch(clearActionStatus('post', 'update'))
       }
     }
 
     disableSubmitButton = () => {
-      // this function would return true if you suold disable the submit
+      // this function would return true if you should disable the submit
       // button on your form - because you've already sent a PUT request
-      return !!nextProps.status.pending
+      return !!this.props.status.pending
     }
 
     ....
 
     function mapStateToProps(state, ownProps) {
       return {
-        post: selectRecord('posts', ownProps.id, state.models) },
+        post: select(fetchPost(ownProps.id), state.models),
         status: selectActionStatus('posts', state.models, 'update')
       }
     }
