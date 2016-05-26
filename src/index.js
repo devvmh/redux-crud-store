@@ -1,3 +1,5 @@
+/* @flow */
+
 import crudSaga from './sagas'
 import crudReducer from './reducers'
 import * as crudActions from './actionTypes'
@@ -10,6 +12,15 @@ export {
 } from './actionCreators'
 
 export {
+  select,
   selectCollection, selectRecord, selectRecordOrEmptyObject,
   selectActionStatus, selectNiceActionStatus
+} from './selectors'
+
+export type {
+  Action, CrudAction
+} from './actionTypes'
+
+export type {
+  Selection
 } from './selectors'

@@ -1,3 +1,6 @@
+/* @flow */
+/* global Generator */
+
 import 'babel-polyfill'
 import { takeEvery } from 'redux-saga'
 import { fork, put, call } from 'redux-saga/effects'
@@ -5,6 +8,13 @@ import { fork, put, call } from 'redux-saga/effects'
 import {
   FETCH, FETCH_ONE, CREATE, UPDATE, DELETE, API_CALL, GARBAGE_COLLECT
 } from './actionTypes'
+
+// TODO: The `Effect` type is not actually defined. Because 'redux-saga' does
+// not use @flow annotations, flow pretends that this import succeeds.
+import type { Effect } from 'redux-saga'
+import type { CrudAction } from './actionTypes'
+
+// Generator type parameters are: Generator<+Yield,+Return,-Next>
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -16,17 +26,20 @@ function* garbageCollector() {
   }
 }
 
-const apiGeneric = (apiClient) => function* _apiGeneric(action) {
+export const apiGeneric = (apiClient: Object) =>
+function* _apiGeneric(action: CrudAction<any>): Generator<Effect, void, any> {
   const { method, path, params, data } = action.payload
   const { success, failure } = action.meta
-
-  action.meta.fetchTime = Date.now()
+  const meta = {
+    ...action.meta,
+    fetchTime: Date.now()
+  }
 
   try {
     const response = yield call(apiClient[method], path, { params, data })
-    yield put({ ...action, type: success, payload: response })
+    yield put({ meta, type: success, payload: response })
   } catch (error) {
-    yield put({ ...action, type: failure, payload: error, error: true })
+    yield put({ meta, type: failure, payload: error, error: true })
   }
 }
 
@@ -54,8 +67,8 @@ const watchApiCall = (apiClient) => function* _watchApiCall() {
   yield* takeEvery(API_CALL, apiGeneric(apiClient))
 }
 
-export default function crudSaga(apiClient) {
-  return function* _crudSaga() {
+export default function crudSaga(apiClient: Object) {
+  return function* _crudSaga(): Generator<Effect, void, any> {
     yield [
       fork(watchFetch(apiClient)),
       fork(watchFetchOne(apiClient)),

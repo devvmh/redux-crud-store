@@ -2,7 +2,11 @@ import expect from 'expect'
 import { fromJS } from 'immutable'
 
 import {
-  selectCollection, selectRecord
+  fetchCollection, fetchRecord, createRecord, updateRecord, deleteRecord
+} from '../src/actionCreators'
+
+import {
+  select, selectCollection, selectRecord, selectNiceActionStatus
 } from '../src/selectors'
 
 const now = Date.now()
@@ -68,6 +72,59 @@ const isLoadingOutput = {
   isLoading: true,
   needsFetch: true
 }
+
+/* action creators */
+function fetchWidgets(page) {
+  return fetchCollection(modelName, '/widgets', { page })
+}
+function fetchWidget(id) {
+  return fetchRecord(modelName, id, `/widgets/${id}`)
+}
+function createWidget(w) {
+  return createRecord(modelName, '/widgets', w)
+}
+function updateWidget(id, w) {
+  return updateRecord(modelName, id, `/widgets/${id}`, w)
+}
+function deleteWidget(id) {
+  return deleteRecord(modelName, id, `/widgets/${id}`)
+}
+
+describe('select', () => {
+  it('selects collections', () => {
+    const selection = select(fetchWidgets(1), crud)
+    delete selection.fetch
+    expect(selection).toEqual(
+      selectCollection(modelName, crud, { page: 1 })
+    )
+  })
+  it('selects records', () => {
+    const selection = select(fetchWidget(3), crud)
+    delete selection.fetch
+    expect(selection.data).toEqual(
+      selectRecord(modelName, 3, crud)
+    )
+  })
+  it('provides selection data when selecting a collection', () => {
+    const selection = select(fetchWidgets(1), crud)
+    expect(selection.needsFetch).toBe(false)
+    expect(selection.data).toEqual(
+      expectedOutput.data
+    )
+  })
+  it('provides selection data when selecting a record', () => {
+    const selection = select(fetchWidget(3), crud)
+    expect(selection.needsFetch).toBe(false)
+    expect(selection.data).toEqual(
+      expectedOutput.data[2]
+    )
+  })
+  it('exposes underlying action', () => {
+    const action = fetchWidgets(1)
+    const selection = select(action, crud)
+    expect(selection.fetch).toEqual(action)
+  })
+})
 
 describe('selectCollection', () => {
   describe('store has valid, up-to-date models', () => {
