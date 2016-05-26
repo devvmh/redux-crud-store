@@ -21,8 +21,7 @@
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
     "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack",
-    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack",
-    "build:lol": "git tag -a -m $(git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --oneline) v-test HEAD"
+    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack"
   },
   "repository": {
     "type": "git",

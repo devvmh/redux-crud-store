@@ -22,10 +22,12 @@ There are four ways to integrate redux-crud-store into your app:
 
 ### 1. Set up a redux-saga middleware
 
-You'll need to write an ApiClient that looks something like this, and can handle 'get', 'post', 'put', and 'del' methods:
+You'll need to write an ApiClient that looks something like this:
 
     import superagent from 'superagent'
+
     const base_path = 'https://example.com/api/v3'
+    const methods = ['get', 'post', 'put', 'patch', 'del']
 
     class _ApiClient {
       constructor(req) {
@@ -253,7 +255,7 @@ This is a slightly airbrushed representation of what the state.models key in you
                     isSuccess: false, 
                     payload: {
                       message: "Invalid id",
-                      errors: { "planner_id": "not a planner" }
+                      errors: { "editor_id": "not an editor" }
                     }
                   },
           delete: { pending: true, id: 45 }
@@ -268,7 +270,7 @@ This is a slightly airbrushed representation of what the state.models key in you
 
  - Model is an abstract type like "posts" or "comments"
    - it also refers to an object in state.models
- - Record is a single resource e.g. the plan with id=10
+ - Record is a single resource e.g. the post with id=10
  - Collection is a number of records e.g. page 1 of posts
    - state.posts.collections refers to previously executed queries
    - a single collection is made up of params, the returned ids, and then metadata
