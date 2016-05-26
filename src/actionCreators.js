@@ -105,7 +105,7 @@ export function updateRecord<T>(model: string, id: ID, path: string, data: $Shap
 export function deleteRecord(model: string, id: ID, path: string,
                              params: Object = {}, opts: Opts = {}
                             ): CrudAction<void> {
-  const method = opts.method || 'del'
+  const method = opts.method || 'delete'
   return {
     type: DELETE,
     meta: {

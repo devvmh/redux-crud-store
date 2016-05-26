@@ -5,13 +5,16 @@ The ApiClient class is fully customizable. You can write your own and drop it in
     # note since you are writing this code, you can specify the base_path here
     const base_path = 'https://example.com/api/v3'
 
-    const methods = ['get', 'post', 'put', 'patch', 'del']
+    const methods = ['get', 'post', 'put', 'patch', 'delete']
 
     class _ApiClient {
       constructor(req) {
         methods.forEach((method) =>
           this[method] = (path, { params, data } = {}) => new Promise((resolve, reject) => {
-            const request = superagent[method](base_path + path)
+            // superagent uses 'del' instead of 'delete'
+            const saMethod = method === 'delete' ? 'del' : method
+
+            const request = superagent[saMethod](base_path + path)
 
             if (params) {
               request.query(params)
