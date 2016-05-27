@@ -100,11 +100,13 @@ export function selectRecordOrEmptyObject(modelName, id, crud) {
 }
 
 export function selectActionStatus(modelName, crud, action) {
-  console.warn('This function is deprecated. In the 4.0.0 release it will be ' \
-               'replaced with the current selectNiceActionStatus ' \
-               'implementation. You should switch your code to use ' \
-               'selectNiceActionStatus before upgrading to 4.0.0. In 5.0.0, ' \
+  /* eslint-disable */
+  console.warn('This function is deprecated. In the 4.0.0 release it will be ' +
+               'replaced with the current selectNiceActionStatus ' +
+               'implementation. You should switch your code to use ' +
+               'selectNiceActionStatus before upgrading to 4.0.0. In 5.0.0, ' +
                'selectNiceActionStatus will be renamed to selectActionStatus.')
+  /* eslint-enable */
   const status = crud.getIn([modelName, 'actionStatus', action]) ||
                  fromJS({
                    pending: false,
