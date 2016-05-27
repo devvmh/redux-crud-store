@@ -28,7 +28,7 @@ function* garbageCollector() {
 
 export const apiGeneric = (apiClient: Object) =>
 function* _apiGeneric(action: CrudAction<any>): Generator<Effect, void, any> {
-  const { method, path, params, data } = action.payload
+  const { method, path, params, data, fetchConfig } = action.payload
   const { success, failure } = action.meta
   const meta = {
     ...action.meta,
@@ -36,7 +36,7 @@ function* _apiGeneric(action: CrudAction<any>): Generator<Effect, void, any> {
   }
 
   try {
-    const response = yield call(apiClient[method], path, { params, data })
+    const response = yield call(apiClient[method], path, { params, data, fetchConfig })
     yield put({ meta, type: success, payload: response })
   } catch (error) {
     yield put({ meta, type: failure, payload: error, error: true })
