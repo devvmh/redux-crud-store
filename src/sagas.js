@@ -17,13 +17,13 @@ function* garbageCollector() {
 }
 
 const apiGeneric = (apiClient) => function* _apiGeneric(action) {
-  const { method, path, params, data } = action.payload
+  const { method, path, params, data, fetchConfig } = action.payload
   const { success, failure } = action.meta
 
   action.meta.fetchTime = Date.now()
 
   try {
-    const response = yield call(apiClient[method], path, { params, data })
+    const response = yield call(apiClient[method], path, { params, data, fetchConfig })
     yield put({ ...action, type: success, payload: response })
   } catch (error) {
     yield put({ ...action, type: failure, payload: error, error: true })
