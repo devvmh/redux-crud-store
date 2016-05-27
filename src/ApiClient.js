@@ -46,13 +46,12 @@ class ApiClient {
   }
 
   queryString(params) {
-    if (!params) return ''
-    if (Object.keys(params).length === 0) return ''
-    const queryParams = Object.keys(params).map(key => {
-      const value = params[key]
-      return `${key}=${value}`
+    const q = new URLSearchParams()
+    Object.keys(params).forEach(key => {
+      q.set(key, params[key])
     })
-    return '?' + queryParams.join('&')
+    const s = String(q)
+    return s ? `?${s}` : ''
   }
 
   getHeaders(defaultHeaders, data) {
