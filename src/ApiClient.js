@@ -33,19 +33,13 @@ class ApiClient {
           ...fetchConfig.headers
         }
 
-        return new Promise((resolve, reject) => {
-          fetch(basePath + path + this.queryString(), {
-            ...fetchConfig,
-            ...otherConfig,
-            method,
-            headers
-          }).then(response => {
-            return response[format]()
-          }).then(payload => {
-            resolve(payload)
-          }).catch(error => {
-            reject(error)
-          })
+        return fetch(basePath + path + this.queryString(), {
+          ...fetchConfig,
+          ...otherConfig,
+          method,
+          headers
+        }).then(response => {
+          return response[format]()
         })
       }
     })
