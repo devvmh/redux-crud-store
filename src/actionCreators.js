@@ -81,7 +81,7 @@ export function updateRecord(model, id, path, data = {}, params = {}, opts = {})
 }
 
 export function deleteRecord(model, id, path, params = {}, opts = {}) {
-  const method = opts.method || 'del'
+  const method = opts.method || 'delete'
   return {
     type: DELETE,
     meta: {
