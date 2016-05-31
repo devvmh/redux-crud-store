@@ -46,17 +46,17 @@ class ApiClient {
     methods.forEach(method => {
       this[method] = (path, { params, data, fetchConfig } = {}) => {
         const config = {
-          baseConfig,
+          ...baseConfig,
           ...passedConfig,
           ...fetchConfig,
           headers: {
-            baseConfig.headers,
+            ...baseConfig.headers,
             ...passedConfig.headers,
             ...fetchConfig.headers
           }
         }
         const {
-          methods: _methods, basePath, headers, format, bodyEncoder
+          methods: _methods, basePath, headers, format, bodyEncoder,
           ...otherConfig
         } = config
         const requestPath = basePath + path + this.queryString()

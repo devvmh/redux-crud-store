@@ -34,6 +34,7 @@ export type CrudAction<T> = {
     path:   string,
     data?:  T,
     params: Object,
+    fetchConfig: Object,
   },
 }
 
@@ -79,5 +80,5 @@ export type GarbageCollect = {
 }
 
 export type ID = string | number
-export type Method = 'get' | 'post' | 'put' | 'del'
+export type Method = 'get' | 'post' | 'put' | 'delete'
 export type Model = string
