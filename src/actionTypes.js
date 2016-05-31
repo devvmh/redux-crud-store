@@ -34,7 +34,7 @@ export type CrudAction<T> = {
     path:   string,
     data?:  T,
     params: Object,
-    fetchConfig: Object,
+    fetchConfig?: Object,
   },
 }
 

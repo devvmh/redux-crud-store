@@ -58,7 +58,11 @@ describe('apiGeneric', () => {
     const gen = apiGeneric(apiClient)(fetchWidgets(1))
     const apiCall = gen.next().value
     expect(apiCall).toEqual(
-      call(apiClient.get, '/widgets', { params: { page: 1 }, data: undefined })
+      call(apiClient.get, '/widgets', {
+        params: { page: 1 },
+        data: undefined,
+        fetchConfig: undefined
+      })
     )
   })
   it('dispatches success event', () => {
@@ -67,8 +71,8 @@ describe('apiGeneric', () => {
     const putSuccess = gen.next(widgets).value
     if (!putSuccess) { throw new Error('undefined yield value') }  // Flow wants this check
     expect(putSuccess.PUT).toExist()
-    expect(putSuccess.PUT.action.type).toEqual(FETCH_SUCCESS)
-    expect(putSuccess.PUT.action.payload).toEqual(widgets)
+    expect(putSuccess.PUT.type).toEqual(FETCH_SUCCESS)
+    expect(putSuccess.PUT.payload).toEqual(widgets)
   })
   it('dispatches error event', () => {
     const error = new Error('fetch failed')
@@ -77,14 +81,14 @@ describe('apiGeneric', () => {
     const putError = gen.throw(error).value
     if (!putError) { throw new Error('undefined yield value') }  // Flow wants this check
     expect(putError.PUT).toExist()
-    expect(putError.PUT.action.type).toEqual(FETCH_ERROR)
-    expect(putError.PUT.action.payload).toBe(error)
+    expect(putError.PUT.type).toEqual(FETCH_ERROR)
+    expect(putError.PUT.payload).toBe(error)
   })
   it('attaches `fetchTime` property to dispatched action meta', () => {
     const gen = apiGeneric(apiClient)(fetchWidgets(1))
     const apiCall = gen.next().value
     const putSuccess = gen.next(widgets).value
     if (!putSuccess) { throw new Error('undefined yield value') }  // Flow wants this check
-    expect(putSuccess.PUT.action.meta.fetchTime).toBeA('number')
+    expect(putSuccess.PUT.meta.fetchTime).toBeA('number')
   })
 })

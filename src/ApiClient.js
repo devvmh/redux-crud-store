@@ -31,13 +31,13 @@ class ApiClient {
       credentials: 'same-origin',
       format: 'json',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json'
       },
       methods: ['get', 'post', 'put', 'patch', 'delete']
     }
 
-    if (!config.basePath) {
+    if (!passedConfig.basePath) {
       // e.g. 'https://example.com/api/v3'
       throw new Error('You must pass a base path to the ApiClient')
     }
@@ -67,9 +67,7 @@ class ApiClient {
           method,
           headers,
           body
-        }).then(response => {
-          return response[format]()
-        })
+        }).then(response => response[format]())
       }
     })
   }
