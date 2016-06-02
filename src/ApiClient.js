@@ -51,15 +51,15 @@ class ApiClient {
           ...fetchConfig,
           headers: {
             ...baseConfig.headers,
-            ...passedConfig.headers,
-            ...fetchConfig.headers
+            ...(passedConfig ? passedConfig.headers : {}),
+            ...(fetchConfig ? fetchConfig.headers : {})
           }
         }
         const {
           methods: _methods, basePath, headers, format, bodyEncoder,
           ...otherConfig
         } = config
-        const requestPath = basePath + path + this.queryString()
+        const requestPath = basePath + path + this.queryString(params)
         const body = data ? bodyEncoder(data) : undefined
 
         return fetch(requestPath, {
