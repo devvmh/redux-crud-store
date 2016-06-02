@@ -19,7 +19,7 @@ export {
 export {
   select,
   selectCollection, selectRecord, selectRecordOrEmptyObject,
-  selectActionStatus, selectNiceActionStatus
+  selectActionStatus
 } from './selectors'
 
 export type {
@@ -158,7 +158,7 @@ In either case, `select` will return an object with this shape:
 - crud (required) is the immutable map as described in select, above.
 - params (default {}) is the list of params that could be sent to the server to retrieve the collection you want.
 
-selectCollection will check crud[modelName]['collections'] for a map that contains a params key that is the same as the params object passed to this function. When it finds it, it will return an object with this shape:
+selectCollection will check `crud[modelName]['collections']` for a map that contains a params key that is the same as the params object passed to this function. When it finds it, it will return an object with this shape:
 
 ```js
 {
@@ -199,33 +199,7 @@ This function calls selectRecord, but instead of returning the "error object" de
 - crud (required) is the immutable map as described in selectCollection, above
 - action (required) should be one of 'create', 'update', or 'delete'
 
-CREATE, UPDATE, and DELETE will set this to an object of this shape:
-
-    {
-      pending: true,
-      id
-    }
-
-The corresponding success/failure actions for CREATE, UPDATE, and DELETE return this shape instead:
-
-    {
-      pending: false,   # true if the most recently dispatched action is still
-                        #  on its way to the server
-      id,               # the id of the created/updated/deleted record
-      isSuccess,        # true if the action was successful
-      payload           # for create/update success, this is the object.
-                        # for failure, this is the error message
-}
-
-id will be null for create actions until/unless the CREATE_SUCCESS action is dispatched.
-
-#### selectNiceActionStatus(modelName : string, crud : Map, action : string)
-
-- modelName (required) is the key in the store
-- crud (required) is the immutable map as described in selectCollection, above
-- action (required) should be one of 'create', 'update', or 'delete'
-
-This function returns your action status in a "nice" form. It will be in one of three forms:
+This function returns your action status in one of three forms:
 
     {
       id,
@@ -244,7 +218,7 @@ This function returns your action status in a "nice" form. It will be in one of 
       pending: false
     }
 
-This ensures that you can run checks in your component like
+The recommended workflow in your components is to check for error/response like this:
 
     if (status.error) {
       // do something
@@ -252,13 +226,12 @@ This ensures that you can run checks in your component like
       // do something
     }
 
-If you prefer, this can simplify the logic in your components
 
 # API_CALL and apiCall - roll your own!
 
 apiCall is a really versatile function. If you find you are having troubles making it do what you want, you may want to implement your own saga/reducer/actionCreator/selectors module that copies most of the code of redux-crud-store, but for your specific purpose.
 
-However, for some quick and dirty uses, apiCall may be helpful. Generally you'll want to write an action creator in terms of this function. Unfortunately, the dispatching action is limited to being crudActions.API_CALL, so you'll need to watch for that action in your reducer if you want to update the store when the api call is dispatched.
+However, for some quick and dirty uses, apiCall may be helpful. Generally you'll want to write an action creator in terms of this function. Unfortunately, the dispatching action type is limited to being crudActions.API_CALL, so you'll need to watch for that action in your reducer if you want to update the store when the api call is dispatched.
 
 We used to use this function to send autocomplete queries from an autocomplete input box, but eventually were forced to re-implement the whole stack. This was so we could use the `takeLatest` method from redux-saga instead of `takeEvery`. In the future we may be able to implement a TAKE_LATEST_API_CALL action. Pull requests welcome!
 
