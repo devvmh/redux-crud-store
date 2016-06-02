@@ -156,36 +156,17 @@ export function selectRecordOrEmptyObject<T>(modelName: Model, id: ID, crud: Sta
 }
 
 type ActionStatusSelection<T> = {
-  isSuccess: ?boolean,
-  pending: boolean,
   id: ?ID,
-  payload: ?(T|Error)
+  pending: boolean,
+  response?: T,
+  error?: Error,
 }
 
 export function selectActionStatus<T>(modelName: Model, crud: State,
                                       action: 'create' | 'update' | 'delete'
                                      ): ActionStatusSelection<T> {
-  const status = crud.getIn([modelName, 'actionStatus', action]) ||
-                 fromJS({
-                   pending: false,
-                   id: null,
-                   isSuccess: null,
-                   payload: null
-                 })
-  return status.toJS()
-}
-
-type NiceActionStatus<T> = {
-  id?: ?ID,
-  pending?: boolean,
-  response?: T,
-  error?: Error,
-}
-
-export function selectNiceActionStatus<T>(modelName: Model, crud: State,
-                                          action: 'create' | 'update' | 'delete'
-                                         ): NiceActionStatus<T> {
-  const { pending, id, isSuccess, payload } = selectActionStatus(modelName, crud, action)
+  const rawStatus = (crud.getIn([modelName, 'actionStatus', action]) || fromJS({})).toJS()
+  const { pending = false, id = null, isSuccess = null, payload = null } = rawStatus
 
   if (pending === true) {
     return { id, pending }
@@ -193,16 +174,27 @@ export function selectNiceActionStatus<T>(modelName: Model, crud: State,
   if (isSuccess === true) {
     return {
       id,
-      response: (payload:any),
-      pending
+      pending,
+      response: (payload:any)
     }
   }
-  if (isSuccess === false) {
-    return {
-      id,
-      error: (payload:any),
-      pending
-    }
+  return {
+    id,
+    pending,
+    error: (payload:any)
   }
-  return {}
+}
+
+
+export function selectNiceActionStatus<T>(modelName: Model, crud: State,
+                                          action: 'create' | 'update' | 'delete'
+                                         ): ActionStatusSelection<T> {
+  // eslint-disable-next-line no-console
+  console.warn('This function is deprecated and will be removed in 5.0.0.')
+  // eslint-disable-next-line no-console
+  console.warn('Please replace it with selectActionStatus, which has the ')
+  // eslint-disable-next-line no-console
+  console.warn('same functionality.')
+
+  return selectActionStatus(modelName, crud, action)
 }
