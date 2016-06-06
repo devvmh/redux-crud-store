@@ -27,8 +27,14 @@ NODE_ENV === 'production'  && plugins.push(
 export default {
   module: {
     loaders: [
-      { test: /\.js$/, loaders: ['babel-loader'], exclude: /node_modules/ },
+      { test: /\.js.flow$/, loaders: ['babel-loader'], exclude: /node_modules/ },
     ],
+  },
+
+  resolve: {
+    // For consistent builds, it is important that '.js.flow' is first in the
+    // list.
+    extensions: ['.js.flow', '.js', '']
   },
 
   entry: [
