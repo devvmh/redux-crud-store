@@ -53,6 +53,13 @@ const apiClient = {
   del: () => {}
 }
 
+// Extracts action from a redux-saga `put` effect. The internal structure of the
+// `put` effect changed in redux-saga v0.10. This function handles both the
+// v0.10 and v0.9 formats.
+function getAction(effect) {
+  return effect.PUT.action ? effect.PUT.action : effect.PUT
+}
+
 describe('apiGeneric', () => {
   it('invokes API client methods', () => {
     const gen = apiGeneric(apiClient)(fetchWidgets(1))
