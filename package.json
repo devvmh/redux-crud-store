@@ -13,7 +13,7 @@
   "scripts": {
     "clean": "gulp clean",
     "build": "npm run build:commonjs && npm run build:umd && npm run build:umd:min && npm run build:es",
-    "prepublish": "npm run clean && npm run test && npm run build",
+    "prepublish": "npm run clean && npm run build && npm run test",
     "postpublish": "git add -A package.json src dist es && git commit -m \"publish v${npm_package_version}\"; bin/tag-with-changelog.sh v${npm_package_version} && git push && git push --tags",
     "posttest": "npm run lint",
     "lint": "flow check && eslint src test",
