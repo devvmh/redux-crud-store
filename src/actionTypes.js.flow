@@ -1,4 +1,5 @@
 /* @flow */
+/* global T */
 /* eslint max-len: 0, no-multi-spaces: 0, no-use-before-define: 0 */
 
 export const FETCH               : 'redux-crud-store/crud/FETCH'               = 'redux-crud-store/crud/FETCH'

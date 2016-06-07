@@ -16,7 +16,7 @@
     "prepublish": "npm run clean && npm run build && npm run test",
     "postpublish": "git add -A package.json src dist es && git commit -m \"publish v${npm_package_version}\"; bin/tag-with-changelog.sh v${npm_package_version} && git push && git push --tags",
     "posttest": "npm run lint",
-    "lint": "flow check && eslint src test",
+    "lint": "flow check && eslint src --ext .flow && eslint test",
     "test": "cross-env BABEL_ENV=commonjs mocha --compilers js:babel-core/register --reporter spec test/*.js",
     "build:commonjs": "gulp commonjs",
     "build:es": "gulp es",
