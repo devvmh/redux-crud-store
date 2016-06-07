@@ -53,6 +53,13 @@ const apiClient = {
   del: () => {}
 }
 
+// Extracts action from a redux-saga `put` effect. The internal structure of the
+// `put` effect changed in redux-saga v0.10. This function handles both the
+// v0.10 and v0.9 formats.
+function getAction(effect) {
+  return effect.PUT.action ? effect.PUT.action : effect.PUT
+}
+
 describe('apiGeneric', () => {
   it('invokes API client methods', () => {
     const gen = apiGeneric(apiClient)(fetchWidgets(1))
@@ -70,9 +77,10 @@ describe('apiGeneric', () => {
     const apiCall = gen.next().value
     const putSuccess = gen.next(widgets).value
     if (!putSuccess) { throw new Error('undefined yield value') }  // Flow wants this check
-    expect(putSuccess.PUT).toExist()
-    expect(putSuccess.PUT.type).toEqual(FETCH_SUCCESS)
-    expect(putSuccess.PUT.payload).toEqual(widgets)
+    const action = getAction(putSuccess)
+    expect(action).toExist()
+    expect(action.type).toEqual(FETCH_SUCCESS)
+    expect(action.payload).toEqual(widgets)
   })
   it('dispatches error event', () => {
     const error = new Error('fetch failed')
@@ -80,15 +88,17 @@ describe('apiGeneric', () => {
     const apiCall = gen.next().value
     const putError = gen.throw(error).value
     if (!putError) { throw new Error('undefined yield value') }  // Flow wants this check
-    expect(putError.PUT).toExist()
-    expect(putError.PUT.type).toEqual(FETCH_ERROR)
-    expect(putError.PUT.payload).toBe(error)
+    const action = getAction(putError)
+    expect(action).toExist()
+    expect(action.type).toEqual(FETCH_ERROR)
+    expect(action.payload).toBe(error)
   })
   it('attaches `fetchTime` property to dispatched action meta', () => {
     const gen = apiGeneric(apiClient)(fetchWidgets(1))
     const apiCall = gen.next().value
     const putSuccess = gen.next(widgets).value
     if (!putSuccess) { throw new Error('undefined yield value') }  // Flow wants this check
-    expect(putSuccess.PUT.meta.fetchTime).toBeA('number')
+    const action = getAction(putSuccess)
+    expect(action.meta.fetchTime).toBeA('number')
   })
 })
