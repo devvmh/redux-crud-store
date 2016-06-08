@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "clean": "rimraf lib dist es",
-    "build": "npm run build:commonjs && npm run build:umd && npm run build:umd:min && npm run build:es",
+    "build": "npm run build:commonjs && npm run build:types && npm run build:umd && npm run build:umd:min && npm run build:es",
     "prepublish": "npm run clean && npm run test && npm run build",
     "postpublish": "git add -A package.json src dist lib es && git commit -m \"publish v${npm_package_version}\"; bin/tag-with-changelog.sh v${npm_package_version} && git push && git push --tags",
     "posttest": "npm run lint",
@@ -21,7 +21,8 @@
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
     "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack",
-    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack"
+    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack",
+    "build:types": "node scripts/export-types.js"
   },
   "repository": {
     "type": "git",
@@ -59,6 +60,7 @@
     "expect": "^1.16.0",
     "flow-bin": "^0.25.0",
     "mocha": "^2.2.5",
+    "recursive-copy": "^2.0.5",
     "rimraf": "^2.5.2",
     "webpack": "^1.12.14"
   },
