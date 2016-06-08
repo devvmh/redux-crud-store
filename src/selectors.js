@@ -1,4 +1,5 @@
 /* @flow */
+/* global T */
 /* eslint no-use-before-define: 0 */
 
 import { fromJS, List, Map } from 'immutable'

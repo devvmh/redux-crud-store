@@ -1,5 +1,5 @@
 /* @flow */
-/* global $Shape */
+/* global T $Shape */
 
 import {
   FETCH, FETCH_SUCCESS, FETCH_ERROR,
