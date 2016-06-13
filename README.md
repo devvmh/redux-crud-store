@@ -22,43 +22,14 @@ There are four ways to integrate redux-crud-store into your app:
 
 ### 1. Set up a redux-saga middleware
 
-You'll need to write an ApiClient that looks something like this:
-
-    import superagent from 'superagent'
-
-    const base_path = 'https://example.com/api/v3'
-    const methods = ['get', 'post', 'put', 'patch', 'del']
-
-    class _ApiClient {
-      constructor(req) {
-        methods.forEach((method) =>
-          this[method] = (path, { params, data } = {}) => new Promise((resolve, reject) => {
-            const request = superagent[method](base_path + path)
-
-            if (params) {
-              request.query(params)
-            }
-
-            if (data) {
-              request.send(data)
-            }
-
-            request.withCredentials().end((err, { body } = {}) => err ? reject(body || err) : resolve(body))
-          }))
-      }
-    }
-
-You don't need to use this exact code, but you must match the API. See [src/sagas.js](https://github.com/uniqueway/redux-crud-store/blob/master/src/sagas.js) for how this client is called.
-
-Once you've done that, you can create a redux-saga middleware and add it to your store:
+The first step is to import ApiClient and crudSaga from redux-crud-store, which will automate async tasks for you. If your app uses JSON in requests, all you need to do is provide a basePath for the ApiClient, which will be prepended to all of your requests. (See [ApiClient.js](https://github.com/uniqueway/redux-crud-store/blob/master/src/ApiClient.js) for more config options). Once you've done that, you can create a redux-saga middleware and add it to your redux store using this code:
 
     import { createStore, applyMiddleware, compose } from 'redux'
     import createSagaMiddleware from 'redux-saga'
 
-    import { crudSaga } from 'redux-crud-store'
-    import { ApiClient } from './util/ApiClient' // write this yourself!
+    import { crudSaga, ApiClient } from 'redux-crud-store'
 
-    const client = new ApiClient()
+    const client = new ApiClient({ basePath: 'https://example.com/api/v3/' })
     const crudMiddleware = createSagaMiddleware(crudSaga(client))
 
     const createStoreWithMiddleware = compose(
@@ -70,9 +41,11 @@ Once you've done that, you can create a redux-saga middleware and add it to your
 
     // then use createStoreWithMiddleware as you like
 
+This requires fetch API support. If your clients won't support the fetch API, you will need to [write your own ApiClient](https://github.com/uniqueway/redux-crud-store/blob/feature/api-client/docs/Sample-Api-Client-with-Superagent.md).
+
 ### 2. Add the reducer to your store
 
-This step is a bit easier! If you like combining your reducers in one file, here's what that file might look like:
+If you like combining your reducers in one file, here's what that file might look like:
 
     import { combineReducers } from 'redux'
     import { crudReducer } from 'redux-crud-store'
@@ -84,7 +57,7 @@ This step is a bit easier! If you like combining your reducers in one file, here
 
 ### 3. Create action creators for your specific models
 
-A given model might use very predictable endpoints, or it might need a lot of logic. You can make your action creators very quickly by basing them off of redux-crud-store's API:
+Now that the boilerplate is out of the way, you can start being productive with your own API. A given model might use very predictable endpoints, or it might need a lot of logic. You can make your action creators very quickly by basing them off of redux-crud-store's API:
 
     import {
       fetchCollection, fetchRecord, createRecord, updateRecord, deleteRecord
@@ -123,58 +96,82 @@ A typical component to render page 1 of a collection might look like this:
     import { mapStoteToProps, mapDispatchToProps, connect } from 'react-redux'
 
     import { fetchPosts } from '../../redux/modules/posts'
-    import { selectCollection } from 'redux-crud-store'
+    import { select } from 'redux-crud-store'
 
     class List extends React.Component {
       componentWillMount() {
-        if (this.props.posts.needsFetch) {
-          this.props.actions.fetchPosts({ page: 1 })
+        const { posts, dispatch } = this.props
+        if (posts.needsFetch) {
+          dispatch(posts.fetch)
         }
       }
 
       componentWillReceiveProps(nextProps) {
-        if (nextProps.posts.needsFetch) {
-          this.props.actions.fetchPosts({ page: 1 })
+        const { posts } = nextProps
+        const { dispatch } = this.props
+        if (posts.needsFetch) {
+          dispatch(posts.fetch)
         }
       }
 
-      render() {...}
+      render() {
+        const { posts } = this.props
+        if (posts.isLoading) {
+          return <div>
+            <p>loading...</p>
+          </div>
+        } else {
+          return <div>
+            {posts.data.map(post => <li key={post.id}>{post.title}</li>)}
+          </div>
+        }
+      }
     }
 
     function mapStateToProps(state, ownProps) {
-      return { posts: selectCollection('posts', state.models, { page: 1 }) }
-
-
-    function mapDispatchToProps(dispatch) {
-      return { actions: bindActionCreators(Object.assign({}, { fetchPosts }), dispatch) }
+      return { posts: select(fetchPosts({ page: 1 }), state.models) }
     }
 
-    export default connect(mapStateToProps, mapDispatchToProps)(List)
+    export default connect(mapStateToProps)(List)
 
 Fetching a single record is very similar. A typical component for editing a single record might implement these functions:
 
+    import { fetchPost } from '../../redux/modules/posts'
+    import {
+      clearActionStatus, select, selectActionStatus
+    } from 'redux-crud-store'
+
+    ....
+
     componentWillMount() {
-      if (this.props.post.needsFetch) this.props.actions.fetchPost(this.props.id)
+      const { posts, dispatch } = this.props
+      if (posts.needsFetch) {
+        dispatch(posts.fetch)
+      }
     }
 
     componentWillReceiveProps(nextProps) {
-      if (nextProps.post.needsFetch) nextProps.actions.fetchPost(nextProps.id)
-      if (nextProps.status.isSuccess) {
-        this.props.actions.clearActionStatus('post', 'update')
+      const { posts, status } = nextProps
+      const { dispatch } = this.props
+      if (posts.needsFetch) {
+        dispatch(posts.fetch)
+      }
+      if (status.isSuccess) {
+        dispatch(clearActionStatus('post', 'update'))
       }
     }
 
     disableSubmitButton = () => {
-      // this function would return true if you suold disable the submit
+      // this function would return true if you should disable the submit
       // button on your form - because you've already sent a PUT request
-      return !!nextProps.status.pending
+      return !!this.props.status.pending
     }
 
     ....
 
     function mapStateToProps(state, ownProps) {
       return {
-        post: selectRecord('posts', ownProps.id, state.models) },
+        post: select(fetchPost(ownProps.id), state.models),
         status: selectActionStatus('posts', state.models, 'update')
       }
     }

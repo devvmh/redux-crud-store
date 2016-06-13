@@ -1,3 +1,6 @@
+/* @flow */
+/* global T $Shape */
+
 import {
   FETCH, FETCH_SUCCESS, FETCH_ERROR,
   FETCH_ONE, FETCH_ONE_SUCCESS, FETCH_ONE_ERROR,
@@ -7,7 +10,20 @@ import {
   CLEAR_ACTION_STATUS, API_CALL
 } from './actionTypes'
 
-export function fetchCollection(model, path, params = {}, opts = {}) {
+import type {
+  Action,
+  ClearActionStatus,
+  CrudAction,
+  ID,
+  Method
+} from './actionTypes'
+
+type Opts = {
+  method?: Method,
+}
+
+export function fetchCollection<T>(model: string, path: string, params: Object = {}, opts: Opts = {}
+                                  ): CrudAction<T[]> {
   const method = opts.method || 'get'
   return {
     type: FETCH,
@@ -25,7 +41,9 @@ export function fetchCollection(model, path, params = {}, opts = {}) {
   }
 }
 
-export function fetchRecord(model, id, path, params = {}, opts = {}) {
+export function fetchRecord<T>(model: string, id: ID, path: string,
+                               params: Object = {}, opts: Opts = {}
+                              ): CrudAction<T> {
   const method = opts.method || 'get'
   return {
     type: FETCH_ONE,
@@ -43,7 +61,9 @@ export function fetchRecord(model, id, path, params = {}, opts = {}) {
   }
 }
 
-export function createRecord(model, path, data = {}, params = {}, opts = {}) {
+export function createRecord<T>(model: string, path: string, data: $Shape<T> = {},
+                                params: Object = {}, opts: Opts = {}
+                               ): CrudAction<T> {
   const method = opts.method || 'post'
   return {
     type: CREATE,
@@ -61,7 +81,9 @@ export function createRecord(model, path, data = {}, params = {}, opts = {}) {
   }
 }
 
-export function updateRecord(model, id, path, data = {}, params = {}, opts = {}) {
+export function updateRecord<T>(model: string, id: ID, path: string, data: $Shape<T> = {},
+                                params: Object = {}, opts: Opts = {}
+                               ): CrudAction<T> {
   const method = opts.method || 'put'
   return {
     type: UPDATE,
@@ -80,8 +102,10 @@ export function updateRecord(model, id, path, data = {}, params = {}, opts = {})
   }
 }
 
-export function deleteRecord(model, id, path, params = {}, opts = {}) {
-  const method = opts.method || 'del'
+export function deleteRecord(model: string, id: ID, path: string,
+                             params: Object = {}, opts: Opts = {}
+                            ): CrudAction<void> {
+  const method = opts.method || 'delete'
   return {
     type: DELETE,
     meta: {
@@ -98,14 +122,17 @@ export function deleteRecord(model, id, path, params = {}, opts = {}) {
   }
 }
 
-export function clearActionStatus(model, action) {
+export function clearActionStatus(model: string, action: 'create' | 'update' | 'delete'
+                                 ): ClearActionStatus {
   return {
     type: CLEAR_ACTION_STATUS,
     payload: { model, action }
   }
 }
 
-export function apiCall(success, failure, method, path, params = {}, data = undefined, opts = {}) {
+export function apiCall<T>(success: string, failure: string, method: Method, path: string,
+                           params: Object = {}, data: $Shape<T> = undefined, opts: Object = {}
+                          ): CrudAction<T> {
   const meta = opts.meta || {}
   return {
     type: API_CALL,

@@ -2,6 +2,9 @@ The API for redux-crud-store is quite varied, and leaves you a lot of options fo
 
 This is a copy of the contents of src/index.js:
 
+```js
+/* @flow */
+
 import crudSaga from './sagas'
 import crudReducer from './reducers'
 import * as crudActions from './actionTypes'
@@ -10,13 +13,23 @@ export { crudSaga, crudReducer, crudActions }
 
 export {
   fetchCollection, fetchRecord, createRecord, updateRecord, deleteRecord,
-    clearActionStatus, apiCall
+  clearActionStatus, apiCall
 } from './actionCreators'
 
 export {
+  select,
   selectCollection, selectRecord, selectRecordOrEmptyObject,
-    selectActionStatus
+  selectActionStatus
 } from './selectors'
+
+export type {
+  Action, CrudAction
+} from './actionTypes'
+
+export type {
+  Selection
+} from './selectors'
+```
 
 # crudSaga
 
@@ -116,14 +129,38 @@ This function clears the actionStatus[action] key in the store, so your componen
 
 In this section, Map means an ImmutableJS Map.
 
+#### select<T>(action : CrudAction<T>, crud : Map) : Selection<T>
+
+- action (required) is an action created by a call to `fetchCollection` or `fetchRecord`
+- crud (required) is the immutable map. It should have at least one key, which should match modelName. This key should have the 'actionStatus', 'byId', and 'collections' keys for querying.
+
+`select` will inspect the given action to determine whether it should select a collection or a single record.
+
+In the case of a collection selection, `select` get data from will check `crud[action.meta.model]['collections']` for a map that contains the params key that is the same as `action.payload.params`. It will populate data using IDs from the value that is found.
+
+In the case of a single record selection, `select` will get data from `crud[action.meta.model]['byId'][action.meta.id]['record']`.
+
+In either case, `select` will return an object with this shape:
+
+```js
+{
+  otherInfo,   # when selecting collection, provides info (e.g. paging data) thas was sent by the server alongside the data object (or {})
+  data,        # collection of records, or a single record (if data is ready)
+  isLoading,   # false if data is ready and no error occurred
+  needsFetch,  # true if you still need to dispatch a fetch action
+  fetch        # action to dispatch, in case `needsFetch` is true
+}
+```
+
 #### selectCollection(modelName : string, crud : Map, params : object)
 
-- modelName: (required) is the key in the store
-- crud (required) is the immutable map. It should have at least one key, which should match modelName. This key should have the 'actionStatus', 'byId', and 'collections' keys for querying.
+- modelName (required) is the key in the store
+- crud (required) is the immutable map as described in select, above.
 - params (default {}) is the list of params that could be sent to the server to retrieve the collection you want.
 
-selectCollection will check crud[modelName]['collections'] for a map that contains a params key that is the same as the params object passed to this function. When it finds it, it will return an object with this shape:
+selectCollection will check `crud[modelName]['collections']` for a map that contains a params key that is the same as the params object passed to this function. When it finds it, it will return an object with this shape:
 
+```js
 {
   otherInfo,  # other info (e.g. paging data) that was sent by the server 
 # alongside the data object (or {})
@@ -132,15 +169,17 @@ selectCollection will check crud[modelName]['collections'] for a map that contai
     isLoading,  # false if the data array is full of usable objects
     needsFetch  # true if you still need to dispatch a fetchCollection action
 }
+```
 
 #### selectRecord(modelName : string, id : number, crud : Map)
 
 - modelName (required) is the key in the store
 - id (required) is the id of the record you're looking for
-- crud (required) is the immutable map as described in selectCollection, above.
+- crud (required) is the immutable map as described in select, above.
 
 selectRecord will return one of two things. In the first case, it will return the record, exactly as sent by the server. If the record is not available or is out of date, it will return an error object with the following shape:
 
+```js
 {
   isLoading,  # will be true if the fetchRecord call returned an error.
 # false/undefined otherwise
@@ -148,6 +187,7 @@ selectRecord will return one of two things. In the first case, it will return th
     error       # either { message: 'Loading...' } or the error returned by
 # the server after your fetchRecord action
 }
+```
 
 #### selectRecordOrEmptyObject(modelName : string, id : number, crud : Map)
 
@@ -159,33 +199,7 @@ This function calls selectRecord, but instead of returning the "error object" de
 - crud (required) is the immutable map as described in selectCollection, above
 - action (required) should be one of 'create', 'update', or 'delete'
 
-CREATE, UPDATE, and DELETE will set this to an object of this shape:
-
-    {
-      pending: true,
-      id
-    }
-
-The corresponding success/failure actions for CREATE, UPDATE, and DELETE return this shape instead:
-
-    {
-      pending: false,   # true if the most recently dispatched action is still
-                        #  on its way to the server
-      id,               # the id of the created/updated/deleted record
-      isSuccess,        # true if the action was successful
-      payload           # for create/update success, this is the object.
-                        # for failure, this is the error message
-}
-
-id will be null for create actions until/unless the CREATE_SUCCESS action is dispatched.
-
-#### selectNiceActionStatus(modelName : string, crud : Map, action : string)
-
-- modelName (required) is the key in the store
-- crud (required) is the immutable map as described in selectCollection, above
-- action (required) should be one of 'create', 'update', or 'delete'
-
-This function returns your action status in a "nice" form. It will be in one of three forms:
+This function returns your action status in one of three forms:
 
     {
       id,
@@ -204,7 +218,7 @@ This function returns your action status in a "nice" form. It will be in one of 
       pending: false
     }
 
-This ensures that you can run checks in your component like
+The recommended workflow in your components is to check for error/response like this:
 
     if (status.error) {
       // do something
@@ -212,13 +226,12 @@ This ensures that you can run checks in your component like
       // do something
     }
 
-If you prefer, this can simplify the logic in your components
 
 # API_CALL and apiCall - roll your own!
 
 apiCall is a really versatile function. If you find you are having troubles making it do what you want, you may want to implement your own saga/reducer/actionCreator/selectors module that copies most of the code of redux-crud-store, but for your specific purpose.
 
-However, for some quick and dirty uses, apiCall may be helpful. Generally you'll want to write an action creator in terms of this function. Unfortunately, the dispatching action is limited to being crudActions.API_CALL, so you'll need to watch for that action in your reducer if you want to update the store when the api call is dispatched.
+However, for some quick and dirty uses, apiCall may be helpful. Generally you'll want to write an action creator in terms of this function. Unfortunately, the dispatching action type is limited to being crudActions.API_CALL, so you'll need to watch for that action in your reducer if you want to update the store when the api call is dispatched.
 
 We used to use this function to send autocomplete queries from an autocomplete input box, but eventually were forced to re-implement the whole stack. This was so we could use the `takeLatest` method from redux-saga instead of `takeEvery`. In the future we may be able to implement a TAKE_LATEST_API_CALL action. Pull requests welcome!
 

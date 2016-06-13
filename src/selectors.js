@@ -1,5 +1,26 @@
+/* @flow */
+/* global T */
+/* eslint no-use-before-define: 0 */
+
 import { fromJS, List, Map } from 'immutable'
 import isEqual from 'lodash.isequal'
+import {
+  FETCH, FETCH_ONE, CREATE, UPDATE, DELETE
+} from './actionTypes'
+
+import type { CrudAction, ID, Model } from './actionTypes'
+
+// TODO: `State` is not actually defined yet
+import type { State } from './reducers'
+
+export type Selection<T> = {
+  otherInfo?: Object,
+  data?: T,
+  isLoading: boolean,
+  needsFetch: boolean,
+  error?: Error | { message: string },
+  fetch?: CrudAction<T>,
+}
 
 const recentTimeInterval = 10 * 60 * 1000 // ten minutes
 
@@ -15,10 +36,34 @@ function recent(fetchTime) {
   return Date.now() - recentTimeInterval < fetchTime
 }
 
-export function selectCollection(modelName, crud, params = {}) {
+export function select<T>(action: CrudAction<T>, crud: State): Selection<T> {
+  const model = action.meta.model
+  const params = action.payload.params
+  let id
+  let selection
+  switch (action.type) {
+    case FETCH:
+      selection = selectCollection(model, crud, params)
+      break
+    case FETCH_ONE:
+      id = action.meta.id
+      if (id == null) {
+        throw new Error('Selecting a record, but no ID was given')
+      }
+      selection = getRecordSelection(model, id, crud)
+      break
+    default:
+      throw new Error(`Action type '${action.type}' is not a fetch action.`)
+  }
+  selection.fetch = action
+  return selection
+}
+
+export function selectCollection<T>(modelName: Model, crud: State, params: Object = {}
+                                                 ): Selection<T> {
   const isLoading = ({ needsFetch }) => ({
     otherInfo: {},
-    data: [],
+    data: ([]:any),
     isLoading: true,
     needsFetch
   })
@@ -26,9 +71,9 @@ export function selectCollection(modelName, crud, params = {}) {
   const model = crud.getIn([modelName], Map())
 
   // find the collection that has the same params
-  const collection = model.get('collections', List()).find(coll => {
-    return isEqual(coll.get('params').toJS(), params)
-  })
+  const collection = model.get('collections', List()).find(coll => (
+    isEqual(coll.get('params').toJS(), params)
+  ))
   if (collection === undefined) {
     return isLoading({ needsFetch: true })
   }
@@ -43,7 +88,7 @@ export function selectCollection(modelName, crud, params = {}) {
   // search the records to ensure they're all recent
   // TODO can we make this faster?
   let itemNeedsFetch = null
-  collection.get('ids', fromJS([])).forEach((id) => {
+  collection.get('ids', fromJS([])).forEach((id) => {  // eslint-disable-line consistent-return
     const item = model.getIn(['byId', id.toString()], Map())
     if (!recent(item.get('fetchTime'))) {
       itemNeedsFetch = item
@@ -69,7 +114,7 @@ export function selectCollection(modelName, crud, params = {}) {
   }
 }
 
-export function selectRecord(modelName, id, crud) {
+function getRecordSelection<T>(modelName: Model, id: ID, crud: State): Selection<T> {
   const id_str = id ? id.toString() : undefined
   const model = crud.getIn([modelName, 'byId', id_str])
 
@@ -88,10 +133,22 @@ export function selectRecord(modelName, id, crud) {
       error: model.get('error').toJS()
     }
   }
-  return model.get('record').toJS()
+  return {
+    isLoading: false,
+    needsFetch: false,
+    data: model.get('record').toJS()
+  }
 }
 
-export function selectRecordOrEmptyObject(modelName, id, crud) {
+export function selectRecord<T>(modelName: Model, id: ID, crud: State): T | Selection<T> {
+  const sel = getRecordSelection(modelName, id, crud)
+  if (sel.data) {
+    return sel.data
+  }
+  return sel
+}
+
+export function selectRecordOrEmptyObject<T>(modelName: Model, id: ID, crud: State): T|{} {
   const record = selectRecord(modelName, id, crud)
   if (record.isLoading || record.error) {
     return {}
@@ -99,19 +156,18 @@ export function selectRecordOrEmptyObject(modelName, id, crud) {
   return record
 }
 
-export function selectActionStatus(modelName, crud, action) {
-  const status = crud.getIn([modelName, 'actionStatus', action]) ||
-                 fromJS({
-                   pending: false,
-                   id: null,
-                   isSuccess: null,
-                   payload: null
-                 })
-  return status.toJS()
+type ActionStatusSelection<T> = {
+  id: ?ID,
+  pending: boolean,
+  response?: T,
+  error?: Error,
 }
 
-export function selectNiceActionStatus(modelName, crud, action) {
-  const { pending, id, isSuccess, payload } = selectActionStatus(modelName, crud, action)
+export function selectActionStatus<T>(modelName: Model, crud: State,
+                                      action: 'create' | 'update' | 'delete'
+                                     ): ActionStatusSelection<T> {
+  const rawStatus = (crud.getIn([modelName, 'actionStatus', action]) || fromJS({})).toJS()
+  const { pending = false, id = null, isSuccess = null, payload = null } = rawStatus
 
   if (pending === true) {
     return { id, pending }
@@ -119,16 +175,27 @@ export function selectNiceActionStatus(modelName, crud, action) {
   if (isSuccess === true) {
     return {
       id,
-      response: payload,
-      pending
+      pending,
+      response: (payload:any)
     }
   }
-  if (isSuccess === false) {
-    return {
-      id,
-      error: payload,
-      pending
-    }
+  return {
+    id,
+    pending,
+    error: (payload:any)
   }
-  return {}
+}
+
+
+export function selectNiceActionStatus<T>(modelName: Model, crud: State,
+                                          action: 'create' | 'update' | 'delete'
+                                         ): ActionStatusSelection<T> {
+  // eslint-disable-next-line no-console
+  console.warn('This function is deprecated and will be removed in 5.0.0.')
+  // eslint-disable-next-line no-console
+  console.warn('Please replace it with selectActionStatus, which has the ')
+  // eslint-disable-next-line no-console
+  console.warn('same functionality.')
+
+  return selectActionStatus(modelName, crud, action)
 }
