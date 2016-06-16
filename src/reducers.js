@@ -70,13 +70,10 @@ function byIdReducer(state = byIdInitialState, action) {
                   .setIn([id.toString(), 'record'], fromJS(action.payload))
     case FETCH_ONE_ERROR:
       return state.setIn([id.toString(), 'fetchTime'], action.meta.fetchTime)
-                  .setIn([id.toString(), 'error'], fromJS(action.payload))
+                  .setIn([id.toString(), 'error'], action.payload)
                   .setIn([id.toString(), 'record'], null)
     case CREATE_SUCCESS:
       const cid = action.payload.id
-      if (state.get(cid.toString()) !== undefined) {
-        // console.error(`There was already a record at that id (${action.payload.id}) - erasing!`)
-      }
       return state.set(action.payload.id.toString(), fromJS({
         record: action.payload,
         fetchTime: action.meta.fetchTime,
@@ -121,7 +118,7 @@ function collectionReducer(state = collectionInitialState, action) {
                   .set('fetchTime', action.meta.fetchTime)
     case FETCH_ERROR:
       return state.set('params', fromJS(action.meta.params))
-                  .set('error', fromJS(action.payload))
+                  .set('error', action.payload)
     default:
       return state
   }
