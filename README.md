@@ -273,3 +273,19 @@ This is a slightly airbrushed representation of what the state.models key in you
    - a single collection is made up of params, the returned ids, and then metadata
  - fetch means to go to the server
  - select means to get the existing models from the state, or an object that communicates to the component that it should dispatch a fetch action
+
+# License
+
+Copyright 2016 Devin Howard
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
