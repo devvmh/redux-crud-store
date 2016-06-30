@@ -93,7 +93,7 @@ redux-crud-store is based on a RESTful API. If you need support for non-restful 
 A typical component to render page 1 of a collection might look like this:
 
     import React from 'react'
-    import { mapStoteToProps, mapDispatchToProps, connect } from 'react-redux'
+    import { mapStateToProps, mapDispatchToProps, connect } from 'react-redux'
 
     import { fetchPosts } from '../../redux/modules/posts'
     import { select } from 'redux-crud-store'
