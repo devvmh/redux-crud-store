@@ -197,7 +197,6 @@ If you ever worry about your cache getting out of sync, it's easy to manually sy
 
 ### What's still missing (TODO)
 
-- default fetch client could be included, to make saga setup easier
 - allow dispatching multiple actions for API_CALL
 - consider allowing dispatching multiple actions for CREATE/UPDATE/DELETE
 - it would be great to support nested models - automatically stripping the models out of a parent object, moving them into their own store, and storing the parent with just an id reference. This might make component logic kind of intense if we aren't careful.
