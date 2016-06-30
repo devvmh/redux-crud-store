@@ -173,8 +173,8 @@ describe('selectRecord', () => {
     })
 
     describe('model has an error', () => {
-      const loadFailed = { status: 500, message: '500 Internal Server Error', time: now }
-      const errorModels = crud.setIn([modelName, 'byId', '1', 'error'], fromJS(loadFailed))
+      const loadFailed = new Error('500 Interval Server Error')
+      const errorModels = crud.setIn([modelName, 'byId', '1', 'error'], loadFailed)
       it('renders the error', () => {
         expect(selectRecord(modelName, 1, errorModels)).toEqual({
           isLoading: false,

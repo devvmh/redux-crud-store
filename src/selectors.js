@@ -18,7 +18,7 @@ export type Selection<T> = {
   data?: T,
   isLoading: boolean,
   needsFetch: boolean,
-  error?: Error | { message: string },
+  error?: Error,
   fetch?: CrudAction<T>,
 }
 
@@ -119,18 +119,18 @@ function getRecordSelection<T>(modelName: Model, id: ID, crud: State): Selection
   const model = crud.getIn([modelName, 'byId', id_str])
 
   if (model && model.get('fetchTime') === 0) {
-    return { isLoading: true, needsFetch: false, error: { message: 'Loading...' } }
+    return { isLoading: true, needsFetch: false, error: new Error('Loading...') }
   }
   if (id === undefined || model === undefined ||
       !recent(model.get('fetchTime'))) {
-    return { isLoading: true, needsFetch: true, error: { message: 'Loading...' } }
+    return { isLoading: true, needsFetch: true, error: new Error('Loading...') }
   }
 
   if (model.get('error') !== null) {
     return {
       isLoading: false,
       needsFetch: false,
-      error: model.get('error').toJS()
+      error: model.get('error')
     }
   }
   return {
