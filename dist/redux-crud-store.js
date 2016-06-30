@@ -10479,12 +10479,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    case _actionTypes.FETCH_ONE_SUCCESS:
 	      return state.setIn([id.toString(), 'fetchTime'], action.meta.fetchTime).setIn([id.toString(), 'error'], null).setIn([id.toString(), 'record'], (0, _immutable.fromJS)(action.payload));
 	    case _actionTypes.FETCH_ONE_ERROR:
-	      return state.setIn([id.toString(), 'fetchTime'], action.meta.fetchTime).setIn([id.toString(), 'error'], (0, _immutable.fromJS)(action.payload)).setIn([id.toString(), 'record'], null);
+	      return state.setIn([id.toString(), 'fetchTime'], action.meta.fetchTime).setIn([id.toString(), 'error'], action.payload).setIn([id.toString(), 'record'], null);
 	    case _actionTypes.CREATE_SUCCESS:
 	      var cid = action.payload.id;
-	      if (state.get(cid.toString()) !== undefined) {
-	        // console.error(`There was already a record at that id (${action.payload.id}) - erasing!`)
-	      }
 	      return state.set(action.payload.id.toString(), (0, _immutable.fromJS)({
 	        record: action.payload,
 	        fetchTime: action.meta.fetchTime,
@@ -10526,7 +10523,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	      return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('ids', (0, _immutable.fromJS)(ids)).set('otherInfo', (0, _immutable.fromJS)(action.payload || {}).delete('data')).set('error', null).set('fetchTime', action.meta.fetchTime);
 	    case _actionTypes.FETCH_ERROR:
-	      return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('error', (0, _immutable.fromJS)(action.payload));
+	      return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('error', action.payload);
 	    default:
 	      return state;
 	  }
@@ -11066,17 +11063,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var model = crud.getIn([modelName, 'byId', id_str]);
 
 	  if (model && model.get('fetchTime') === 0) {
-	    return { isLoading: true, needsFetch: false, error: { message: 'Loading...' } };
+	    return { isLoading: true, needsFetch: false, error: new Error('Loading...') };
 	  }
 	  if (id === undefined || model === undefined || !recent(model.get('fetchTime'))) {
-	    return { isLoading: true, needsFetch: true, error: { message: 'Loading...' } };
+	    return { isLoading: true, needsFetch: true, error: new Error('Loading...') };
 	  }
 
 	  if (model.get('error') !== null) {
 	    return {
 	      isLoading: false,
 	      needsFetch: false,
-	      error: model.get('error').toJS()
+	      error: model.get('error')
 	    };
 	  }
 	  return {
