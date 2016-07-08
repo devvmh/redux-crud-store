@@ -30,7 +30,7 @@ The first step is to import ApiClient and crudSaga from redux-crud-store, which 
     import { crudSaga, ApiClient } from 'redux-crud-store'
 
     const client = new ApiClient({ basePath: 'https://example.com/api/v3/' })
-    const crudMiddleware = createSagaMiddleware(crudSaga(client))
+    const crudMiddleware = createSagaMiddleware()
 
     const createStoreWithMiddleware = compose(
       applyMiddleware(
@@ -38,6 +38,7 @@ The first step is to import ApiClient and crudSaga from redux-crud-store, which 
         // add other middlewares here...
       )
     )(createStore)
+    crudMiddleware.run(crudSaga(client))
 
     // then use createStoreWithMiddleware as you like
 
