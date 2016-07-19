@@ -63,7 +63,8 @@ const expectedOutput = {
     { id: 3, name: 'three' }
   ],
   isLoading: false,
-  needsFetch: false
+  needsFetch: false,
+  error: null
 }
 
 const isLoadingOutput = {
@@ -130,6 +131,17 @@ describe('selectCollection', () => {
   describe('store has valid, up-to-date models', () => {
     it('should return the correct models for rendering', () => {
       expect(selectCollection(modelName, crud, { page: 1 })).toEqual(expectedOutput)
+    })
+  })
+  describe('has an error', () => {
+    it('sets error', () => {
+      const loadFailed = new Error('500 Interval Server Error')
+      const fetchError = selectCollection(
+        modelName,
+        crud.setIn([modelName, 'collections', 0, 'error'], loadFailed),
+        { page: 1 }
+      )
+      expect(fetchError.error).toEqual(loadFailed)
     })
   })
   describe('fetchTime is yesterday', () => {
