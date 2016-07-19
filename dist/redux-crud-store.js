@@ -10937,6 +10937,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	/* global T */
+	/* eslint no-use-before-define: 0 */
+
 	exports.select = select;
 	exports.selectCollection = selectCollection;
 	exports.selectRecord = selectRecord;
@@ -10965,10 +10970,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *  - fetchTime is null (hasn't been set yet)
 	 *  - fetchTime is 0 (but note, this won't return NEEDS_FETCH)
 	 */
-
-	/* global T */
-	/* eslint no-use-before-define: 0 */
-
 	function recent(fetchTime) {
 	  if (fetchTime === null) return false;
 
@@ -11001,22 +11002,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	function selectCollection(modelName, crud) {
 	  var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-	  var isLoading = function isLoading(_ref) {
-	    var needsFetch = _ref.needsFetch;
-	    return {
-	      otherInfo: {},
-	      data: [],
-	      isLoading: true,
-	      needsFetch: needsFetch
-	    };
-	  };
-
 	  var model = crud.getIn([modelName], (0, _immutable.Map)());
-
-	  // find the collection that has the same params
 	  var collection = model.get('collections', (0, _immutable.List)()).find(function (coll) {
 	    return (0, _lodash2.default)(coll.get('params').toJS(), params);
 	  });
+
+	  var isLoading = function isLoading(_ref) {
+	    var needsFetch = _ref.needsFetch;
+	    return _extends({
+	      otherInfo: {},
+	      data: [],
+	      isLoading: true
+	    }, collection ? { error: collection.get('error') } : {}, {
+	      needsFetch: needsFetch
+	    });
+	  };
+
+	  // find the collection that has the same params
 	  if (collection === undefined) {
 	    return isLoading({ needsFetch: true });
 	  }
@@ -11050,12 +11052,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return model.getIn(['byId', id.toString(), 'record']);
 	  }).toJS();
 
-	  return {
+	  return _extends({
 	    otherInfo: collection.get('otherInfo', (0, _immutable.Map)()).toJS(),
 	    data: data,
 	    isLoading: false,
 	    needsFetch: false
-	  };
+	  }, collection ? { error: collection.get('error') } : {});
 	}
 
 	function getRecordSelection(modelName, id, crud) {

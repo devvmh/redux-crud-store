@@ -61,19 +61,20 @@ export function select<T>(action: CrudAction<T>, crud: State): Selection<T> {
 
 export function selectCollection<T>(modelName: Model, crud: State, params: Object = {}
                                                  ): Selection<T> {
+  const model = crud.getIn([modelName], Map())
+  const collection = model.get('collections', List()).find(coll => (
+    isEqual(coll.get('params').toJS(), params)
+  ))
+
   const isLoading = ({ needsFetch }) => ({
     otherInfo: {},
     data: ([]:any),
     isLoading: true,
+    ...(collection ? { error: collection.get('error') } : {}),
     needsFetch
   })
 
-  const model = crud.getIn([modelName], Map())
-
   // find the collection that has the same params
-  const collection = model.get('collections', List()).find(coll => (
-    isEqual(coll.get('params').toJS(), params)
-  ))
   if (collection === undefined) {
     return isLoading({ needsFetch: true })
   }
@@ -110,7 +111,8 @@ export function selectCollection<T>(modelName: Model, crud: State, params: Objec
     otherInfo: collection.get('otherInfo', Map()).toJS(),
     data,
     isLoading: false,
-    needsFetch: false
+    needsFetch: false,
+    ...(collection ? { error: collection.get('error') } : {})
   }
 }
 
