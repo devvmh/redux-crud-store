@@ -24,9 +24,10 @@ There are four ways to integrate redux-crud-store into your app:
 
 The first step is to import ApiClient and crudSaga from redux-crud-store, which will automate async tasks for you. If your app uses JSON in requests, all you need to do is provide a basePath for the ApiClient, which will be prepended to all of your requests. (See [ApiClient.js](https://github.com/uniqueway/redux-crud-store/blob/master/src/ApiClient.js) for more config options). Once you've done that, you can create a redux-saga middleware and add it to your redux store using this code:
 
-    import { createStore, applyMiddleware, compose } from 'redux'
+    import 'babel-polyfill' // needed for IE 11, Edge 12, Safari 9
     import createSagaMiddleware from 'redux-saga'
 
+    import { createStore, applyMiddleware, compose } from 'redux'
     import { crudSaga, ApiClient } from 'redux-crud-store'
 
     const client = new ApiClient({ basePath: 'https://example.com/api/v3/' })
