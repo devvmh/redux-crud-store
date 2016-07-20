@@ -114,7 +114,8 @@ function collectionReducer(state = collectionInitialState, action) {
     case FETCH_SUCCESS:
       const originalPayload = action.payload || {}
       const payload = ('data' in originalPayload) ? action.payload.data : action.payload
-      const otherInfo = ('data' in originalPayload) ? originalPayload.delete('data') : {}
+      const otherInfo = ('data' in originalPayload) ? originalPayload : {}
+      if ('data' in originalPayload) delete otherInfo.data
       const ids = payload.map((elt) => elt.id)
       return state.set('params', fromJS(action.meta.params))
                   .set('ids', fromJS(ids))
