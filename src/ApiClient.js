@@ -72,12 +72,11 @@ class ApiClient {
     })
   }
 
+  // thanks http://stackoverflow.com/a/12040639/5332286
   queryString(params) {
-    const q = new URLSearchParams()
-    Object.keys(params).forEach(key => {
-      q.set(key, params[key])
-    })
-    const s = String(q)
+    const s = Object.keys(params).map(key => (
+      [key, params[key]].map(encodeURIComponent).join('=')
+    )).join('&')
     return s ? `?${s}` : ''
   }
 }
