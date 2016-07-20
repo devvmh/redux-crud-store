@@ -53,7 +53,8 @@ function byIdReducer(state = byIdInitialState, action) {
   switch (action.type) {
     case FETCH_SUCCESS:
       const data = state.toJS()
-      action.payload.data.forEach((record) => {
+      const payload = ('data' in action.payload) ? action.payload.data : action.payload
+      payload.forEach((record) => {
         data[record.id] = {
           record,
           fetchTime: action.meta.fetchTime,
@@ -111,10 +112,13 @@ function collectionReducer(state = collectionInitialState, action) {
                   .set('fetchTime', 0)
                   .set('error', null)
     case FETCH_SUCCESS:
-      const ids = action.payload.data.map((elt) => elt.id)
+      const originalPayload = action.payload || {}
+      const payload = ('data' in originalPayload) ? action.payload.data : action.payload
+      const otherInfo = ('data' in originalPayload) ? originalPayload.delete('data') : {}
+      const ids = payload.map((elt) => elt.id)
       return state.set('params', fromJS(action.meta.params))
                   .set('ids', fromJS(ids))
-                  .set('otherInfo', fromJS(action.payload || {}).delete('data'))
+                  .set('otherInfo', fromJS(otherInfo))
                   .set('error', null)
                   .set('fetchTime', action.meta.fetchTime)
     case FETCH_ERROR:
