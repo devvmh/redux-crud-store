@@ -86,7 +86,7 @@ The resulting payload will be split up, with the actual data being stored in the
 
 The payload will be stored directly in the byId section of the store.
 
-#### createRecord(model : string, path : string, params : object, data : object, opts : object)
+#### createRecord(model : string, path : string, data : object, params : object, opts : object)
 
 - model (required) is the key in the store
 - path (required) is the path that will be passed to your API cient
@@ -97,7 +97,7 @@ The payload will be stored directly in the byId section of the store.
 
 On success, byId will be updated and all collections will be marked as needing a refresh. Additionally, actionStatus['create'] will be set.
 
-#### updateRecord(model : string, path : string, params : object, data : object, opts : object)
+#### updateRecord(model : string, path : string, data : object, params : object, opts : object)
 
 - model (required) is the key in the store
 - path (required) is the path that will be passed to your API cient
