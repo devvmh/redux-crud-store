@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.selectNiceActionStatus = exports.selectActionStatus = exports.selectRecordOrEmptyObject = exports.selectRecord = exports.selectCollection = exports.select = exports.apiCall = exports.clearActionStatus = exports.deleteRecord = exports.updateRecord = exports.createRecord = exports.fetchRecord = exports.fetchCollection = exports.ApiClient = exports.crudActions = exports.crudReducer = exports.crudSaga = undefined;
+exports.selectNiceActionStatus = exports.selectActionStatus = exports.selectRecordOrEmptyObject = exports.selectRecord = exports.selectCollection = exports.select = exports.clearModelData = exports.apiCall = exports.clearActionStatus = exports.deleteRecord = exports.updateRecord = exports.createRecord = exports.fetchRecord = exports.fetchCollection = exports.ApiClient = exports.crudActions = exports.crudReducer = exports.crudSaga = undefined;
 
 var _actionCreators = require('./actionCreators');
 
@@ -47,6 +47,12 @@ Object.defineProperty(exports, 'apiCall', {
   enumerable: true,
   get: function get() {
     return _actionCreators.apiCall;
+  }
+});
+Object.defineProperty(exports, 'clearModelData', {
+  enumerable: true,
+  get: function get() {
+    return _actionCreators.clearModelData;
   }
 });
 

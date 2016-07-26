@@ -25,24 +25,28 @@ var _actionTypes = require('./actionTypes');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// TODO: `State` is not actually defined yet
-
-
-var recentTimeInterval = 10 * 60 * 1000; // ten minutes
-
 /*
  * Returns false if:
  *  - fetchTime is more than 10 minutes ago
  *  - fetchTime is null (hasn't been set yet)
  *  - fetchTime is 0 (but note, this won't return NEEDS_FETCH)
  */
+
+
+// TODO: `State` is not actually defined yet
 function recent(fetchTime) {
+  var opts = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
   if (fetchTime === null) return false;
 
-  return Date.now() - recentTimeInterval < fetchTime;
+  var interval = opts.interval || 10 * 60 * 1000; // ten minutes
+
+  return Date.now() - interval < fetchTime;
 }
 
 function select(action, crud) {
+  var opts = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
   var model = action.meta.model;
   var params = action.payload.params;
   var id = void 0;
@@ -56,7 +60,7 @@ function select(action, crud) {
       if (id == null) {
         throw new Error('Selecting a record, but no ID was given');
       }
-      selection = getRecordSelection(model, id, crud);
+      selection = getRecordSelection(model, id, crud, opts);
       break;
     default:
       throw new Error('Action type \'' + action.type + '\' is not a fetch action.');
@@ -67,6 +71,7 @@ function select(action, crud) {
 
 function selectCollection(modelName, crud) {
   var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+  var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 
   var model = crud.getIn([modelName], (0, _immutable.Map)());
   var collection = model.get('collections', (0, _immutable.List)()).find(function (coll) {
@@ -92,7 +97,7 @@ function selectCollection(modelName, crud) {
   var fetchTime = collection.get('fetchTime');
   if (fetchTime === 0) {
     return isLoading({ needsFetch: false });
-  } else if (!recent(fetchTime)) {
+  } else if (!recent(fetchTime, opts)) {
     return isLoading({ needsFetch: true });
   }
 
@@ -102,7 +107,7 @@ function selectCollection(modelName, crud) {
   collection.get('ids', (0, _immutable.fromJS)([])).forEach(function (id) {
     // eslint-disable-line consistent-return
     var item = model.getIn(['byId', id.toString()], (0, _immutable.Map)());
-    if (!recent(item.get('fetchTime'))) {
+    if (!recent(item.get('fetchTime'), opts)) {
       itemNeedsFetch = item;
       return false;
     }
@@ -127,13 +132,15 @@ function selectCollection(modelName, crud) {
 }
 
 function getRecordSelection(modelName, id, crud) {
+  var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
   var id_str = id ? id.toString() : undefined;
   var model = crud.getIn([modelName, 'byId', id_str]);
 
   if (model && model.get('fetchTime') === 0) {
     return { isLoading: true, needsFetch: false, error: new Error('Loading...') };
   }
-  if (id === undefined || model === undefined || !recent(model.get('fetchTime'))) {
+  if (id === undefined || model === undefined || !recent(model.get('fetchTime'), opts)) {
     return { isLoading: true, needsFetch: true, error: new Error('Loading...') };
   }
 
@@ -152,7 +159,9 @@ function getRecordSelection(modelName, id, crud) {
 }
 
 function selectRecord(modelName, id, crud) {
-  var sel = getRecordSelection(modelName, id, crud);
+  var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
+  var sel = getRecordSelection(modelName, id, crud, opts);
   if (sel.data) {
     return sel.data;
   }
@@ -160,7 +169,9 @@ function selectRecord(modelName, id, crud) {
 }
 
 function selectRecordOrEmptyObject(modelName, id, crud) {
-  var record = selectRecord(modelName, id, crud);
+  var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
+  var record = selectRecord(modelName, id, crud, opts);
   if (record.isLoading || record.error) {
     return {};
   }

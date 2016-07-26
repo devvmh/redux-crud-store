@@ -1484,6 +1484,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var CLEAR_ACTION_STATUS = exports.CLEAR_ACTION_STATUS = 'redux-crud-store/crud/CLEAR_ACTION_STATUS';
 	var API_CALL = exports.API_CALL = 'redux-crud-store/crud/API_CALL';
 	var GARBAGE_COLLECT = exports.GARBAGE_COLLECT = 'redux-crud-store/crud/GARBAGE_COLLECT';
+	var CLEAR_MODEL_DATA = exports.CLEAR_MODEL_DATA = 'redux-crud-store/crud/CLEAR_MODEL_DATA';
 
 /***/ },
 /* 48 */
@@ -10102,14 +10103,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  }
 
+	  // thanks http://stackoverflow.com/a/12040639/5332286
+
+
 	  _createClass(ApiClient, [{
 	    key: 'queryString',
 	    value: function queryString(params) {
-	      var q = new URLSearchParams();
-	      Object.keys(params).forEach(function (key) {
-	        q.set(key, params[key]);
-	      });
-	      var s = String(q);
+	      var s = Object.keys(params).map(function (key) {
+	        return [key, params[key]].map(encodeURIComponent).join('=');
+	      }).join('&');
 	      return s ? '?' + s : '';
 	    }
 	  }]);
@@ -10139,6 +10141,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.deleteRecord = deleteRecord;
 	exports.clearActionStatus = clearActionStatus;
 	exports.apiCall = apiCall;
+	exports.clearModelData = clearModelData;
 
 	var _actionTypes = __webpack_require__(47);
 
@@ -10278,6 +10281,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	}
 
+	function clearModelData(model) {
+	  return {
+	    type: _actionTypes.CLEAR_MODEL_DATA,
+	    payload: {
+	      model: model
+	    }
+	  };
+	}
+
 /***/ },
 /* 124 */
 /***/ function(module, exports, __webpack_require__) {
@@ -10287,7 +10299,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.selectNiceActionStatus = exports.selectActionStatus = exports.selectRecordOrEmptyObject = exports.selectRecord = exports.selectCollection = exports.select = exports.apiCall = exports.clearActionStatus = exports.deleteRecord = exports.updateRecord = exports.createRecord = exports.fetchRecord = exports.fetchCollection = exports.ApiClient = exports.crudActions = exports.crudReducer = exports.crudSaga = undefined;
+	exports.selectNiceActionStatus = exports.selectActionStatus = exports.selectRecordOrEmptyObject = exports.selectRecord = exports.selectCollection = exports.select = exports.clearModelData = exports.apiCall = exports.clearActionStatus = exports.deleteRecord = exports.updateRecord = exports.createRecord = exports.fetchRecord = exports.fetchCollection = exports.ApiClient = exports.crudActions = exports.crudReducer = exports.crudSaga = undefined;
 
 	var _actionCreators = __webpack_require__(123);
 
@@ -10331,6 +10343,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  enumerable: true,
 	  get: function get() {
 	    return _actionCreators.apiCall;
+	  }
+	});
+	Object.defineProperty(exports, 'clearModelData', {
+	  enumerable: true,
+	  get: function get() {
+	    return _actionCreators.clearModelData;
 	  }
 	});
 
@@ -10445,9 +10463,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 	var modelInitialState = (0, _immutable.fromJS)({
-	  collections: [],
-	  byId: undefined,
-	  actionStatus: undefined
+	  byId: byIdInitialState,
+	  collections: collectionsInitialState,
+	  actionStatus: actionStatusInitialState
 	});
 
 	// holds a number of models, each of which are strucured like modelInitialState
@@ -10631,6 +10649,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  var id = action.meta ? action.meta.id : undefined;
 	  switch (action.type) {
+	    case _actionTypes.CLEAR_MODEL_DATA:
+	      return state.set(action.payload.model, modelInitialState);
 	    case _actionTypes.CLEAR_ACTION_STATUS:
 	      return state.updateIn([action.payload.model, 'actionStatus'], function (s) {
 	        return actionStatusReducer(s, action);
@@ -10959,24 +10979,28 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// TODO: `State` is not actually defined yet
-
-
-	var recentTimeInterval = 10 * 60 * 1000; // ten minutes
-
 	/*
 	 * Returns false if:
 	 *  - fetchTime is more than 10 minutes ago
 	 *  - fetchTime is null (hasn't been set yet)
 	 *  - fetchTime is 0 (but note, this won't return NEEDS_FETCH)
 	 */
+
+
+	// TODO: `State` is not actually defined yet
 	function recent(fetchTime) {
+	  var opts = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
 	  if (fetchTime === null) return false;
 
-	  return Date.now() - recentTimeInterval < fetchTime;
+	  var interval = opts.interval || 10 * 60 * 1000; // ten minutes
+
+	  return Date.now() - interval < fetchTime;
 	}
 
 	function select(action, crud) {
+	  var opts = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
 	  var model = action.meta.model;
 	  var params = action.payload.params;
 	  var id = void 0;
@@ -10990,7 +11014,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (id == null) {
 	        throw new Error('Selecting a record, but no ID was given');
 	      }
-	      selection = getRecordSelection(model, id, crud);
+	      selection = getRecordSelection(model, id, crud, opts);
 	      break;
 	    default:
 	      throw new Error('Action type \'' + action.type + '\' is not a fetch action.');
@@ -11001,6 +11025,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function selectCollection(modelName, crud) {
 	  var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	  var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 
 	  var model = crud.getIn([modelName], (0, _immutable.Map)());
 	  var collection = model.get('collections', (0, _immutable.List)()).find(function (coll) {
@@ -11026,7 +11051,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var fetchTime = collection.get('fetchTime');
 	  if (fetchTime === 0) {
 	    return isLoading({ needsFetch: false });
-	  } else if (!recent(fetchTime)) {
+	  } else if (!recent(fetchTime, opts)) {
 	    return isLoading({ needsFetch: true });
 	  }
 
@@ -11036,7 +11061,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  collection.get('ids', (0, _immutable.fromJS)([])).forEach(function (id) {
 	    // eslint-disable-line consistent-return
 	    var item = model.getIn(['byId', id.toString()], (0, _immutable.Map)());
-	    if (!recent(item.get('fetchTime'))) {
+	    if (!recent(item.get('fetchTime'), opts)) {
 	      itemNeedsFetch = item;
 	      return false;
 	    }
@@ -11061,13 +11086,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function getRecordSelection(modelName, id, crud) {
+	  var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
 	  var id_str = id ? id.toString() : undefined;
 	  var model = crud.getIn([modelName, 'byId', id_str]);
 
 	  if (model && model.get('fetchTime') === 0) {
 	    return { isLoading: true, needsFetch: false, error: new Error('Loading...') };
 	  }
-	  if (id === undefined || model === undefined || !recent(model.get('fetchTime'))) {
+	  if (id === undefined || model === undefined || !recent(model.get('fetchTime'), opts)) {
 	    return { isLoading: true, needsFetch: true, error: new Error('Loading...') };
 	  }
 
@@ -11086,7 +11113,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function selectRecord(modelName, id, crud) {
-	  var sel = getRecordSelection(modelName, id, crud);
+	  var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
+	  var sel = getRecordSelection(modelName, id, crud, opts);
 	  if (sel.data) {
 	    return sel.data;
 	  }
@@ -11094,7 +11123,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function selectRecordOrEmptyObject(modelName, id, crud) {
-	  var record = selectRecord(modelName, id, crud);
+	  var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
+	  var record = selectRecord(modelName, id, crud, opts);
 	  if (record.isLoading || record.error) {
 	    return {};
 	  }

@@ -8,7 +8,8 @@ import {
   CREATE, CREATE_SUCCESS, CREATE_ERROR,
   UPDATE, UPDATE_SUCCESS, UPDATE_ERROR,
   DELETE, DELETE_SUCCESS, DELETE_ERROR,
-  CLEAR_ACTION_STATUS, API_CALL, GARBAGE_COLLECT
+  CLEAR_ACTION_STATUS, API_CALL, GARBAGE_COLLECT,
+  CLEAR_MODEL_DATA
 } from './actionTypes'
 
 /*
@@ -34,9 +35,9 @@ const actionStatusInitialState = fromJS({
 })
 
 const modelInitialState = fromJS({
-  collections: [],
-  byId: undefined,
-  actionStatus: undefined
+  byId: byIdInitialState,
+  collections: collectionsInitialState,
+  actionStatus: actionStatusInitialState
 })
 
 // holds a number of models, each of which are strucured like modelInitialState
@@ -211,6 +212,8 @@ function actionStatusReducer(state = actionStatusInitialState, action) {
 export default function crudReducer(state = initialState, action) {
   const id = action.meta ? action.meta.id : undefined
   switch (action.type) {
+    case CLEAR_MODEL_DATA:
+      return state.set(action.payload.model, modelInitialState)
     case CLEAR_ACTION_STATUS:
       return state.updateIn([action.payload.model, 'actionStatus'],
                           (s) => actionStatusReducer(s, action))
