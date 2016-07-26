@@ -66,7 +66,7 @@ See src/crudActions.js for a full list of action types defined by this module.
 
 Example usage is outlined in README.md. If you are interested in advanced usage, see the API for apiCall at the bottom of this document.
 
-#### fetchCollection(model : string, path : string, params : object, opts : object)
+#### fetchCollection(model: string, path: string, params: object, opts: object)
 
 - model (required) is the key in the store
 - path (required) is the path that will be passed to your API cient
@@ -76,7 +76,7 @@ Example usage is outlined in README.md. If you are interested in advanced usage,
 
 The resulting payload will be split up, with the actual data being stored in the byId section, and the ids of the data being stored along with the passed params in the collections section.
 
-#### fetchRecord(model : string, path : string, params : object, opts : object)
+#### fetchRecord(model: string, path: string, params: object, opts: object)
 
 - model (required) is the key in the store
 - path (required) is the path that will be passed to your API cient
@@ -86,7 +86,7 @@ The resulting payload will be split up, with the actual data being stored in the
 
 The payload will be stored directly in the byId section of the store.
 
-#### createRecord(model : string, path : string, data : object, params : object, opts : object)
+#### createRecord(model: string, path: string, data: object, params: object, opts: object)
 
 - model (required) is the key in the store
 - path (required) is the path that will be passed to your API cient
@@ -97,7 +97,7 @@ The payload will be stored directly in the byId section of the store.
 
 On success, byId will be updated and all collections will be marked as needing a refresh. Additionally, actionStatus['create'] will be set.
 
-#### updateRecord(model : string, path : string, data : object, params : object, opts : object)
+#### updateRecord(model: string, path: string, data: object, params: object, opts: object)
 
 - model (required) is the key in the store
 - path (required) is the path that will be passed to your API cient
@@ -108,7 +108,7 @@ On success, byId will be updated and all collections will be marked as needing a
 
 On success, byId will be updated. Additionally, actionStatus['update'] will be set.
 
-#### deleteRecord(model : string, path : string, params : object, opts : object)
+#### deleteRecord(model: string, path: string, params: object, opts: object)
 
 - model (required) is the key in the store
 - path (required) is the path that will be passed to your API cient
@@ -118,7 +118,7 @@ On success, byId will be updated. Additionally, actionStatus['update'] will be s
 
 On success, byId will be updated and all collections will be marked as needing a refresh. Additionally, actionStatus['delete'] will be set.
 
-#### clearActionStatus(model : string, action : string)
+#### clearActionStatus(model: string, action: string)
 
 - model (required) is the key in the store
 - action (required) must be one of 'create', 'update', or 'delete'.
@@ -147,10 +147,11 @@ This function clears the data for a given model, replacing its contents in the s
 
 In this section, Map means an ImmutableJS Map.
 
-#### select<T>(action : CrudAction<T>, crud : Map) : Selection<T>
+#### select<T>(action: CrudAction<T>, crud: Map, opts: object): Selection<T>
 
 - action (required) is an action created by a call to `fetchCollection` or `fetchRecord`
 - crud (required) is the immutable map. It should have at least one key, which should match modelName. This key should have the 'actionStatus', 'byId', and 'collections' keys for querying.
+- opts (optional) can contain "interval", a number of milliseconds which defaults to 10 minutes. This interval determines when records should be reloaded from the server
 
 `select` will inspect the given action to determine whether it should select a collection or a single record.
 
@@ -170,11 +171,12 @@ In either case, `select` will return an object with this shape:
 }
 ```
 
-#### selectCollection(modelName : string, crud : Map, params : object)
+#### selectCollection(modelName: string, crud: Map, params: object, opts: object)
 
 - modelName (required) is the key in the store
 - crud (required) is the immutable map as described in select, above.
 - params (default {}) is the list of params that could be sent to the server to retrieve the collection you want.
+- opts (optional) can contain "interval", a number of milliseconds which defaults to 10 minutes. This interval determines when records should be reloaded from the server
 
 selectCollection will check `crud[modelName]['collections']` for a map that contains a params key that is the same as the params object passed to this function. When it finds it, it will return an object with this shape:
 
@@ -189,11 +191,12 @@ selectCollection will check `crud[modelName]['collections']` for a map that cont
 }
 ```
 
-#### selectRecord(modelName : string, id : number, crud : Map)
+#### selectRecord(modelName: string, id: number, crud: Map, opts: object)
 
 - modelName (required) is the key in the store
 - id (required) is the id of the record you're looking for
 - crud (required) is the immutable map as described in select, above.
+- opts (optional) can contain "interval", a number of milliseconds which defaults to 10 minutes. This interval determines when the record should be reloaded from the server
 
 selectRecord will return one of two things. In the first case, it will return the record, exactly as sent by the server. If the record is not available or is out of date, it will return an error object with the following shape:
 
@@ -207,11 +210,11 @@ selectRecord will return one of two things. In the first case, it will return th
 }
 ```
 
-#### selectRecordOrEmptyObject(modelName : string, id : number, crud : Map)
+#### selectRecordOrEmptyObject(modelName: string, id: number, crud: Map, opts: object)
 
 This function calls selectRecord, but instead of returning the "error object" described above, it simply returns {} if the record is not valid. This is intended to make the logic in your components simpler.
 
-#### selectActionStatus(modelName : string, crud : Map, action : string)
+#### selectActionStatus(modelName: string, crud: Map, action: string)
 
 - modelName (required) is the key in the store
 - crud (required) is the immutable map as described in selectCollection, above
@@ -253,7 +256,7 @@ However, for some quick and dirty uses, apiCall may be helpful. Generally you'll
 
 We used to use this function to send autocomplete queries from an autocomplete input box, but eventually were forced to re-implement the whole stack. This was so we could use the `takeLatest` method from redux-saga instead of `takeEvery`. In the future we may be able to implement a TAKE_LATEST_API_CALL action. Pull requests welcome!
 
-#### apiCall(success : string, failure : string, method : string, path : string, params : object, data: object, opts : object)
+#### apiCall(success: string, failure: string, method: string, path: string, params: object, data: object, opts: object)
 
 - success (required) is the action type to be dispatched on success
 - failure (required) is the action type to be dispatched if the request returns any kind of error (including Javascript errors)
