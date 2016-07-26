@@ -7,12 +7,13 @@ import {
   CREATE, CREATE_SUCCESS, CREATE_ERROR,
   UPDATE, UPDATE_SUCCESS, UPDATE_ERROR,
   DELETE, DELETE_SUCCESS, DELETE_ERROR,
-  CLEAR_ACTION_STATUS, API_CALL
+  CLEAR_ACTION_STATUS, API_CALL, CLEAR_MODEL_DATA
 } from './actionTypes'
 
 import type {
   Action,
   ClearActionStatus,
+  ClearModelDataAction,
   CrudAction,
   ID,
   Method
@@ -146,6 +147,15 @@ export function apiCall<T>(success: string, failure: string, method: Method, pat
       path,
       params,
       data
+    }
+  }
+}
+
+export function clearModelData(model: string): ClearModelDataAction {
+  return {
+    type: CLEAR_MODEL_DATA,
+    payload: {
+      model
     }
   }
 }

@@ -125,6 +125,24 @@ On success, byId will be updated and all collections will be marked as needing a
 
 This function clears the actionStatus[action] key in the store, so your components can stop rendering the success/error message.
 
+#### clearModelData(model: string)
+
+- model (required) is the key in the store
+
+This function clears the data for a given model, replacing its contents in the store with this:
+
+```js
+{
+  byId: {},
+  collections: [],
+  actionStatus: {
+    create: {},
+    update: {},
+    delete: {}
+  }
+}
+```
+
 # Selectors
 
 In this section, Map means an ImmutableJS Map.

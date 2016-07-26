@@ -9,7 +9,7 @@ export { crudSaga, crudReducer, crudActions, ApiClient }
 
 export {
   fetchCollection, fetchRecord, createRecord, updateRecord, deleteRecord,
-  clearActionStatus, apiCall
+  clearActionStatus, apiCall, clearModelData
 } from './actionCreators'
 
 export {

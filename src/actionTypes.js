@@ -20,6 +20,7 @@ export const DELETE_ERROR        : 'redux-crud-store/crud/DELETE_ERROR'        =
 export const CLEAR_ACTION_STATUS : 'redux-crud-store/crud/CLEAR_ACTION_STATUS' = 'redux-crud-store/crud/CLEAR_ACTION_STATUS'
 export const API_CALL            : 'redux-crud-store/crud/API_CALL'            = 'redux-crud-store/crud/API_CALL'
 export const GARBAGE_COLLECT     : 'redux-crud-store/crud/GARBAGE_COLLECT'     = 'redux-crud-store/crud/GARBAGE_COLLECT'
+export const CLEAR_MODEL_DATA    : 'redux-crud-store/crud/CLEAR_MODEL_DATA'    = 'redux-crud-store/crud/CLEAR_MODEL_DATA'
 
 export type Action =
   | ClearActionStatus
@@ -77,6 +78,13 @@ export type GarbageCollect = {
   type: typeof GARBAGE_COLLECT,
   meta: {
     now: number,
+  }
+}
+
+export type ClearModelDataAction = {
+  type: typeof CLEAR_MODEL_DATA,
+  payload: {
+    model: Model,
   }
 }
 
