@@ -6,7 +6,8 @@ import {
 } from '../src/actionCreators'
 
 import {
-  select, selectCollection, selectRecord, selectNiceActionStatus
+  select, selectCollection, selectRecord, selectNiceActionStatus,
+  selectRecordOrEmptyObject
 } from '../src/selectors'
 
 const now = Date.now()
@@ -222,5 +223,20 @@ describe('selectRecord', () => {
       expect(get.needsFetch).toEqual(false)
       expect(get.error.message).toEqual('Loading...')
     })
+  })
+})
+
+describe('selectRecordOrEmptyObject', () => {
+  it('returns valid object from selectRecord', () => {
+    expect(selectRecordOrEmptyObject(modelName, 1, crud)).toEqual(selectRecord(modelName, 1, crud))
+  })
+  it('empty object if model has an error', () => {
+    const loadFailed = new Error('500 Interval Server Error')
+    const errorModels = crud.setIn([modelName, 'byId', '1', 'error'], loadFailed)
+    expect(selectRecordOrEmptyObject(modelName, 1, errorModels)).toEqual({})
+  })
+  it('empty object if model is loading', () => {
+    const oldModels = crud.setIn([modelName, 'byId', '1', 'fetchTime'], yesterday)
+    expect(selectRecordOrEmptyObject(modelName, 1, oldModels)).toEqual({})
   })
 })
