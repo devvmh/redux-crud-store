@@ -6,7 +6,7 @@ import {
 } from '../src/actionCreators'
 
 import {
-  select, selectCollection, selectRecord, selectNiceActionStatus,
+  select, selectCollection, selectRecord,
   selectRecordOrEmptyObject
 } from '../src/selectors'
 
