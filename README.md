@@ -1,5 +1,6 @@
 # redux-crud-store - a reusable API for syncing models with a backend
 
+[![NPM Version](https://img.shields.io/npm/v/redux-crud-store.svg?style=flat)](https://www.npmjs.com/package/redux-crud-store)
 [![NPM Downloads](https://img.shields.io/npm/dm/redux-crud-store.svg?style=flat)](https://www.npmjs.com/package/redux-crud-store)
 
 
