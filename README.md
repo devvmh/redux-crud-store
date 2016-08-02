@@ -33,7 +33,7 @@ The first step is to import ApiClient and crudSaga from redux-crud-store, which 
 
     import { crudSaga, ApiClient } from 'redux-crud-store'
 
-    const client = new ApiClient({ basePath: 'https://example.com/api/v3/' })
+    const client = new ApiClient({ basePath: 'https://example.com/api/v1' })
     const crudMiddleware = createSagaMiddleware()
 
     const createStoreWithMiddleware = compose(
