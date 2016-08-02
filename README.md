@@ -4,7 +4,7 @@
 [![NPM Downloads](https://img.shields.io/npm/dm/redux-crud-store.svg?style=flat)](https://www.npmjs.com/package/redux-crud-store)
 
 
-Making a single page application (SPA)? Using a Redux store?
+Making a single page application (SPA)? Using a Redux store? Tired of writing the same code for every API endpoint?
 
 This module contains helper functions to make it easier to keep your models in sync with a backend. In particular, it provides these four things:
 
