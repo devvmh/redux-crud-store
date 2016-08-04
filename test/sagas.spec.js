@@ -1,5 +1,6 @@
 /* @flow */
 
+import 'babel-polyfill'
 import expect from 'expect'
 declare var describe
 declare var it
