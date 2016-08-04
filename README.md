@@ -205,8 +205,8 @@ If you ever worry about your cache getting out of sync, it's easy to manually sy
 
 - allow dispatching multiple actions for API_CALL
 - consider allowing dispatching multiple actions for CREATE/UPDATE/DELETE
-- it would be great to support nested models - automatically stripping the models out of a parent object, moving them into their own store, and storing the parent with just an id reference. This might make component logic kind of intense if we aren't careful.
-- configurable keys: This module is still mostly agnostic about the format your data comes in from the server as, but in particular it expects records to live in response.data when running FETCH, and it expects all records to have an id attribute. It would be great to analyze this further and make those keys configurable.
+- configurable keys: It would be great to integrate normalizr, so people could specify a response schema and have their data automatically normalized into the store. This would also enable support for nested models for free.
+- it would be great to support nested models in selectors, perhaps using normalizr somehow.
 - tests for every public function
 - tests for every private function too
 
