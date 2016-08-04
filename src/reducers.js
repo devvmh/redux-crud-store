@@ -81,7 +81,7 @@ function byIdReducer(state = byIdInitialState, action) {
         error: null
       }))
     case UPDATE:
-      return state.setIn([id.toString(), 'fetchTime'], 0)
+      return state // don't change fetchTime, or it'll invalidate collections
     case UPDATE_SUCCESS:
       return state.set(id.toString(), fromJS({
         record: action.payload,
