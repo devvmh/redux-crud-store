@@ -117,8 +117,7 @@ function collectionReducer() {
     case _actionTypes.FETCH_SUCCESS:
       var originalPayload = action.payload || {};
       var payload = 'data' in originalPayload ? action.payload.data : action.payload;
-      var otherInfo = 'data' in originalPayload ? originalPayload : {};
-      if ('data' in originalPayload) delete otherInfo.data;
+      var otherInfo = (0, _immutable.fromJS)('data' in originalPayload ? originalPayload : {}).delete('data');
       var ids = payload.map(function (elt) {
         return elt.id;
       });
