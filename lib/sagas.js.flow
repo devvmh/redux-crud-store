@@ -1,7 +1,6 @@
 /* @flow */
 /* global Generator */
 
-import 'babel-polyfill'
 import { takeEvery } from 'redux-saga'
 import { fork, put, call } from 'redux-saga/effects'
 

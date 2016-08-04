@@ -43,7 +43,7 @@ export type CrudAction<T> = {
 export type Success<T:{ id: ID }> = {
   type: typeof FETCH_SUCCESS | typeof FETCH_ONE_SUCCESS | typeof CREATE_SUCCESS | typeof UPDATE_SUCCESS | typeof DELETE_SUCCESS,
   meta: Meta,
-  payload: {
+  payload: T | {
     data: T,
   },
   error?: boolean,

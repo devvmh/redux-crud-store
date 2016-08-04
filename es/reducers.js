@@ -62,7 +62,8 @@ function byIdReducer() {
   switch (action.type) {
     case _actionTypes.FETCH_SUCCESS:
       var data = state.toJS();
-      action.payload.data.forEach(function (record) {
+      var payload = 'data' in action.payload ? action.payload.data : action.payload;
+      payload.forEach(function (record) {
         data[record.id] = {
           record: record,
           fetchTime: action.meta.fetchTime,
@@ -84,7 +85,7 @@ function byIdReducer() {
         error: null
       }));
     case _actionTypes.UPDATE:
-      return state.setIn([id.toString(), 'fetchTime'], 0);
+      return state; // don't change fetchTime, or it'll invalidate collections
     case _actionTypes.UPDATE_SUCCESS:
       return state.set(id.toString(), (0, _immutable.fromJS)({
         record: action.payload,
@@ -114,10 +115,14 @@ function collectionReducer() {
     case _actionTypes.FETCH:
       return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('fetchTime', 0).set('error', null);
     case _actionTypes.FETCH_SUCCESS:
-      var ids = action.payload.data.map(function (elt) {
+      var originalPayload = action.payload || {};
+      var payload = 'data' in originalPayload ? action.payload.data : action.payload;
+      var otherInfo = 'data' in originalPayload ? originalPayload : {};
+      if ('data' in originalPayload) delete otherInfo.data;
+      var ids = payload.map(function (elt) {
         return elt.id;
       });
-      return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('ids', (0, _immutable.fromJS)(ids)).set('otherInfo', (0, _immutable.fromJS)(action.payload || {}).delete('data')).set('error', null).set('fetchTime', action.meta.fetchTime);
+      return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('ids', (0, _immutable.fromJS)(ids)).set('otherInfo', (0, _immutable.fromJS)(otherInfo)).set('error', null).set('fetchTime', action.meta.fetchTime);
     case _actionTypes.FETCH_ERROR:
       return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('error', action.payload);
     default:
