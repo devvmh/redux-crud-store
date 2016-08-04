@@ -3,6 +3,7 @@
 [![NPM Version](https://img.shields.io/npm/v/redux-crud-store.svg?style=flat)](https://www.npmjs.com/package/redux-crud-store)
 [![NPM Downloads](https://img.shields.io/npm/dm/redux-crud-store.svg?style=flat)](https://www.npmjs.com/package/redux-crud-store)
 
+[Jump to see breaking changes in 5.0.0](#breaking-changes-in-500)
 
 Making a single page application (SPA)? Using a Redux store? Tired of writing the same code for every API endpoint?
 
@@ -200,6 +201,10 @@ Further, if you then want to inspect or edit one of the 25 posts returned by tha
 
 If you ever worry about your cache getting out of sync, it's easy to manually sync to the server from your components.
 
+### Breaking changes in 5.0.0
+
+- babel-polyfill is removed. You must import it yourself if you want sagas to work in IE9, Edge 12, or Safari 9 (other other browsers without generator functions).
+- the UPDATE action no longer changes fetchTime on the record. This is probably only a good thing for your app, but it is a change in behaviour.
 
 ### What's still missing (TODO)
 
