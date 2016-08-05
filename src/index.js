@@ -15,7 +15,7 @@ export {
 export {
   select,
   selectCollection, selectRecord, selectRecordOrEmptyObject,
-  selectActionStatus, selectNiceActionStatus
+  selectActionStatus
 } from './selectors'
 
 export type {
