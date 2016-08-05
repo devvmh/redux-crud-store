@@ -6972,7 +6972,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 	  var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 
+	  var fetchConfig = opts.fetchConfig || undefined;
 	  var method = opts.method || 'get';
+
 	  return {
 	    type: _actionTypes.FETCH,
 	    meta: {
@@ -6982,6 +6984,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      model: model
 	    },
 	    payload: {
+	      fetchConfig: fetchConfig,
 	      method: method,
 	      path: path,
 	      params: params
@@ -6993,7 +6996,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 	  var opts = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
+	  var fetchConfig = opts.fetchConfig || undefined;
 	  var method = opts.method || 'get';
+
 	  return {
 	    type: _actionTypes.FETCH_ONE,
 	    meta: {
@@ -7003,6 +7008,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      id: id
 	    },
 	    payload: {
+	      fetchConfig: fetchConfig,
 	      method: method,
 	      path: path,
 	      params: params
@@ -7015,7 +7021,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 	  var opts = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
+	  var fetchConfig = opts.fetchConfig || undefined;
 	  var method = opts.method || 'post';
+
 	  return {
 	    type: _actionTypes.CREATE,
 	    meta: {
@@ -7024,6 +7032,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      model: model
 	    },
 	    payload: {
+	      fetchConfig: fetchConfig,
 	      method: method,
 	      path: path,
 	      data: data,
@@ -7037,7 +7046,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var params = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 	  var opts = arguments.length <= 5 || arguments[5] === undefined ? {} : arguments[5];
 
+	  var fetchConfig = opts.fetchConfig || undefined;
 	  var method = opts.method || 'put';
+
 	  return {
 	    type: _actionTypes.UPDATE,
 	    meta: {
@@ -7047,6 +7058,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      id: id
 	    },
 	    payload: {
+	      fetchConfig: fetchConfig,
 	      method: method,
 	      path: path,
 	      data: data,
@@ -7059,7 +7071,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 	  var opts = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
+	  var fetchConfig = opts.fetchConfig || undefined;
 	  var method = opts.method || 'delete';
+
 	  return {
 	    type: _actionTypes.DELETE,
 	    meta: {
@@ -7069,6 +7083,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      id: id
 	    },
 	    payload: {
+	      fetchConfig: fetchConfig,
 	      method: method,
 	      path: path,
 	      params: params
@@ -7089,6 +7104,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var opts = arguments.length <= 6 || arguments[6] === undefined ? {} : arguments[6];
 
 	  var meta = opts.meta || {};
+	  var fetchConfig = opts.fetchConfig || undefined;
+
 	  return {
 	    type: _actionTypes.API_CALL,
 	    meta: _extends({}, meta, {
@@ -7096,6 +7113,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      failure: failure
 	    }),
 	    payload: {
+	      fetchConfig: fetchConfig,
 	      method: method,
 	      path: path,
 	      params: params,
@@ -7122,7 +7140,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.selectNiceActionStatus = exports.selectActionStatus = exports.selectRecordOrEmptyObject = exports.selectRecord = exports.selectCollection = exports.select = exports.clearModelData = exports.apiCall = exports.clearActionStatus = exports.deleteRecord = exports.updateRecord = exports.createRecord = exports.fetchRecord = exports.fetchCollection = exports.ApiClient = exports.crudActions = exports.crudReducer = exports.crudSaga = undefined;
+	exports.selectActionStatus = exports.selectRecordOrEmptyObject = exports.selectRecord = exports.selectCollection = exports.select = exports.clearModelData = exports.apiCall = exports.clearActionStatus = exports.deleteRecord = exports.updateRecord = exports.createRecord = exports.fetchRecord = exports.fetchCollection = exports.ApiClient = exports.crudActions = exports.crudReducer = exports.crudSaga = undefined;
 
 	var _actionCreators = __webpack_require__(13);
 
@@ -7205,12 +7223,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  enumerable: true,
 	  get: function get() {
 	    return _selectors.selectActionStatus;
-	  }
-	});
-	Object.defineProperty(exports, 'selectNiceActionStatus', {
-	  enumerable: true,
-	  get: function get() {
-	    return _selectors.selectNiceActionStatus;
 	  }
 	});
 
@@ -7362,11 +7374,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    case _actionTypes.FETCH_SUCCESS:
 	      var originalPayload = action.payload || {};
 	      var payload = 'data' in originalPayload ? action.payload.data : action.payload;
-	      var otherInfo = (0, _immutable.fromJS)('data' in originalPayload ? originalPayload : {}).delete('data');
+	      var otherInfo = 'data' in originalPayload ? originalPayload : {};
 	      var ids = payload.map(function (elt) {
 	        return elt.id;
 	      });
-	      return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('ids', (0, _immutable.fromJS)(ids)).set('otherInfo', (0, _immutable.fromJS)(otherInfo)).set('error', null).set('fetchTime', action.meta.fetchTime);
+	      return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('ids', (0, _immutable.fromJS)(ids)).set('otherInfo', (0, _immutable.fromJS)(otherInfo).delete('data')).set('error', null).set('fetchTime', action.meta.fetchTime);
 	    case _actionTypes.FETCH_ERROR:
 	      return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('error', action.payload);
 	    default:
@@ -7792,7 +7804,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.selectRecord = selectRecord;
 	exports.selectRecordOrEmptyObject = selectRecordOrEmptyObject;
 	exports.selectActionStatus = selectActionStatus;
-	exports.selectNiceActionStatus = selectNiceActionStatus;
 
 	var _immutable = __webpack_require__(7);
 
@@ -7984,17 +7995,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    pending: pending,
 	    error: payload
 	  };
-	}
-
-	function selectNiceActionStatus(modelName, crud, action) {
-	  // eslint-disable-next-line no-console
-	  console.warn('This function is deprecated and will be removed in 5.0.0.');
-	  // eslint-disable-next-line no-console
-	  console.warn('Please replace it with selectActionStatus, which has the ');
-	  // eslint-disable-next-line no-console
-	  console.warn('same functionality.');
-
-	  return selectActionStatus(modelName, crud, action);
 	}
 
 /***/ },

@@ -21,11 +21,14 @@ import type {
 
 type Opts = {
   method?: Method,
+  fetchConfig?: Object
 }
 
 export function fetchCollection<T>(model: string, path: string, params: Object = {}, opts: Opts = {}
                                   ): CrudAction<T[]> {
+  const fetchConfig = opts.fetchConfig || undefined
   const method = opts.method || 'get'
+
   return {
     type: FETCH,
     meta: {
@@ -35,6 +38,7 @@ export function fetchCollection<T>(model: string, path: string, params: Object =
       model
     },
     payload: {
+      fetchConfig,
       method,
       path,
       params
@@ -45,7 +49,9 @@ export function fetchCollection<T>(model: string, path: string, params: Object =
 export function fetchRecord<T>(model: string, id: ID, path: string,
                                params: Object = {}, opts: Opts = {}
                               ): CrudAction<T> {
+  const fetchConfig = opts.fetchConfig || undefined
   const method = opts.method || 'get'
+
   return {
     type: FETCH_ONE,
     meta: {
@@ -55,6 +61,7 @@ export function fetchRecord<T>(model: string, id: ID, path: string,
       id
     },
     payload: {
+      fetchConfig,
       method,
       path,
       params
@@ -65,7 +72,9 @@ export function fetchRecord<T>(model: string, id: ID, path: string,
 export function createRecord<T>(model: string, path: string, data: $Shape<T> = {},
                                 params: Object = {}, opts: Opts = {}
                                ): CrudAction<T> {
+  const fetchConfig = opts.fetchConfig || undefined
   const method = opts.method || 'post'
+
   return {
     type: CREATE,
     meta: {
@@ -74,6 +83,7 @@ export function createRecord<T>(model: string, path: string, data: $Shape<T> = {
       model
     },
     payload: {
+      fetchConfig,
       method,
       path,
       data,
@@ -85,7 +95,9 @@ export function createRecord<T>(model: string, path: string, data: $Shape<T> = {
 export function updateRecord<T>(model: string, id: ID, path: string, data: $Shape<T> = {},
                                 params: Object = {}, opts: Opts = {}
                                ): CrudAction<T> {
+  const fetchConfig = opts.fetchConfig || undefined
   const method = opts.method || 'put'
+
   return {
     type: UPDATE,
     meta: {
@@ -95,6 +107,7 @@ export function updateRecord<T>(model: string, id: ID, path: string, data: $Shap
       id
     },
     payload: {
+      fetchConfig,
       method,
       path,
       data,
@@ -106,7 +119,9 @@ export function updateRecord<T>(model: string, id: ID, path: string, data: $Shap
 export function deleteRecord(model: string, id: ID, path: string,
                              params: Object = {}, opts: Opts = {}
                             ): CrudAction<void> {
+  const fetchConfig = opts.fetchConfig || undefined
   const method = opts.method || 'delete'
+
   return {
     type: DELETE,
     meta: {
@@ -116,6 +131,7 @@ export function deleteRecord(model: string, id: ID, path: string,
       id
     },
     payload: {
+      fetchConfig,
       method,
       path,
       params
@@ -135,6 +151,8 @@ export function apiCall<T>(success: string, failure: string, method: Method, pat
                            params: Object = {}, data: $Shape<T> = undefined, opts: Object = {}
                           ): CrudAction<T> {
   const meta = opts.meta || {}
+  const fetchConfig = opts.fetchConfig || undefined
+
   return {
     type: API_CALL,
     meta: {
@@ -143,6 +161,7 @@ export function apiCall<T>(success: string, failure: string, method: Method, pat
       failure
     },
     payload: {
+      fetchConfig,
       method,
       path,
       params,

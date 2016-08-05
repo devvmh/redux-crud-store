@@ -114,12 +114,11 @@ function collectionReducer(state = collectionInitialState, action) {
     case FETCH_SUCCESS:
       const originalPayload = action.payload || {}
       const payload = ('data' in originalPayload) ? action.payload.data : action.payload
-      const otherInfo = fromJS(('data' in originalPayload) ? originalPayload : {})
-                          .delete('data')
+      const otherInfo = ('data' in originalPayload) ? originalPayload : {}
       const ids = payload.map((elt) => elt.id)
       return state.set('params', fromJS(action.meta.params))
                   .set('ids', fromJS(ids))
-                  .set('otherInfo', fromJS(otherInfo))
+                  .set('otherInfo', fromJS(otherInfo).delete('data'))
                   .set('error', null)
                   .set('fetchTime', action.meta.fetchTime)
     case FETCH_ERROR:

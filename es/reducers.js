@@ -117,11 +117,11 @@ function collectionReducer() {
     case _actionTypes.FETCH_SUCCESS:
       var originalPayload = action.payload || {};
       var payload = 'data' in originalPayload ? action.payload.data : action.payload;
-      var otherInfo = (0, _immutable.fromJS)('data' in originalPayload ? originalPayload : {}).delete('data');
+      var otherInfo = 'data' in originalPayload ? originalPayload : {};
       var ids = payload.map(function (elt) {
         return elt.id;
       });
-      return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('ids', (0, _immutable.fromJS)(ids)).set('otherInfo', (0, _immutable.fromJS)(otherInfo)).set('error', null).set('fetchTime', action.meta.fetchTime);
+      return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('ids', (0, _immutable.fromJS)(ids)).set('otherInfo', (0, _immutable.fromJS)(otherInfo).delete('data')).set('error', null).set('fetchTime', action.meta.fetchTime);
     case _actionTypes.FETCH_ERROR:
       return state.set('params', (0, _immutable.fromJS)(action.meta.params)).set('error', action.payload);
     default:

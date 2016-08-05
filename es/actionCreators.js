@@ -22,7 +22,9 @@ function fetchCollection(model, path) {
   var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
   var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 
+  var fetchConfig = opts.fetchConfig || undefined;
   var method = opts.method || 'get';
+
   return {
     type: _actionTypes.FETCH,
     meta: {
@@ -32,6 +34,7 @@ function fetchCollection(model, path) {
       model: model
     },
     payload: {
+      fetchConfig: fetchConfig,
       method: method,
       path: path,
       params: params
@@ -43,7 +46,9 @@ function fetchRecord(model, id, path) {
   var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
   var opts = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
+  var fetchConfig = opts.fetchConfig || undefined;
   var method = opts.method || 'get';
+
   return {
     type: _actionTypes.FETCH_ONE,
     meta: {
@@ -53,6 +58,7 @@ function fetchRecord(model, id, path) {
       id: id
     },
     payload: {
+      fetchConfig: fetchConfig,
       method: method,
       path: path,
       params: params
@@ -65,7 +71,9 @@ function createRecord(model, path) {
   var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
   var opts = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
+  var fetchConfig = opts.fetchConfig || undefined;
   var method = opts.method || 'post';
+
   return {
     type: _actionTypes.CREATE,
     meta: {
@@ -74,6 +82,7 @@ function createRecord(model, path) {
       model: model
     },
     payload: {
+      fetchConfig: fetchConfig,
       method: method,
       path: path,
       data: data,
@@ -87,7 +96,9 @@ function updateRecord(model, id, path) {
   var params = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
   var opts = arguments.length <= 5 || arguments[5] === undefined ? {} : arguments[5];
 
+  var fetchConfig = opts.fetchConfig || undefined;
   var method = opts.method || 'put';
+
   return {
     type: _actionTypes.UPDATE,
     meta: {
@@ -97,6 +108,7 @@ function updateRecord(model, id, path) {
       id: id
     },
     payload: {
+      fetchConfig: fetchConfig,
       method: method,
       path: path,
       data: data,
@@ -109,7 +121,9 @@ function deleteRecord(model, id, path) {
   var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
   var opts = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
+  var fetchConfig = opts.fetchConfig || undefined;
   var method = opts.method || 'delete';
+
   return {
     type: _actionTypes.DELETE,
     meta: {
@@ -119,6 +133,7 @@ function deleteRecord(model, id, path) {
       id: id
     },
     payload: {
+      fetchConfig: fetchConfig,
       method: method,
       path: path,
       params: params
@@ -139,6 +154,8 @@ function apiCall(success, failure, method, path) {
   var opts = arguments.length <= 6 || arguments[6] === undefined ? {} : arguments[6];
 
   var meta = opts.meta || {};
+  var fetchConfig = opts.fetchConfig || undefined;
+
   return {
     type: _actionTypes.API_CALL,
     meta: _extends({}, meta, {
@@ -146,6 +163,7 @@ function apiCall(success, failure, method, path) {
       failure: failure
     }),
     payload: {
+      fetchConfig: fetchConfig,
       method: method,
       path: path,
       params: params,

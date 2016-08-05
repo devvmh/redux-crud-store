@@ -195,17 +195,3 @@ export function selectActionStatus<T>(modelName: Model, crud: State,
     error: (payload:any)
   }
 }
-
-
-export function selectNiceActionStatus<T>(modelName: Model, crud: State,
-                                          action: 'create' | 'update' | 'delete'
-                                         ): ActionStatusSelection<T> {
-  // eslint-disable-next-line no-console
-  console.warn('This function is deprecated and will be removed in 5.0.0.')
-  // eslint-disable-next-line no-console
-  console.warn('Please replace it with selectActionStatus, which has the ')
-  // eslint-disable-next-line no-console
-  console.warn('same functionality.')
-
-  return selectActionStatus(modelName, crud, action)
-}
