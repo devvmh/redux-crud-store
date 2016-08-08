@@ -35,7 +35,7 @@ function* _apiGeneric(action: CrudAction<any>): Generator<Effect, void, any> {
   }
 
   try {
-    const response = yield call(apiClient[method], path, { params, data, fetchConfig })
+    const response = yield call([apiClient, apiClient[method]], path, { params, data, fetchConfig })
     yield put({ meta, type: success, payload: response })
   } catch (error) {
     yield put({ meta, type: failure, payload: error, error: true })
