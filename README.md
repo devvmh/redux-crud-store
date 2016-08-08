@@ -218,7 +218,7 @@ If you ever worry about your cache getting out of sync, it's easy to manually sy
 
 ### Brief layout of what state.models should look like
 
-This is a slightly airbrushed representation of what the state.models key in your store might look like, if it were represented as JSON instead of with Immutable JS.
+This is a slightly airbrushed representation of what the state.models key in your store might look like, if it were represented as JSON instead of with Immutable JS. You can see a real-world example using the Github API at https://tonicdev.com/npm/redux-crud-store.
 
     state.models : {
       posts: {
