@@ -93,18 +93,17 @@ export function selectCollection<T>(modelName: Model, crud: State, params: Objec
 
   // search the records to ensure they're all recent
   // TODO can we make this faster?
-  let itemNeedsFetch = null
+  let itemThatNeedsFetch = null
   collection.get('ids', fromJS([])).forEach((id) => {  // eslint-disable-line consistent-return
     const item = model.getIn(['byId', id.toString()], Map())
-    if (!recent(item.get('fetchTime'), opts)) {
-      itemNeedsFetch = item
+    const itemFetchTime = item.get('fetchTime')
+    // if fetchTime on the record is 0, don't set the whole collection to isLoading.
+    if (itemFetchTime !== 0 && !recent(itemFetchTime, opts)) {
+      itemThatNeedsFetch = item
       return false
     }
   })
-  if (itemNeedsFetch) {
-    if (itemNeedsFetch.get('fetchTime') === 0) {
-      return isLoading({ needsFetch: false })
-    }
+  if (itemThatNeedsFetch) {
     return isLoading({ needsFetch: true })
   }
 
