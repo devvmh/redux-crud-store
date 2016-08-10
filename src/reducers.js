@@ -93,9 +93,8 @@ function byIdReducer(state = byIdInitialState, action) {
       return state.delete(id.toString())
     case GARBAGE_COLLECT:
       const tenMinutesAgo = action.meta.now - 10 * 60 * 1000
-      return state.filter(collection => (
-        collection.get('fetchTime') > tenMinutesAgo ||
-          collection.get('fetchTime') === null
+      return state.filter((record, _id) => (
+        record.get('fetchTime') > tenMinutesAgo
       ))
     default:
       return state
