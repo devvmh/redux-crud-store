@@ -85,7 +85,7 @@ function byIdReducer() {
         error: null
       }));
     case _actionTypes.UPDATE:
-      return state; // don't change fetchTime, or it'll invalidate collections
+      return state.setIn([id.toString(), 'fetchTime'], 0);
     case _actionTypes.UPDATE_SUCCESS:
       return state.set(id.toString(), (0, _immutable.fromJS)({
         record: action.payload,
@@ -96,8 +96,8 @@ function byIdReducer() {
       return state.delete(id.toString());
     case _actionTypes.GARBAGE_COLLECT:
       var tenMinutesAgo = action.meta.now - 10 * 60 * 1000;
-      return state.filter(function (collection) {
-        return collection.get('fetchTime') > tenMinutesAgo || collection.get('fetchTime') === null;
+      return state.filter(function (record, _id) {
+        return record.get('fetchTime') > tenMinutesAgo;
       });
     default:
       return state;
