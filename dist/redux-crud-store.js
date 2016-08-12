@@ -7330,7 +7330,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        error: null
 	      }));
 	    case _actionTypes.UPDATE:
-	      return state; // don't change fetchTime, or it'll invalidate collections
+	      return state.setIn([id.toString(), 'fetchTime'], 0);
 	    case _actionTypes.UPDATE_SUCCESS:
 	      return state.set(id.toString(), (0, _immutable.fromJS)({
 	        record: action.payload,
@@ -7882,19 +7882,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // search the records to ensure they're all recent
 	  // TODO can we make this faster?
-	  var itemNeedsFetch = null;
+	  var itemThatNeedsFetch = null;
 	  collection.get('ids', (0, _immutable.fromJS)([])).forEach(function (id) {
 	    // eslint-disable-line consistent-return
 	    var item = model.getIn(['byId', id.toString()], (0, _immutable.Map)());
-	    if (!recent(item.get('fetchTime'), opts)) {
-	      itemNeedsFetch = item;
+	    var itemFetchTime = item.get('fetchTime');
+	    // if fetchTime on the record is 0, don't set the whole collection to isLoading
+	    if (itemFetchTime !== 0 && !recent(item.get('fetchTime'), opts)) {
+	      itemThatNeedsFetch = item;
 	      return false;
 	    }
 	  });
-	  if (itemNeedsFetch) {
-	    if (itemNeedsFetch.get('fetchTime') === 0) {
-	      return isLoading({ needsFetch: false });
-	    }
+	  if (itemThatNeedsFetch) {
 	    return isLoading({ needsFetch: true });
 	  }
 
