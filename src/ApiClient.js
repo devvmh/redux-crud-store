@@ -67,7 +67,9 @@ class ApiClient {
           method,
           headers,
           body
-        }).then(response => response[format]())
+        }).then(response => ({ response, format }))
+          .then(this.handleErrors)
+          .then(response => response[format]())
       }
     })
   }
@@ -78,6 +80,17 @@ class ApiClient {
       [key, params[key]].map(encodeURIComponent).join('=')
     )).join('&')
     return s ? `?${s}` : ''
+  }
+
+  handleErrors({ response, format }) {
+    if (!response.ok) {
+      return response[format]()
+        // if response parsing failed send back the entire response object
+        .catch(() => { throw response })
+        // else send back the parsed error
+        .then(parsedErr => { throw parsedErr })
+    }
+    return response
   }
 }
 
