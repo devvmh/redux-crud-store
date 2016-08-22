@@ -6920,6 +6920,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          headers: headers,
 	          body: body
 	        })).then(function (response) {
+	          return { response: response, format: format };
+	        }).then(_this.handleErrors).then(function (response) {
 	          return response[format]();
 	        });
 	      };
@@ -6936,6 +6938,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return [key, params[key]].map(encodeURIComponent).join('=');
 	      }).join('&');
 	      return s ? '?' + s : '';
+	    }
+	  }, {
+	    key: 'handleErrors',
+	    value: function handleErrors(_ref2) {
+	      var response = _ref2.response;
+	      var format = _ref2.format;
+
+	      if (!response.ok) {
+	        return response[format]()
+	        // if response parsing failed send back the entire response object
+	        .catch(function () {
+	          throw response;
+	        })
+	        // else send back the parsed error
+	        .then(function (parsedErr) {
+	          throw parsedErr;
+	        });
+	      }
+	      return response;
 	    }
 	  }]);
 
