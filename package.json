@@ -38,7 +38,7 @@
     "models",
     "store"
   ],
-  "tonicExampleFilename": "docs/tonicExample.js",
+  "tonicExampleFilename": "./docs/tonicExample.js",
   "author": "Devin Howard <devin@callysto.com>",
   "license": "Apache-2.0",
   "devDependencies": {
