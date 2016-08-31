@@ -49,7 +49,7 @@ The first step is to import ApiClient and crudSaga from redux-crud-store, which 
     const store = createStoreWithMiddleware(rootReducer, initialState)
     crudMiddleware.run(crudSaga(client))
 
-The included ApiClient requires fetch API support. If your clients won't support the fetch API, you will need to [write your own ApiClient](https://github.com/uniqueway/redux-crud-store/blob/feature/api-client/docs/Sample-Api-Client-with-Superagent.md).
+The included ApiClient requires fetch API support. If your clients won't support the fetch API, you will need to [write your own ApiClient](https://github.com/uniqueway/redux-crud-store/blob/master/docs/Sample-Api-Client-with-Superagent.md).
 
 ### 2. Add the reducer to your store
 
