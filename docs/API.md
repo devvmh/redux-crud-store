@@ -35,10 +35,10 @@ export type {
 
 crudSaga uses redux-saga to intercept actions like FETCH, CREATE, API_CALL, and others. Its use is outlined in README.md section 1. In particular, you will need to provide it with an instance of an API client class that defines:
 
-  apiClient['get'](path, { params, data })
-  apiClient['post'](path, { params, data })
-  apiClient['put'](path, { params, data })
-  apiClient['del'](path, { params, data })
+    apiClient['get'](path, { params, data })
+    apiClient['post'](path, { params, data })
+    apiClient['put'](path, { params, data })
+    apiClient['del'](path, { params, data })
 
   If you end up customizing the method on any of your action creators, your apiClient will also need to implement these methods.
 
@@ -50,13 +50,13 @@ crudSaga uses redux-saga to intercept actions like FETCH, CREATE, API_CALL, and 
 
   API-wise, the only decision you have to make is the key you pass to combineReducers. In this repository's documentation, "models" is used as the key, but you can use any key, as long as you pass state["your key"] to the selector functions from your components.
 
-  import { combineReducers } from 'redux'
-  import { crudReducer } from 'redux-crud-store'
+    import { combineReducers } from 'redux'
+    import { crudReducer } from 'redux-crud-store'
 
-  export default combineReducers({
-models: crudReducer,
-// other reducers go here
-})
+    export default combineReducers({
+      models: crudReducer,
+      // other reducers go here
+    })
 
 # crudActions
 

@@ -49,7 +49,7 @@ The first step is to import ApiClient and crudSaga from redux-crud-store, which 
     const store = createStoreWithMiddleware(rootReducer, initialState)
     crudMiddleware.run(crudSaga(client))
 
-The included ApiClient requires fetch API support. If your clients won't support the fetch API, you will need to [write your own ApiClient](https://github.com/uniqueway/redux-crud-store/blob/master/docs/Sample-Api-Client-with-Superagent.md).
+The included ApiClient requires fetch API support. If your clients won't support the fetch API, you will need to [write your own ApiClient](https://github.com/uniqueway/redux-crud-store/blob/master/docs/Sample-Api-Client-with-Superagent.md) or import a fetch polyfill like [whatwg-fetch](https://www.npmjs.com/package/whatwg-fetch).
 
 ### 2. Add the reducer to your store
 
@@ -184,9 +184,23 @@ Fetching a single record is very similar. A typical component for editing a sing
       }
     }
 
+### What does the return value of select() look like?
+
+Select is a helper function to minimize what you need to import into each component. There are simpler selector functions available, documented in [docs/API.md](https://github.com/uniqueway/redux-crud-store/blob/master/docs/API.md).
+
+```js
+{
+  otherInfo,   # if response was sent in a data envelope, provides the other keys (e.g. paging data)
+  data,        # if isLoading is false, then this will hold either a collection of records, or a single record
+  isLoading,   # boolean: false if data is ready and no error occurred while loading data
+  needsFetch,  # boolean: true if you still need to dispatch a fetch action (iselect(...).fetch)
+  fetch        # action to dispatch, in case `needsFetch` is true
+}
+```
+
 ### Collection caching
 
-Additionally, the module caches collections and records. So if you send a request like `GET /posts` to your server with the params
+redux-crud-store caches collections and records. So if you send a request like `GET /posts` to your server with the params
 
     {
       page: 2,
@@ -196,9 +210,9 @@ Additionally, the module caches collections and records. So if you send a reques
       }
     }
 
-it will store the ids associated with that collection in the store. If you make the same request again in the next 10 minutes, it will simply use the cached result instead.
+it will store the ids associated with that particular collection in the store. If you make the same request again in the next 10 minutes, it will simply use the cached result instead.
 
-Further, if you then want to inspect or edit one of the 25 posts returned by that query, it will already be stored in the byId array in the store. Collections simply hold a list of ids.
+Further, if you then want to inspect or edit one of the 25 posts returned by that query, it will already be stored in the byId array in the store. Collections simply hold a list of ids pointing to the cached records.
 
 If you ever worry about your cache getting out of sync, it's easy to manually sync to the server from your components.
 
@@ -218,7 +232,7 @@ If you ever worry about your cache getting out of sync, it's easy to manually sy
 
 ### Brief layout of what state.models should look like
 
-This is a slightly airbrushed representation of what the state.models key in your store might look like, if it were represented as JSON instead of with Immutable JS. You can see a real-world example using the Github API at https://tonicdev.com/npm/redux-crud-store.
+This is a slightly airbrushed representation of what the state.models key in your store might look like, if it were represented as JSON instead of with Immutable JS.
 
     state.models : {
       posts: {
