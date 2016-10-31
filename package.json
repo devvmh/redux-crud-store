@@ -26,9 +26,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/uniqueway/redux-crud-store.git"
+    "url": "https://github.com/devvmh/redux-crud-store.git"
   },
-  "homepage": "https://github.com/uniqueway/redux-crud-store",
+  "homepage": "https://github.com/devvmh/redux-crud-store",
   "keywords": [
     "redux",
     "crud",
