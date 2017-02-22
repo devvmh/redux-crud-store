@@ -18,7 +18,7 @@ This module contains helper functions to make it easier to keep your models in s
 
 See [docs/API.md](https://github.com/uniqueway/redux-crud-store/blob/master/docs/API.md) for usage.
 
-There are four ways to integrate redux-crud-store into your app:
+There are four steps to integrating redux-crud-store into your app:
 
 1. Set up a redux-saga middleware
 2. Add the reducer to your store
