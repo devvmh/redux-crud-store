@@ -8,7 +8,8 @@
     "lib",
     "es",
     "src",
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "clean": "rimraf lib dist es",
