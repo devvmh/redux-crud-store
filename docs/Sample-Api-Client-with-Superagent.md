@@ -29,4 +29,4 @@ The ApiClient class is fully customizable. You can write your own and drop it in
       }
     }
 
-See [src/sagas.js](https://github.com/uniqueway/redux-crud-store/blob/master/src/sagas.js) for how this client is called.
+See [src/sagas.js](https://github.com/devvmh/redux-crud-store/blob/master/src/sagas.js) for how this client is called.

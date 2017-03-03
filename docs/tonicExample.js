@@ -7,7 +7,7 @@ const createSagaMiddleware = require("redux-saga").default
 
 /* Local variables */
 const params = { page: 1, per_page: 10, state: 'closed' }
-const fetchAction = fetchCollection('issues', '/repos/uniqueway/redux-crud-store/issues', params)
+const fetchAction = fetchCollection('issues', '/repos/devvmh/redux-crud-store/issues', params)
 const client = new ApiClient({ basePath: 'https://api.github.com' })
 
 /* Set up store and integrate redux-crud-store as the top level reducer */

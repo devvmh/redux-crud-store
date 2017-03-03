@@ -16,7 +16,7 @@ This module contains helper functions to make it easier to keep your models in s
 
 # How to use it
 
-See [docs/API.md](https://github.com/uniqueway/redux-crud-store/blob/master/docs/API.md) for usage.
+See [docs/API.md](https://github.com/devvmh/redux-crud-store/blob/master/docs/API.md) for usage.
 
 There are four steps to integrating redux-crud-store into your app:
 
@@ -27,7 +27,7 @@ There are four steps to integrating redux-crud-store into your app:
 
 ### 1. Set up a redux-saga middleware
 
-The first step is to import ApiClient and crudSaga from redux-crud-store, which will automate async tasks for you. If your app uses JSON in requests, all you need to do is provide a basePath for the ApiClient, which will be prepended to all of your requests. (See [ApiClient.js](https://github.com/uniqueway/redux-crud-store/blob/master/src/ApiClient.js) for more config options). Once you've done that, you can create a redux-saga middleware and add it to your redux store using this code:
+The first step is to import ApiClient and crudSaga from redux-crud-store, which will automate async tasks for you. If your app uses JSON in requests, all you need to do is provide a basePath for the ApiClient, which will be prepended to all of your requests. (See [ApiClient.js](https://github.com/devvmh/redux-crud-store/blob/master/src/ApiClient.js) for more config options). Once you've done that, you can create a redux-saga middleware and add it to your redux store using this code:
 
     import 'babel-polyfill' // needed for IE 11, Edge 12, Safari 9
     import createSagaMiddleware from 'redux-saga'
@@ -49,7 +49,7 @@ The first step is to import ApiClient and crudSaga from redux-crud-store, which 
     const store = createStoreWithMiddleware(rootReducer, initialState)
     crudMiddleware.run(crudSaga(client))
 
-The included ApiClient requires fetch API support. If your clients won't support the fetch API, you will need to [write your own ApiClient](https://github.com/uniqueway/redux-crud-store/blob/master/docs/Sample-Api-Client-with-Superagent.md) or import a fetch polyfill like [whatwg-fetch](https://www.npmjs.com/package/whatwg-fetch).
+The included ApiClient requires fetch API support. If your clients won't support the fetch API, you will need to [write your own ApiClient](https://github.com/devvmh/redux-crud-store/blob/master/docs/Sample-Api-Client-with-Superagent.md) or import a fetch polyfill like [whatwg-fetch](https://www.npmjs.com/package/whatwg-fetch).
 
 ### 2. Add the reducer to your store
 
@@ -94,7 +94,7 @@ Now that the boilerplate is out of the way, you can start being productive with 
       return deleteRecord(MODEL, id, `${PATH}/${id}`)
     }
 
-redux-crud-store is based on a RESTful API. If you need support for non-restful endpoints, take a look at the apiCall function in [src/actionCreators.js](https://github.com/uniqueway/redux-crud-store/blob/master/src/actionCreators.js) and/or submit a pull request!
+redux-crud-store is based on a RESTful API. If you need support for non-restful endpoints, take a look at the apiCall function in [src/actionCreators.js](https://github.com/devvmh/redux-crud-store/blob/master/src/actionCreators.js) and/or submit a pull request!
 
 ### 4. Use redux-crud-store's selectors and your action creators in your components
 
@@ -186,7 +186,7 @@ Fetching a single record is very similar. A typical component for editing a sing
 
 ### What does the return value of select() look like?
 
-Select is a helper function to minimize what you need to import into each component. There are simpler selector functions available, documented in [docs/API.md](https://github.com/uniqueway/redux-crud-store/blob/master/docs/API.md).
+Select is a helper function to minimize what you need to import into each component. There are simpler selector functions available, documented in [docs/API.md](https://github.com/devvmh/redux-crud-store/blob/master/docs/API.md).
 
 ```js
 {
