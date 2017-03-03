@@ -63,22 +63,21 @@ var ApiClient = function () {
     var methods = passedConfig.methods || baseConfig.methods;
     methods.forEach(function (method) {
       _this[method] = function (path) {
-        var _ref = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-        var params = _ref.params;
-        var data = _ref.data;
-        var fetchConfig = _ref.fetchConfig;
+        var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+            params = _ref.params,
+            data = _ref.data,
+            fetchConfig = _ref.fetchConfig;
 
         var config = _extends({}, baseConfig, passedConfig, fetchConfig, {
           headers: _extends({}, baseConfig.headers, passedConfig ? passedConfig.headers : {}, fetchConfig ? fetchConfig.headers : {})
         });
-        var _methods = config.methods;
-        var basePath = config.basePath;
-        var headers = config.headers;
-        var format = config.format;
-        var bodyEncoder = config.bodyEncoder;
 
-        var otherConfig = _objectWithoutProperties(config, ['methods', 'basePath', 'headers', 'format', 'bodyEncoder']);
+        var _methods = config.methods,
+            basePath = config.basePath,
+            headers = config.headers,
+            format = config.format,
+            bodyEncoder = config.bodyEncoder,
+            otherConfig = _objectWithoutProperties(config, ['methods', 'basePath', 'headers', 'format', 'bodyEncoder']);
 
         var requestPath = basePath + path + _this.queryString(params);
         var body = data ? bodyEncoder(data) : undefined;
@@ -110,8 +109,8 @@ var ApiClient = function () {
   }, {
     key: 'handleErrors',
     value: function handleErrors(_ref2) {
-      var response = _ref2.response;
-      var format = _ref2.format;
+      var response = _ref2.response,
+          format = _ref2.format;
 
       if (!response.ok) {
         return response[format]()

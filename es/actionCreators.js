@@ -19,8 +19,8 @@ exports.clearModelData = clearModelData;
 var _actionTypes = require('./actionTypes');
 
 function fetchCollection(model, path) {
-  var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-  var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+  var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var opts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
   var fetchConfig = opts.fetchConfig || undefined;
   var method = opts.method || 'get';
@@ -43,8 +43,8 @@ function fetchCollection(model, path) {
 }
 
 function fetchRecord(model, id, path) {
-  var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-  var opts = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
+  var params = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  var opts = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
   var fetchConfig = opts.fetchConfig || undefined;
   var method = opts.method || 'get';
@@ -67,9 +67,9 @@ function fetchRecord(model, id, path) {
 }
 
 function createRecord(model, path) {
-  var data = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-  var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-  var opts = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
+  var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var params = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  var opts = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
   var fetchConfig = opts.fetchConfig || undefined;
   var method = opts.method || 'post';
@@ -92,9 +92,9 @@ function createRecord(model, path) {
 }
 
 function updateRecord(model, id, path) {
-  var data = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-  var params = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
-  var opts = arguments.length <= 5 || arguments[5] === undefined ? {} : arguments[5];
+  var data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  var params = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+  var opts = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {};
 
   var fetchConfig = opts.fetchConfig || undefined;
   var method = opts.method || 'put';
@@ -118,8 +118,8 @@ function updateRecord(model, id, path) {
 }
 
 function deleteRecord(model, id, path) {
-  var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-  var opts = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
+  var params = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  var opts = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
   var fetchConfig = opts.fetchConfig || undefined;
   var method = opts.method || 'delete';
@@ -149,9 +149,9 @@ function clearActionStatus(model, action) {
 }
 
 function apiCall(success, failure, method, path) {
-  var params = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
-  var data = arguments.length <= 5 || arguments[5] === undefined ? undefined : arguments[5];
-  var opts = arguments.length <= 6 || arguments[6] === undefined ? {} : arguments[6];
+  var params = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+  var data = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : undefined;
+  var opts = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : {};
 
   var meta = opts.meta || {};
   var fetchConfig = opts.fetchConfig || undefined;

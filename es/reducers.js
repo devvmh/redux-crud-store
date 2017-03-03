@@ -55,7 +55,7 @@ var initialState = (0, _immutable.fromJS)({});
 
 // server data is canonical, so blast away the old data
 function byIdReducer() {
-  var state = arguments.length <= 0 || arguments[0] === undefined ? byIdInitialState : arguments[0];
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : byIdInitialState;
   var action = arguments[1];
 
   var id = action.meta ? action.meta.id : undefined;
@@ -108,7 +108,7 @@ function byIdReducer() {
  * Note: fetchTime of null means "needs fetch"
  */
 function collectionReducer() {
-  var state = arguments.length <= 0 || arguments[0] === undefined ? collectionInitialState : arguments[0];
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : collectionInitialState;
   var action = arguments[1];
 
   switch (action.type) {
@@ -130,7 +130,7 @@ function collectionReducer() {
 }
 
 function collectionsReducer() {
-  var state = arguments.length <= 0 || arguments[0] === undefined ? collectionsInitialState : arguments[0];
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : collectionsInitialState;
   var action = arguments[1];
 
   switch (action.type) {
@@ -149,10 +149,9 @@ function collectionsReducer() {
         return state.push(collectionReducer(undefined, action));
       }
 
-      var _entry = _slicedToArray(entry, 2);
-
-      var index = _entry[0];
-      var existingCollection = _entry[1];
+      var _entry = _slicedToArray(entry, 2),
+          index = _entry[0],
+          existingCollection = _entry[1];
 
       return state.update(index, function (s) {
         return collectionReducer(s, action);
@@ -175,7 +174,7 @@ function collectionsReducer() {
 }
 
 function actionStatusReducer() {
-  var state = arguments.length <= 0 || arguments[0] === undefined ? actionStatusInitialState : arguments[0];
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : actionStatusInitialState;
   var action = arguments[1];
 
   switch (action.type) {
@@ -226,7 +225,7 @@ function actionStatusReducer() {
 }
 
 function crudReducer() {
-  var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
   var action = arguments[1];
 
   var id = action.meta ? action.meta.id : undefined;
