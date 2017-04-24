@@ -92,7 +92,7 @@ class ApiClient {
     }
     // fix of "Unexpected end of JSON input" when HTTP response is 204 No Content
     if (response.status === 204) {
-      return { json: () => () => null }
+      return { json: () => null }
     }
     return response
   }
