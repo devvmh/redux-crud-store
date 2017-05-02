@@ -17,32 +17,32 @@ import {
  * SECTION: initial states
  */
 
-const byIdInitialState = fromJS({})
+const byIdInitialState = {}
 
-const collectionInitialState = fromJS({
+const collectionInitialState = {
   params: {},
   otherInfo: {},
   ids: [],
   fetchTime: null,
   error: null
-})
+}
 
-const collectionsInitialState = fromJS([])
+const collectionsInitialState = []
 
-const actionStatusInitialState = fromJS({
+const actionStatusInitialState = {
   create: {},
   update: {},
   delete: {}
-})
+}
 
-export const modelInitialState = fromJS({
+export const modelInitialState = {
   byId: byIdInitialState,
   collections: collectionsInitialState,
   actionStatus: actionStatusInitialState
-})
+}
 
 // holds a number of models, each of which are strucured like modelInitialState
-const initialState = fromJS({})
+const initialState = {}
 
 /*
  * SECTION: reducers
@@ -53,7 +53,7 @@ export function byIdReducer(state = byIdInitialState, action) {
   const id = action.meta ? action.meta.id : undefined
   switch (action.type) {
     case FETCH_SUCCESS:
-      const data = state.toJS()
+      const data = {}
       const payload = ('data' in action.payload) ? action.payload.data : action.payload
       payload.forEach((record) => {
         data[record.id] = {
@@ -62,41 +62,66 @@ export function byIdReducer(state = byIdInitialState, action) {
           error: null
         }
       })
-      return fromJS(data)
+      return Object.assign({}, state, data)
     case FETCH_ONE:
-      return state.setIn([id.toString(), 'fetchTime'], 0)
-                  .setIn([id.toString(), 'error'], null)
-                  .setIn([id.toString(), 'record'], null)
+      return Object.assign({}, state, {
+        [id]: {
+          fetchTime: 0,
+          error: null,
+          record: null
+        }
+      })
     case FETCH_ONE_SUCCESS:
-      return state.setIn([id.toString(), 'fetchTime'], action.meta.fetchTime)
-                  .setIn([id.toString(), 'error'], null)
-                  .setIn([id.toString(), 'record'], fromJS(action.payload))
+      return Object.assign({}, state, {
+        [id]: {
+          fetchTime: action.meta.fetchTime,
+          error: null,
+          record: action.payload
+        }
+      })
     case FETCH_ONE_ERROR:
-      return state.setIn([id.toString(), 'fetchTime'], action.meta.fetchTime)
-                  .setIn([id.toString(), 'error'], action.payload)
-                  .setIn([id.toString(), 'record'], null)
+      return Object.assign({}, state, {
+        [id]: {
+          fetchTime: action.meta.fetchTime,
+          error: action.payload,
+          record: null
+        }
+      })
     case CREATE_SUCCESS:
-      const cid = action.payload.id
-      return state.set(action.payload.id.toString(), fromJS({
-        record: action.payload,
-        fetchTime: action.meta.fetchTime,
-        error: null
-      }))
+      return Object.assign({}, state, {
+        [action.payload.id]: {
+          fetchTime: action.meta.fetchTime,
+          error: null,
+          record: action.payload
+        }
+      })
     case UPDATE:
-      return state.setIn([id.toString(), 'fetchTime'], 0)
+      return Object.assign({}, state, {
+        [id]: {
+          fetchTime: 0,
+          error: state[id].error,
+          record: state[id].record
+        }
+      })
     case UPDATE_SUCCESS:
-      return state.set(id.toString(), fromJS({
-        record: action.payload,
-        fetchTime: action.meta.fetchTime,
-        error: null
-      }))
+      return Object.assign({}, state, {
+        [id]: {
+          fetchTime: action.meta.fetchTime,
+          error: null,
+          record: action.payload
+        }
+      })
     case DELETE_SUCCESS:
-      return state.delete(id.toString())
+      const newState = Object.assign({}, state)
+      delete newState[id]
+      return newState
     case GARBAGE_COLLECT:
       const tenMinutesAgo = action.meta.now - 10 * 60 * 1000
-      return state.filter((record, _id) => (
-        record.get('fetchTime') > tenMinutesAgo
-      ))
+      const newState = Object.assign({}, state)
+      Object.keys(state)
+        .filter(id => newState[id].fetchTime > tenMinutesAgo)
+        .forEach(id => { delete newState[id] })
+      return newState
     default:
       return state
   }
