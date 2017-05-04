@@ -83,7 +83,7 @@ export function selectCollection<T>(modelName: Model, crud: State, params: Objec
     return isLoading({ needsFetch: true })
   }
 
-  const fetchTime = collection.get('fetchTime')
+  const { fetchTime } = collection
   if (fetchTime === 0) {
     return isLoading({ needsFetch: false })
   } else if (!recent(fetchTime, opts)) {
@@ -121,8 +121,7 @@ export function selectCollection<T>(modelName: Model, crud: State, params: Objec
 
 function getRecordSelection<T>(modelName: Model, id: ID, crud: State, opts: SelectorOpts = {}
                               ): Selection<T> {
-  const id_str = id ? id.toString() : undefined
-  const model = crud.getIn([modelName, 'byId', id_str])
+  const model = crud[modelName] && crud[modelName].byId && crud[modelName].byId[id]
 
   if (model && model.fetchTime === 0) {
     return { isLoading: true, needsFetch: false, error: new Error('Loading...') }
