@@ -188,21 +188,23 @@ export function collectionsReducer(state = collectionsInitialState, action,
       if (action.meta.params === undefined) {
         return state
       }
-      const entry = state.findEntry(coll => (
-        isEqual(coll.toJS().params, action.meta.params)
+      const entry = state.find(coll => (
+        isEqual(coll, action.meta.params)
       ))
       if (entry === undefined) {
-        return state.push(collectionReducer(undefined, action))
+        return state.concat([collectionReducer(undefined, action)])
       }
       const [index, existingCollection] = entry
-      return state.update(index, s => collectionReducer(s, action))
+
+      return state.slice(0, index)
+                  .concat([collectionReducer(state[index], action)])
+                  .concat(state.slice(index + 1))
     case CREATE_SUCCESS:
     case DELETE_SUCCESS:
       // set fetchTime on all entries to null
       return state.map((item, idx) => (
         item.set('fetchTime', null)
       ))
-
     case GARBAGE_COLLECT:
       const tenMinutesAgo = action.meta.now - 10 * 60 * 1000
       return state.filter(collection => (
