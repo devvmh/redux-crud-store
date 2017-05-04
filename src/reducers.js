@@ -219,46 +219,60 @@ export function collectionsReducer(state = collectionsInitialState, action,
 export function actionStatusReducer(state = actionStatusInitialState, action) {
   switch (action.type) {
     case CLEAR_ACTION_STATUS:
-      return state.set(action.payload.action, fromJS({}))
+      return Object.assign({}, state, {
+        [action.payload.action]: {}
+      })
     case CREATE:
-      return state.set('create', fromJS({
-        pending: true,
-        id: null
-      }))
+      return Object.assign({}, state, {
+        create: {
+          pending: true,
+          id: null
+        }
+      })
     case CREATE_SUCCESS:
     case CREATE_ERROR:
-      return state.set('create', fromJS({
-        pending: false,
-        id: action.payload.id,
-        isSuccess: !action.error,
-        payload: action.payload
-      }))
+      return Object.assign({}, state, {
+        create: {
+          pending: false,
+          id: action.payload.id,
+          isSuccess: !action.error,
+          payload: action.payload
+        }
+      })
     case UPDATE:
-      return state.set('update', fromJS({
-        pending: true,
-        id: action.meta.id
-      }))
+      return Object.assign({}, state, {
+        update: {
+          pending: true,
+          id: action.meta.id
+        }
+      })
     case UPDATE_SUCCESS:
     case UPDATE_ERROR:
-      return state.set('update', fromJS({
-        pending: false,
-        id: action.meta.id,
-        isSuccess: !action.error,
-        payload: action.payload
-      }))
+      return Object.assign({}, state, {
+        update: {
+          pending: false,
+          id: action.meta.id,
+          isSuccess: !action.error,
+          payload: action.payload
+        }
+      })
     case DELETE:
-      return state.set('delete', fromJS({
-        pending: true,
-        id: action.meta.id
-      }))
+      return Object.assign({}, state, {
+        delete: {
+          pending: true,
+          id: action.meta.id
+        }
+      })
     case DELETE_SUCCESS:
     case DELETE_ERROR:
-      return state.set('delete', fromJS({
-        pending: false,
-        id: action.meta.id,
-        isSuccess: !action.error,
-        payload: action.payload // probably null...
-      }))
+      return Object.assign({}, state, {
+        delete: {
+          pending: false,
+          id: action.meta.id,
+          isSuccess: !action.error,
+          payload: action.payload // probably null...
+        } 
+      })
     default:
       return state
   }
