@@ -57,9 +57,9 @@ export function byIdReducer(state = byIdInitialState, action) {
       const payload = ('data' in action.payload) ? action.payload.data : action.payload
       payload.forEach((record) => {
         data[record.id] = {
-          record,
           fetchTime: action.meta.fetchTime,
-          error: null
+          error: null,
+          record
         }
       })
       return Object.assign({}, state, data)
@@ -133,13 +133,16 @@ export function byIdReducer(state = byIdInitialState, action) {
 export function collectionReducer(state = collectionInitialState, action) {
   switch (action.type) {
     case FETCH:
-      return state.set('params', fromJS(action.meta.params))
-                  .set('fetchTime', 0)
-                  .set('error', null)
+      return Object.assign({}, state, {
+        params: action.meta.params,
+        fetchTime: 0,
+        error: null
+      })
     case FETCH_SUCCESS:
       const originalPayload = action.payload || {}
       const payload = ('data' in originalPayload) ? originalPayload.data : originalPayload
       const otherInfo = ('data' in originalPayload) ? originalPayload : {}
+      delete otherInfo.data
       if (!Array.isArray(payload)) {
         devMessage(`
           Payload is not an array! Your server response for a FETCH action
@@ -155,14 +158,18 @@ export function collectionReducer(state = collectionInitialState, action) {
         devMessage(JSON.stringify(action))
       }
       const ids = payload.map((elt) => elt.id)
-      return state.set('params', fromJS(action.meta.params))
-                  .set('ids', fromJS(ids))
-                  .set('otherInfo', fromJS(otherInfo).delete('data'))
-                  .set('error', null)
-                  .set('fetchTime', action.meta.fetchTime)
+      return Object.assign({}, state, {
+        params: action.meta.params,
+        ids,
+        otherInfo, 
+        error: null,
+        fetchTime: action.meta.fetchTime
+      })
     case FETCH_ERROR:
-      return state.set('params', fromJS(action.meta.params))
-                  .set('error', action.payload)
+      return Object.assign({}, state, {
+        params: action.meta.params,
+        error: action.payload
+      })
     default:
       return state
   }
