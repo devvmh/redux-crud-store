@@ -2,7 +2,6 @@
 /* global T */
 /* eslint no-use-before-define: 0 */
 
-import { fromJS, List, Map } from 'immutable'
 import isEqual from 'lodash.isequal'
 import {
   FETCH, FETCH_ONE, CREATE, UPDATE, DELETE
@@ -66,16 +65,16 @@ export function select<T>(action: CrudAction<T>, crud: State, opts: SelectorOpts
 
 export function selectCollection<T>(modelName: Model, crud: State, params: Object = {},
                                     opts: SelectorOpts = {}): Selection<T> {
-  const model = crud.getIn([modelName], Map())
-  const collection = model.get('collections', List()).find(coll => (
-    isEqual(coll.get('params').toJS(), params)
+  const model = crud[modelName] || {}
+  const collection = (model.collections || []).find(coll => (
+    isEqual(coll.params, params)
   ))
 
   const isLoading = ({ needsFetch }) => ({
     otherInfo: {},
     data: ([]:any),
     isLoading: true,
-    ...(collection ? { error: collection.get('error') } : {}),
+    ...(collection ? { error: collection.error } : {}),
     needsFetch
   })
 
@@ -94,11 +93,11 @@ export function selectCollection<T>(modelName: Model, crud: State, params: Objec
   // search the records to ensure they're all recent
   // TODO can we make this faster?
   let itemThatNeedsFetch = null
-  collection.get('ids', fromJS([])).forEach((id) => {  // eslint-disable-line consistent-return
-    const item = model.getIn(['byId', id.toString()], Map())
-    const itemFetchTime = item.get('fetchTime')
+  ;(collection.ids || []).forEach((id) => {  // eslint-disable-line consistent-return
+    const item = model.byId && model.byId[id] || {}
+    const itemFetchTime = item.fetchTime
     // if fetchTime on the record is 0, don't set the whole collection to isLoading
-    if (itemFetchTime !== 0 && !recent(item.get('fetchTime'), opts)) {
+    if (itemFetchTime !== 0 && !recent(item.fetchTime, opts)) {
       itemThatNeedsFetch = item
       return false
     }
@@ -107,16 +106,16 @@ export function selectCollection<T>(modelName: Model, crud: State, params: Objec
     return isLoading({ needsFetch: true })
   }
 
-  const data = collection.get('ids', fromJS([])).map((id) =>
-    model.getIn(['byId', id.toString(), 'record'])
-  ).toJS()
+  const data = (collection.ids || []).map(id =>
+    model.byId && model.byId[id] && model.byId[id].record
+  )
 
   return {
-    otherInfo: collection.get('otherInfo', Map()).toJS(),
+    otherInfo: collection.otherInfo || {},
     data,
     isLoading: false,
     needsFetch: false,
-    ...(collection ? { error: collection.get('error') } : {})
+    ...(collection ? { error: collection.error } : {})
   }
 }
 
@@ -125,25 +124,24 @@ function getRecordSelection<T>(modelName: Model, id: ID, crud: State, opts: Sele
   const id_str = id ? id.toString() : undefined
   const model = crud.getIn([modelName, 'byId', id_str])
 
-  if (model && model.get('fetchTime') === 0) {
+  if (model && model.fetchTime === 0) {
     return { isLoading: true, needsFetch: false, error: new Error('Loading...') }
   }
-  if (id === undefined || model === undefined ||
-      !recent(model.get('fetchTime'), opts)) {
+  if (id === undefined || model === undefined || !recent(model.fetchTime, opts)) {
     return { isLoading: true, needsFetch: true, error: new Error('Loading...') }
   }
 
-  if (model.get('error') !== null) {
+  if (model.error !== null) {
     return {
       isLoading: false,
       needsFetch: false,
-      error: model.get('error')
+      error: model.error
     }
   }
   return {
     isLoading: false,
     needsFetch: false,
-    data: model.get('record').toJS()
+    data: model.record
   }
 }
 
@@ -175,7 +173,10 @@ type ActionStatusSelection<T> = {
 export function selectActionStatus<T>(modelName: Model, crud: State,
                                       action: 'create' | 'update' | 'delete'
                                      ): ActionStatusSelection<T> {
-  const rawStatus = (crud.getIn([modelName, 'actionStatus', action]) || fromJS({})).toJS()
+  const rawStatus = crud[modelName]
+                    && crud[modelName].actionStatus
+                    && crud[modelName].actionStatus[action]
+                    || {}
   const { pending = false, id = null, isSuccess = null, payload = null } = rawStatus
 
   if (pending === true) {
