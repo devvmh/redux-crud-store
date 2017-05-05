@@ -48,7 +48,7 @@ const initialState = fromJS({})
  */
 
 // server data is canonical, so blast away the old data
-function byIdReducer(state = byIdInitialState, action) {
+export function byIdReducer(state = byIdInitialState, action) {
   const id = action.meta ? action.meta.id : undefined
   switch (action.type) {
     case FETCH_SUCCESS:
