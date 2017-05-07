@@ -2,6 +2,7 @@
 
 import { fromJS } from 'immutable'
 import isEqual from 'lodash.isequal'
+import devMessage from './devMessage'
 import {
   FETCH, FETCH_SUCCESS, FETCH_ERROR,
   FETCH_ONE, FETCH_ONE_SUCCESS, FETCH_ONE_ERROR,
@@ -112,8 +113,22 @@ function collectionReducer(state = collectionInitialState, action) {
                   .set('error', null)
     case FETCH_SUCCESS:
       const originalPayload = action.payload || {}
-      const payload = ('data' in originalPayload) ? action.payload.data : action.payload
+      const payload = ('data' in originalPayload) ? originalPayload.data : originalPayload
       const otherInfo = ('data' in originalPayload) ? originalPayload : {}
+      if (!Array.isArray(payload)) {
+        devMessage(`
+          Payload is not an array! Your server response for a FETCH action
+          should be in one of the following forms:
+
+          { data: [ ... ] }
+
+          or
+
+          [ ... ]
+        
+          Here are the contents of your action:`)
+        devMessage(JSON.stringify(action))
+      }
       const ids = payload.map((elt) => elt.id)
       return state.set('params', fromJS(action.meta.params))
                   .set('ids', fromJS(ids))
