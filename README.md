@@ -142,6 +142,8 @@ A typical component to render page 1 of a collection might look like this:
 
     export default connect(mapStateToProps)(List)
 
+The `select` selector function is a convenience wrapper around more specific selectors. You can read more about this function and how it works in [the select section of docs/API.md](https://github.com/devvmh/redux-crud-store/blob/master/docs/API.md#selectaction-crudaction-crud-map-opts-object-selection).
+
 Fetching a single record is very similar. A typical component for editing a single record might implement these functions:
 
     import { fetchPost } from '../../redux/modules/posts'
