@@ -14,12 +14,12 @@ import {
 const sampleRecord = fromJS({
   fetchTime: Date.now(),
   record: {},
-  error: null
+  error: undefined
 })
 
 const sampleError = fromJS({
   fetchTime: Date.now(),
-  record: null,
+  record: undefined,
   error: {}
 })
 
@@ -33,17 +33,75 @@ const newRecord = {
   created: true
 }
 
+const initialState = fromJS({
+  0: sampleRecord,
+  1: sampleRecord
+})
+
+const doesNothing = actionType => () => {
+  const action = { type: actionType }
+  expect(byIdReducer(initialState, action)).toEqual(initialState)
+}
+
 describe('byIdReducer', () => {
-  describe('POST actions', () => {
-    const initialState = fromJS({
-      0: sampleRecord,
-      1: sampleRecord
+  it('does nothing on FETCH', doesNothing(FETCH))
+  it('does nothing on FETCH_ERROR', doesNothing(FETCH_ERROR))
+
+  describe('FETCH_SUCCESS', () => {
+    it('adds data', () => {
+      const action = { type: FETCH_SUCCESS, meta: {}, payload: [newRecord] }
+      const newState = byIdReducer(initialState, action)
+      expect(newState.getIn(['2', 'record'])).toEqual(fromJS(newRecord))
     })
 
-    it('does nothing for CREATE', () => {
-      const action = { type: CREATE }
-      expect(byIdReducer(initialState, action)).toEqual(initialState)
+    it('replaces data', () => {
+      const action = { type: FETCH_SUCCESS, meta: {}, payload: [changedRecord] }
+      const newState = byIdReducer(initialState, action)
+      expect(newState.getIn(['1', 'record'])).toEqual(fromJS(changedRecord))
     })
+
+    it('reads data from a data envelope', () => {
+      const action = { type: FETCH_SUCCESS, meta: {}, payload: { data: [newRecord] } }
+      const newState = byIdReducer(initialState, action)
+      expect(newState.getIn(['2', 'record'])).toEqual(fromJS(newRecord))
+    })
+  })
+
+  it('clears record, clears error on FETCH_ONE', () => {
+    const action = { type: FETCH_ONE, meta: { id: 1 } }
+    const newState = byIdReducer(initialState, action)
+    expect(newState.getIn(['1', 'fetchTime'])).toEqual(0)
+    expect(newState.getIn(['1', 'error'])).toEqual(null)
+    expect(newState.getIn(['1', 'record'])).toEqual(null)
+  })
+  it('sets record, clears error on FETCH_ONE_SUCCESS', () => {
+    const arbitraryFetchTime = Date.now() + 400
+    const action = {
+      type: FETCH_ONE_SUCCESS,
+      meta: { id: 1, fetchTime: arbitraryFetchTime },
+      payload: changedRecord
+    }
+    const newState = byIdReducer(initialState, action)
+    expect(newState.getIn(['1', 'fetchTime'])).toEqual(arbitraryFetchTime)
+    expect(newState.getIn(['1', 'error'])).toEqual(null)
+    expect(newState.getIn(['1', 'record'])).toEqual(fromJS(changedRecord))
+  })
+  it('sets error, clears record on FETCH_ONE_ERROR', () => {
+    const arbitraryFetchTime = Date.now() + 400
+    const error = {}
+    const action = {
+      type: FETCH_ONE_ERROR,
+      meta: { id: 1, fetchTime: arbitraryFetchTime },
+      payload: error
+    }
+    const newState = byIdReducer(initialState, action)
+    expect(newState.getIn(['1', 'fetchTime'])).toEqual(arbitraryFetchTime)
+    expect(newState.getIn(['1', 'error'])).toEqual(error)
+    expect(newState.getIn(['1', 'record'])).toEqual(null)
+  })
+
+  describe('POST actions', () => {
+    it('does nothing for CREATE', doesNothing(CREATE))
     it('stores the record on CREATE_SUCCESS', () => {
       const arbitraryFetchTime = Date.now() + 400
       const action = {
@@ -55,10 +113,7 @@ describe('byIdReducer', () => {
       expect(newState.getIn(['2', 'record', 'created'])).toEqual(true)
       expect(newState.getIn(['2', 'fetchTime'])).toEqual(arbitraryFetchTime)
     })
-    it('does nothing for CREATE_ERROR', () => {
-      const action = { type: CREATE_ERROR }
-      expect(byIdReducer(initialState, action)).toEqual(initialState)
-    })
+    it('does nothing for CREATE_ERROR', doesNothing(CREATE_ERROR))
     it('resets fetchTime on UPDATE', () => {
       const action = { type: UPDATE, meta: { id: 1 } }
       const newState = byIdReducer(initialState, action)
@@ -72,14 +127,8 @@ describe('byIdReducer', () => {
       const newState = byIdReducer(initialState, action)
       expect(newState.getIn(['1', 'record', 'changed'])).toEqual(true)
     })
-    it('does nothing for UPDATE_ERROR', () => {
-      const action = { type: UPDATE_ERROR }
-      expect(byIdReducer(initialState, action)).toEqual(initialState)
-    })
-    it('does nothing for DELETE', () => {
-      const action = { type: DELETE }
-      expect(byIdReducer(initialState, action)).toEqual(initialState)
-    })
+    it('does nothing for UPDATE_ERROR', doesNothing(UPDATE_ERROR))
+    it('does nothing for DELETE', doesNothing(DELETE))
     it('removes record on DELETE_SUCCESS', () => {
       const action = { type: DELETE_SUCCESS, meta: { id: 1 } }
       const newState = byIdReducer(initialState, action)
@@ -87,10 +136,7 @@ describe('byIdReducer', () => {
       expect(newState.get('1')).toEqual(undefined)
       expect(Object.keys(newState.toJS()).length).toEqual(1)
     })
-    it('does nothing for DELETE_ERROR', () => {
-      const action = { type: DELETE_ERROR }
-      expect(byIdReducer(initialState, action)).toEqual(initialState)
-    })
+    it('does nothing for DELETE_ERROR', doesNothing(DELETE_ERROR))
   })
 
   describe('GARBAGE_COLLECT', () => {
