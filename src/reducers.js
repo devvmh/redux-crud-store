@@ -104,7 +104,7 @@ export function byIdReducer(state = byIdInitialState, action) {
 /*
  * Note: fetchTime of null means "needs fetch"
  */
-function collectionReducer(state = collectionInitialState, action) {
+export function collectionReducer(state = collectionInitialState, action) {
   switch (action.type) {
     case FETCH:
       return state.set('params', fromJS(action.meta.params))
