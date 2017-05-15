@@ -1,5 +1,5 @@
 import expect from 'expect'
-import { toJS, fromJS } from 'immutable'
+import { fromJS } from 'immutable'
 import { collectionReducer } from '../src/reducers.js'
 import {
     FETCH, FETCH_SUCCESS, FETCH_ERROR,

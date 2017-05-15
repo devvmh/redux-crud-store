@@ -128,7 +128,7 @@ export function collectionReducer(state = collectionInitialState, action) {
   }
 }
 
-function collectionsReducer(state = collectionsInitialState, action) {
+export function collectionsReducer(state = collectionsInitialState, action, collectionReducer = collectionReducer) {
   switch (action.type) {
     case FETCH:
     case FETCH_SUCCESS:
