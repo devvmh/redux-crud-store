@@ -128,8 +128,10 @@ export function collectionReducer(state = collectionInitialState, action) {
   }
 }
 
+/* eslint-disable no-shadow, no-use-before-define */
 export function collectionsReducer(state = collectionsInitialState, action,
                                    { collectionReducer = collectionReducer } = {}) {
+/* eslint-enable no-shadow, no-use-before-define */
   switch (action.type) {
     case FETCH:
     case FETCH_SUCCESS:
@@ -213,10 +215,12 @@ export function actionStatusReducer(state = actionStatusInitialState, action) {
   }
 }
 
+/* eslint-disable no-shadow, no-use-before-define */
 export default function crudReducer(state = initialState, action,
                                     { actionStatusReducer = actionStatusReducer,
                                       byIdReducer = byIdReducer,
                                       collectionsReducer = collectionsReducer } = {}) {
+/* eslint-enable no-shadow, no-use-before-define */
   const id = action.meta ? action.meta.id : undefined
   switch (action.type) {
     case CLEAR_MODEL_DATA:

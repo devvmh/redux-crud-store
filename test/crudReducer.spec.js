@@ -16,33 +16,33 @@ const testModelInitialState = {
   actionStatus: {}
 }
 const initialState = fromJS({
-  widgets: testModelInitialState,
+  widgets: testModelInitialState
 })
 
 
 describe('crudReducer', () => {
   describe('CLEAR_MODEL_DATA', () => {
     it('resets an existing model', () => {
-      const action = { type: CLEAR_MODEL_DATA, payload: { model: 'widgets' }}
+      const action = { type: CLEAR_MODEL_DATA, payload: { model: 'widgets' } }
       const newState = crudReducer(initialState, action)
       expect(newState.toJS().widgets).toEqual(modelInitialState.toJS())
     })
     it('creates a blank model if not already present', () => {
-      const action = { type: CLEAR_MODEL_DATA, payload: { model: 'posts' }}
+      const action = { type: CLEAR_MODEL_DATA, payload: { model: 'posts' } }
       const newState = crudReducer(initialState, action)
       expect(newState.toJS().posts).toEqual(modelInitialState.toJS())
     })
   })
   describe('CLEAR_ACTION_STATUS', () => {
     it('calls actionStatusReducer for the appropriate model', () => {
-      const expectedData = { create: { other: 'new data' }}
-      const actionStatusReducerStub = expect.createSpy().andReturn(expectedData)
-      const action = { type: CLEAR_ACTION_STATUS, payload: { model: 'widgets' }}
+      const expectedData = { create: { other: 'new data' } }
+      const actionStatusReducer = expect.createSpy().andReturn(expectedData)
+      const action = { type: CLEAR_ACTION_STATUS, payload: { model: 'widgets' } }
 
-      const newState = crudReducer(initialState, action, { actionStatusReducer: actionStatusReducerStub })
+      const newState = crudReducer(initialState, action, { actionStatusReducer })
 
       expect(newState.toJS().widgets.actionStatus).toEqual(expectedData)
-      expect(actionStatusReducerStub).toHaveBeenCalledWith(fromJS({}), action)
+      expect(actionStatusReducer).toHaveBeenCalledWith(fromJS({}), action)
     })
   })
 })

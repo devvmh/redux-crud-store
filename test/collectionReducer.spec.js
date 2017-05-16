@@ -2,22 +2,22 @@ import expect from 'expect'
 import { fromJS } from 'immutable'
 import { collectionReducer } from '../src/reducers.js'
 import {
-    FETCH, FETCH_SUCCESS, FETCH_ERROR,
+    FETCH, FETCH_SUCCESS, FETCH_ERROR
 } from '../src/actionTypes'
 
 const initialState = fromJS({
-    params: {},
-    otherInfo: {},
-    ids: [],
-    fetchTime: null,
-    error: null
+  params: {},
+  otherInfo: {},
+  ids: [],
+  fetchTime: null,
+  error: null
 })
 
 describe('collectionReducer', () => {
   const params = { params: 'cool params' }
 
   it('FETCH', () => {
-    const action = { type: FETCH,  meta: { params }}
+    const action = { type: FETCH, meta: { params } }
 
     const newState = collectionReducer(initialState, action)
 
@@ -46,7 +46,7 @@ describe('collectionReducer', () => {
   })
   it('FETCH_ERROR', () => {
     const error = { error: 'oh no' }
-    const action = { type: FETCH_ERROR,  payload: error, meta: { params } }
+    const action = { type: FETCH_ERROR, payload: error, meta: { params } }
 
     const newState = collectionReducer(initialState, action)
 

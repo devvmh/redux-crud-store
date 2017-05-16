@@ -33,21 +33,21 @@ describe('collectionsReducer', () => {
 
   describe('fetch_* tests', () => {
     const fetchTestsArray = [
-      { actionType: FETCH, testName: 'FETCH'},
-      { actionType: FETCH_SUCCESS, testName: 'FETCH_SUCCESS'},
-      { actionType: FETCH_ERROR, testName: 'FETCH_ERROR'}
+      { actionType: FETCH, testName: 'FETCH' },
+      { actionType: FETCH_SUCCESS, testName: 'FETCH_SUCCESS' },
+      { actionType: FETCH_ERROR, testName: 'FETCH_ERROR' }
     ]
     describe('collection is already defined', () => {
       const params = { page: 0 }
-      const collectionReducerStub = createSpy().andReturn(updatedCollection)
+      const collectionReducer = createSpy().andReturn(updatedCollection)
 
       fetchTestsArray.forEach(({ actionType, testName }) => {
         it(testName, () => {
-          const action = { type: actionType,  meta: { params }}
-          const newState = collectionsReducer(initialState, action, { collectionReducer: collectionReducerStub })
+          const action = { type: actionType, meta: { params } }
+          const newState = collectionsReducer(initialState, action, { collectionReducer })
 
           // behaviour check
-          expect(collectionReducerStub).toHaveBeenCalledWith(initialCollection, action)
+          expect(collectionReducer).toHaveBeenCalledWith(initialCollection, action)
           expect(newState.get(0).toJS()).toEqual(updatedCollection.toJS())
 
           // sanity check
@@ -58,15 +58,15 @@ describe('collectionsReducer', () => {
     })
     describe('collection is not defined yet', () => {
       const params = { page: 2 }
-      const collectionReducerStub = createSpy().andReturn(newCollection)
+      const collectionReducer = createSpy().andReturn(newCollection)
 
       fetchTestsArray.forEach(({ actionType, testName }) => {
         it(testName, () => {
-          const action = { type: actionType,  meta: { params }}
-          const newState = collectionsReducer(initialState, action, collectionReducerStub)
+          const action = { type: actionType, meta: { params } }
+          const newState = collectionsReducer(initialState, action, { collectionReducer })
 
           // behaviour check
-          expect(collectionReducerStub).toHaveBeenCalledWith(undefined, action)
+          expect(collectionReducer).toHaveBeenCalledWith(undefined, action)
           expect(newState.get(2).toJS()).toEqual(newCollection.toJS())
 
           // sanity check

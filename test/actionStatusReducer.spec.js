@@ -20,14 +20,14 @@ const actionsList = [
   { statusKey: 'update', actionString: 'UPDATE',
     initAction: UPDATE, successAction: UPDATE_SUCCESS, errorAction: UPDATE_ERROR },
   { statusKey: 'delete', actionString: 'DELETE',
-    initAction: DELETE, successAction: DELETE_SUCCESS, errorAction: DELETE_ERROR },
+    initAction: DELETE, successAction: DELETE_SUCCESS, errorAction: DELETE_ERROR }
 ]
 
 describe('actionStatusReducer', () => {
   describe('CLEAR_ACTION_STATUS', () => {
     actionsList.forEach(({ statusKey }) => {
       it(`clears status for ${statusKey} actions`, () => {
-        const action = { type: CLEAR_ACTION_STATUS, payload: { action: statusKey }}
+        const action = { type: CLEAR_ACTION_STATUS, payload: { action: statusKey } }
         const newState = actionStatusReducer(initialState, action)
         expect(newState.toJS()[statusKey]).toEqual({})
       })

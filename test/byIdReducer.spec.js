@@ -140,14 +140,14 @@ describe('byIdReducer', () => {
   })
 
   describe('GARBAGE_COLLECT', () => {
-    const initialState = fromJS({
+    const gcInitialState = fromJS({
       0: sampleRecord.set('fetchTime', Date.now() - 11 * 60 * 1000), // more than ten minutes ago
       1: sampleRecord
     })
 
     it('clears records older than 10 minutes', () => {
       const action = { type: GARBAGE_COLLECT, meta: { now: Date.now() } }
-      const newState = byIdReducer(initialState, action)
+      const newState = byIdReducer(gcInitialState, action)
       expect(Object.keys(newState.toJS()).length).toEqual(1)
       expect(newState.get('0')).toEqual(undefined)
       expect(newState.get('1')).toEqual(sampleRecord)
