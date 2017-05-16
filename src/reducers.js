@@ -164,7 +164,7 @@ export function collectionsReducer(state = collectionsInitialState, action, coll
   }
 }
 
-function actionStatusReducer(state = actionStatusInitialState, action) {
+export function actionStatusReducer(state = actionStatusInitialState, action) {
   switch (action.type) {
     case CLEAR_ACTION_STATUS:
       return state.set(action.payload.action, fromJS({}))
