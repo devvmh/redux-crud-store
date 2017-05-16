@@ -34,7 +34,7 @@ const actionStatusInitialState = fromJS({
   delete: {}
 })
 
-const modelInitialState = fromJS({
+export const modelInitialState = fromJS({
   byId: byIdInitialState,
   collections: collectionsInitialState,
   actionStatus: actionStatusInitialState
@@ -128,7 +128,8 @@ export function collectionReducer(state = collectionInitialState, action) {
   }
 }
 
-export function collectionsReducer(state = collectionsInitialState, action, collectionReducer = collectionReducer) {
+export function collectionsReducer(state = collectionsInitialState, action,
+                                   { collectionReducer = collectionReducer } = {}) {
   switch (action.type) {
     case FETCH:
     case FETCH_SUCCESS:
@@ -212,7 +213,10 @@ export function actionStatusReducer(state = actionStatusInitialState, action) {
   }
 }
 
-export default function crudReducer(state = initialState, action) {
+export default function crudReducer(state = initialState, action,
+                                    { actionStatusReducer = actionStatusReducer,
+                                      byIdReducer = byIdReducer,
+                                      collectionsReducer = collectionsReducer } = {}) {
   const id = action.meta ? action.meta.id : undefined
   switch (action.type) {
     case CLEAR_MODEL_DATA:

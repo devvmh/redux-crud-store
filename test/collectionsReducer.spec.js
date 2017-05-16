@@ -44,7 +44,7 @@ describe('collectionsReducer', () => {
       fetchTestsArray.forEach(({ actionType, testName }) => {
         it(testName, () => {
           const action = { type: actionType,  meta: { params }}
-          const newState = collectionsReducer(initialState, action, collectionReducerStub)
+          const newState = collectionsReducer(initialState, action, { collectionReducer: collectionReducerStub })
 
           // behaviour check
           expect(collectionReducerStub).toHaveBeenCalledWith(initialCollection, action)
