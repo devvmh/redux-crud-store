@@ -1,5 +1,6 @@
 import expect from 'expect'
 import { actionStatusReducer } from '../src/reducers.js'
+import deepFreeze from 'deep-freeze'
 import {
   CLEAR_ACTION_STATUS,
   CREATE, CREATE_SUCCESS, CREATE_ERROR,
