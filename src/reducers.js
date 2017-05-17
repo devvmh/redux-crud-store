@@ -119,7 +119,7 @@ export function byIdReducer(state = byIdInitialState, action) {
       const tenMinutesAgo = action.meta.now - 10 * 60 * 1000
       newState = Object.assign({}, state)
       Object.keys(state)
-        .filter(key => newState[key].fetchTime > tenMinutesAgo)
+        .filter(key => newState[key].fetchTime < tenMinutesAgo)
         .forEach(key => { delete newState[key] })
       return newState
     default:
@@ -189,7 +189,7 @@ export function collectionsReducer(state = collectionsInitialState, action,
         return state
       }
       const index = state.findIndex(coll => (
-        isEqual(coll, action.meta.params)
+        isEqual(coll.params, action.meta.params)
       ))
       if (index === -1) {
         return state.concat([collectionReducer(undefined, action)])
@@ -202,7 +202,7 @@ export function collectionsReducer(state = collectionsInitialState, action,
     case DELETE_SUCCESS:
       // set fetchTime on all entries to null
       return state.map((item, idx) => (
-        item.set('fetchTime', null)
+        Object.assign({}, item, { fetchTime: null })
       ))
     case GARBAGE_COLLECT:
       const tenMinutesAgo = action.meta.now - 10 * 60 * 1000
@@ -344,12 +344,18 @@ function modelReducer(state = initialState, action,
 }
 
 /* eslint-disable no-shadow, no-use-before-define */
-export default function crudReducer(state = initialState, action, { modelReducer = modelReducer } = {}) {
+export default function crudReducer(state = initialState, action,
+                                    { actionStatusReducer = actionStatusReducer,
+                                      byIdReducer = byIdReducer,
+                                      collectionsReducer = collectionsReducer } = {}) {
 /* eslint-enable no-shadow, no-use-before-define */
-  const id = action.meta ? action.meta.id : undefined
   switch (action.type) {
     case GARBAGE_COLLECT:
-      return state.map(model => modelReducer(state[model], action))
+      return Object.keys(state).reduce((newState, model) => {
+        return Object.assign({}, newState, {
+          [model]: modelReducer(state[model], action, { actionStatusReducer, byIdReducer, collectionsReducer })
+        })
+      }, {})
     case CLEAR_MODEL_DATA:
     case CLEAR_ACTION_STATUS:
     case FETCH:
@@ -367,7 +373,10 @@ export default function crudReducer(state = initialState, action, { modelReducer
     case DELETE:
     case DELETE_SUCCESS:
     case DELETE_ERROR:
-      return modelReducer(state[action.meta.model], action)
+      const model = action.meta && action.meta.model || action.payload.model
+      return Object.assign({}, state, {
+        [model]: modelReducer(state[model], action, { actionStatusReducer, byIdReducer, collectionsReducer })
+      })
     default:
       return state
   }

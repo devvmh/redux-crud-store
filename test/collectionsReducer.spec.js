@@ -1,34 +1,35 @@
 import expect, { createSpy } from 'expect'
-import { fromJS } from 'immutable'
 import { collectionsReducer } from '../src/reducers.js'
+import deepFreeze from 'deep-freeze'
 import {
   FETCH, FETCH_SUCCESS, FETCH_ERROR,
   CREATE_SUCCESS, DELETE_SUCCESS, GARBAGE_COLLECT
 } from '../src/actionTypes'
 
-const initialCollection = fromJS({
+const initialCollection = {
   params: { page: 0 },
   otherInfo: {},
   ids: [],
   fetchTime: Date.now() - 400, // arbitrary time
   error: null
-})
+}
 
-const initialCollection2 = initialCollection.set('params', fromJS({ page: 1 }))
+const initialCollection2 = Object.assign({}, initialCollection, { params: { page: 1 }})
 
-const initialState = fromJS([
-  initialCollection.toJS(),
-  initialCollection2.toJS()
-])
+const initialState = [
+  initialCollection,
+  initialCollection2
+]
+deepFreeze(initialState)
 
-const newCollection = fromJS({ mock: true, params: { page: 0 }, ids: [1] })
-const updatedCollection = fromJS({ mock: true, params: { page: 0 }, ids: [2] })
+const newCollection = { mock: true, params: { page: 0 }, ids: [1] }
+const updatedCollection = { mock: true, params: { page: 0 }, ids: [2] }
 
 describe('collectionsReducer', () => {
   it('does nothing if action.meta.params is undefined', () => {
     const action = { type: FETCH, meta: {} }
     const newState = collectionsReducer(initialState, action)
-    expect(newState.toJS()).toEqual(initialState.toJS())
+    expect(newState).toEqual(initialState)
   })
 
   describe('fetch_* tests', () => {
@@ -48,11 +49,11 @@ describe('collectionsReducer', () => {
 
           // behaviour check
           expect(collectionReducer).toHaveBeenCalledWith(initialCollection, action)
-          expect(newState.get(0).toJS()).toEqual(updatedCollection.toJS())
+          expect(newState[0]).toEqual(updatedCollection)
 
           // sanity check
-          expect(newState.get(1).toJS()).toEqual(initialCollection2.toJS())
-          expect(newState.get(2)).toEqual(undefined)
+          expect(newState[1]).toEqual(initialCollection2)
+          expect(newState[2]).toEqual(undefined)
         })
       })
     })
@@ -67,11 +68,11 @@ describe('collectionsReducer', () => {
 
           // behaviour check
           expect(collectionReducer).toHaveBeenCalledWith(undefined, action)
-          expect(newState.get(2).toJS()).toEqual(newCollection.toJS())
+          expect(newState[2]).toEqual(newCollection)
 
           // sanity check
-          expect(newState.get(0).toJS()).toEqual(initialCollection.toJS())
-          expect(newState.get(1).toJS()).toEqual(initialCollection2.toJS())
+          expect(newState[0]).toEqual(initialCollection)
+          expect(newState[1]).toEqual(initialCollection2)
         })
       })
     })
@@ -81,30 +82,31 @@ describe('collectionsReducer', () => {
     it('CREATE_SUCCESS sets fetchTime to null', () => {
       const action = { type: CREATE_SUCCESS }
       const newState = collectionsReducer(initialState, action)
-      expect(newState.toJS()[0].fetchTime).toEqual(null)
-      expect(newState.toJS()[1].fetchTime).toEqual(null)
+      expect(newState[0].fetchTime).toEqual(null)
+      expect(newState[1].fetchTime).toEqual(null)
     })
     it('DELETE_SUCCESS sets fetchTime to null', () => {
       const action = { type: DELETE_SUCCESS }
       const newState = collectionsReducer(initialState, action)
-      expect(newState.toJS()[0].fetchTime).toEqual(null)
-      expect(newState.toJS()[1].fetchTime).toEqual(null)
+      expect(newState[0].fetchTime).toEqual(null)
+      expect(newState[1].fetchTime).toEqual(null)
     })
   })
 
   describe('garbage collect', () => {
     it('filters out records older than ten minutes', () => {
-      const tenMinutes = 10 * 60 * 1000
+      const elevenMinutes = 11 * 60 * 1000
       const now = 12345678
-      const oldCollection = initialCollection.set('fetchTime', now - 400 - tenMinutes)
-      const initialStatePlusOldCollection = initialState.push(oldCollection)
+      const oldCollection = Object.assign({}, initialCollection, { fetchTime: now - elevenMinutes })
+      const initialStatePlusOldCollection = initialState.concat([oldCollection])
+      deepFreeze(initialStatePlusOldCollection)
       const action = { type: GARBAGE_COLLECT, meta: { now } }
       const newState = collectionsReducer(initialStatePlusOldCollection, action)
 
-      expect(initialStatePlusOldCollection.toJS().length).toEqual(3)
-      expect(newState.toJS().length).toEqual(2)
-      expect(newState.get(0).toJS()).toEqual(initialStatePlusOldCollection.get(0).toJS())
-      expect(newState.get(1).toJS()).toEqual(initialStatePlusOldCollection.get(1).toJS())
+      expect(initialStatePlusOldCollection.length).toEqual(3)
+      expect(newState.length).toEqual(2)
+      expect(newState[0]).toEqual(initialStatePlusOldCollection[0])
+      expect(newState[1]).toEqual(initialStatePlusOldCollection[1])
     })
   })
 })

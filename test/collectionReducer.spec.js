@@ -1,17 +1,18 @@
 import expect from 'expect'
-import { fromJS } from 'immutable'
 import { collectionReducer } from '../src/reducers.js'
+import deepFreeze from 'deep-freeze'
 import {
     FETCH, FETCH_SUCCESS, FETCH_ERROR
 } from '../src/actionTypes'
 
-const initialState = fromJS({
+const initialState = {
   params: {},
   otherInfo: {},
   ids: [],
   fetchTime: null,
   error: null
-})
+}
+deepFreeze(initialState)
 
 describe('collectionReducer', () => {
   const params = { params: 'cool params' }
@@ -21,9 +22,9 @@ describe('collectionReducer', () => {
 
     const newState = collectionReducer(initialState, action)
 
-    expect(newState.get('params').toJS()).toEqual(params)
-    expect(newState.get('fetchTime')).toEqual(0)
-    expect(newState.get('error')).toEqual(null)
+    expect(newState.params).toEqual(params)
+    expect(newState.fetchTime).toEqual(0)
+    expect(newState.error).toEqual(null)
   })
   it('FETCH_SUCCESS', () => {
     const fetchTime = Date.now() - 400 // arbitrary
@@ -38,11 +39,11 @@ describe('collectionReducer', () => {
 
     const newState = collectionReducer(initialState, action)
 
-    expect(newState.get('params').toJS()).toEqual(params)
-    expect(newState.get('ids').toJS()).toEqual([1, 2])
-    expect(newState.get('otherInfo').toJS()).toEqual(otherInfo)
-    expect(newState.get('error')).toEqual(null)
-    expect(newState.get('fetchTime')).toEqual(fetchTime)
+    expect(newState.params).toEqual(params)
+    expect(newState.ids).toEqual([1, 2])
+    expect(newState.otherInfo).toEqual(otherInfo)
+    expect(newState.error).toEqual(null)
+    expect(newState.fetchTime).toEqual(fetchTime)
   })
   it('FETCH_ERROR', () => {
     const error = { error: 'oh no' }
@@ -50,7 +51,7 @@ describe('collectionReducer', () => {
 
     const newState = collectionReducer(initialState, action)
 
-    expect(newState.get('params').toJS()).toEqual(params)
-    expect(newState.get('error')).toEqual(error)
+    expect(newState.params).toEqual(params)
+    expect(newState.error).toEqual(error)
   })
 })
