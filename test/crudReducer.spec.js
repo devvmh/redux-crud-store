@@ -23,12 +23,12 @@ deepFreeze(initialState)
 describe('crudReducer', () => {
   describe('CLEAR_MODEL_DATA', () => {
     it('resets an existing model', () => {
-      const action = { type: CLEAR_MODEL_DATA, payload: { model: 'widgets' }}
+      const action = { type: CLEAR_MODEL_DATA, payload: { model: 'widgets' } }
       const newState = crudReducer(initialState, action)
       expect(newState.widgets).toEqual(modelInitialState)
     })
     it('creates a blank model if not already present', () => {
-      const action = { type: CLEAR_MODEL_DATA, payload: { model: 'posts' }}
+      const action = { type: CLEAR_MODEL_DATA, payload: { model: 'posts' } }
       const newState = crudReducer(initialState, action)
       expect(newState.posts).toEqual(modelInitialState)
     })
@@ -38,7 +38,7 @@ describe('crudReducer', () => {
     it('calls actionStatusReducer for the appropriate model', () => {
       const expectedData = { create: { other: 'new data' } }
       const actionStatusReducer = expect.createSpy().andReturn(expectedData)
-      const action = { type: CLEAR_ACTION_STATUS, payload: { model: 'widgets' }}
+      const action = { type: CLEAR_ACTION_STATUS, payload: { model: 'widgets' } }
 
       const newState = crudReducer(initialState, action, { actionStatusReducer })
 

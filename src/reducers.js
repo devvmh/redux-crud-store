@@ -351,11 +351,13 @@ export default function crudReducer(state = initialState, action,
 /* eslint-enable no-shadow, no-use-before-define */
   switch (action.type) {
     case GARBAGE_COLLECT:
-      return Object.keys(state).reduce((newState, model) => {
-        return Object.assign({}, newState, {
-          [model]: modelReducer(state[model], action, { actionStatusReducer, byIdReducer, collectionsReducer })
+      return Object.keys(state).reduce((newState, model) => (
+        Object.assign({}, newState, {
+          [model]: modelReducer(state[model], action, {
+            actionStatusReducer, byIdReducer, collectionsReducer
+          })
         })
-      }, {})
+      ), {})
     case CLEAR_MODEL_DATA:
     case CLEAR_ACTION_STATUS:
     case FETCH:
@@ -375,7 +377,9 @@ export default function crudReducer(state = initialState, action,
     case DELETE_ERROR:
       const model = action.meta && action.meta.model || action.payload.model
       return Object.assign({}, state, {
-        [model]: modelReducer(state[model], action, { actionStatusReducer, byIdReducer, collectionsReducer })
+        [model]: modelReducer(state[model], action, {
+          actionStatusReducer, byIdReducer, collectionsReducer
+        })
       })
     default:
       return state

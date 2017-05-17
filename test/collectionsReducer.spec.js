@@ -14,7 +14,7 @@ const initialCollection = {
   error: null
 }
 
-const initialCollection2 = Object.assign({}, initialCollection, { params: { page: 1 }})
+const initialCollection2 = Object.assign({}, initialCollection, { params: { page: 1 } })
 
 const initialState = [
   initialCollection,
