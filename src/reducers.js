@@ -34,7 +34,7 @@ const actionStatusInitialState = fromJS({
   delete: {}
 })
 
-const modelInitialState = fromJS({
+export const modelInitialState = fromJS({
   byId: byIdInitialState,
   collections: collectionsInitialState,
   actionStatus: actionStatusInitialState
@@ -48,7 +48,7 @@ const initialState = fromJS({})
  */
 
 // server data is canonical, so blast away the old data
-function byIdReducer(state = byIdInitialState, action) {
+export function byIdReducer(state = byIdInitialState, action) {
   const id = action.meta ? action.meta.id : undefined
   switch (action.type) {
     case FETCH_SUCCESS:
@@ -104,7 +104,7 @@ function byIdReducer(state = byIdInitialState, action) {
 /*
  * Note: fetchTime of null means "needs fetch"
  */
-function collectionReducer(state = collectionInitialState, action) {
+export function collectionReducer(state = collectionInitialState, action) {
   switch (action.type) {
     case FETCH:
       return state.set('params', fromJS(action.meta.params))
@@ -128,7 +128,10 @@ function collectionReducer(state = collectionInitialState, action) {
   }
 }
 
-function collectionsReducer(state = collectionsInitialState, action) {
+/* eslint-disable no-shadow, no-use-before-define */
+export function collectionsReducer(state = collectionsInitialState, action,
+                                   { collectionReducer = collectionReducer } = {}) {
+/* eslint-enable no-shadow, no-use-before-define */
   switch (action.type) {
     case FETCH:
     case FETCH_SUCCESS:
@@ -164,7 +167,7 @@ function collectionsReducer(state = collectionsInitialState, action) {
   }
 }
 
-function actionStatusReducer(state = actionStatusInitialState, action) {
+export function actionStatusReducer(state = actionStatusInitialState, action) {
   switch (action.type) {
     case CLEAR_ACTION_STATUS:
       return state.set(action.payload.action, fromJS({}))
@@ -212,7 +215,12 @@ function actionStatusReducer(state = actionStatusInitialState, action) {
   }
 }
 
-export default function crudReducer(state = initialState, action) {
+/* eslint-disable no-shadow, no-use-before-define */
+export default function crudReducer(state = initialState, action,
+                                    { actionStatusReducer = actionStatusReducer,
+                                      byIdReducer = byIdReducer,
+                                      collectionsReducer = collectionsReducer } = {}) {
+/* eslint-enable no-shadow, no-use-before-define */
   const id = action.meta ? action.meta.id : undefined
   switch (action.type) {
     case CLEAR_MODEL_DATA:
