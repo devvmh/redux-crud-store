@@ -1,8 +1,7 @@
 /* @flow */
 /* global Generator */
 
-import { takeEvery } from 'redux-saga'
-import { fork, put, call } from 'redux-saga/effects'
+import { takeEvery, fork, put, call } from 'redux-saga/effects'
 
 import {
   FETCH, FETCH_ONE, CREATE, UPDATE, DELETE, API_CALL, GARBAGE_COLLECT
