@@ -1,6 +1,7 @@
 /* @flow */
 /* global Generator */
 
+import 'regenerator-runtime/runtime'
 import { takeEvery, fork, put, call } from 'redux-saga/effects'
 
 import {
