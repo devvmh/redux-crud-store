@@ -4,13 +4,31 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _keys = require('babel-runtime/core-js/object/keys');
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _keys2 = _interopRequireDefault(_keys);
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _stringify = require('babel-runtime/core-js/json/stringify');
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // This class is a reference implementation. If you desire additional
 // functionality, you can work with the config options here, or copy this code
@@ -42,10 +60,10 @@ var ApiClient = function () {
   function ApiClient(passedConfig) {
     var _this = this;
 
-    _classCallCheck(this, ApiClient);
+    (0, _classCallCheck3.default)(this, ApiClient);
 
     var baseConfig = {
-      bodyEncoder: JSON.stringify,
+      bodyEncoder: _stringify2.default,
       credentials: 'same-origin',
       format: 'json',
       headers: {
@@ -68,21 +86,20 @@ var ApiClient = function () {
             data = _ref.data,
             fetchConfig = _ref.fetchConfig;
 
-        var config = _extends({}, baseConfig, passedConfig, fetchConfig, {
-          headers: _extends({}, baseConfig.headers, passedConfig ? passedConfig.headers : {}, fetchConfig ? fetchConfig.headers : {})
+        var config = (0, _extends3.default)({}, baseConfig, passedConfig, fetchConfig, {
+          headers: (0, _extends3.default)({}, baseConfig.headers, passedConfig ? passedConfig.headers : {}, fetchConfig ? fetchConfig.headers : {})
         });
-
         var _methods = config.methods,
             basePath = config.basePath,
             headers = config.headers,
             format = config.format,
             bodyEncoder = config.bodyEncoder,
-            otherConfig = _objectWithoutProperties(config, ['methods', 'basePath', 'headers', 'format', 'bodyEncoder']);
+            otherConfig = (0, _objectWithoutProperties3.default)(config, ['methods', 'basePath', 'headers', 'format', 'bodyEncoder']);
 
         var requestPath = basePath + path + _this.queryString(params);
         var body = data ? bodyEncoder(data) : undefined;
 
-        return fetch(requestPath, _extends({}, otherConfig, {
+        return fetch(requestPath, (0, _extends3.default)({}, otherConfig, {
           method: method,
           headers: headers,
           body: body
@@ -98,10 +115,10 @@ var ApiClient = function () {
   // thanks http://stackoverflow.com/a/12040639/5332286
 
 
-  _createClass(ApiClient, [{
+  (0, _createClass3.default)(ApiClient, [{
     key: 'queryString',
     value: function queryString(params) {
-      var s = Object.keys(params).map(function (key) {
+      var s = (0, _keys2.default)(params).map(function (key) {
         return [key, params[key]].map(encodeURIComponent).join('=');
       }).join('&');
       return s ? '?' + s : '';
@@ -126,7 +143,6 @@ var ApiClient = function () {
       return response;
     }
   }]);
-
   return ApiClient;
 }();
 
