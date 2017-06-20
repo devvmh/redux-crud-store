@@ -67,6 +67,7 @@
     "webpack": "^1.12.14"
   },
   "dependencies": {
+    "babel-plugin-transform-regenerator": "^6.24.1",
     "immutable": ">= 3.7.6",
     "lodash.isequal": "^4.1.2",
     "redux-saga": ">= 0.9.5"
