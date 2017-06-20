@@ -15,9 +15,13 @@ import type { CrudAction } from './actionTypes'
 
 // Generator type parameters are: Generator<+Yield,+Return,-Next>
 
+// NOTE: need to avoid hoisting generator functions or they'll happen
+// before this definition. See garbageCollector definition below, e.g.
+const regeneratorRuntime = require('regenerator-runtime')
+
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-function* garbageCollector() {
+const garbageCollector = function* garbageCollector() {
   yield call(delay, 10 * 60 * 1000) // initial 10 minute delay
   for (;;) {
     yield call(delay, 5 * 60 * 1000) // every 5 minutes thereafter
