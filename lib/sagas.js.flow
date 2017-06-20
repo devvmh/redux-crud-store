@@ -1,8 +1,7 @@
 /* @flow */
 /* global Generator */
 
-import 'regenerator-runtime/runtime'
-import { takeEvery, fork, put, call } from 'redux-saga/effects'
+import { all, call, fork, put, takeEvery } from 'redux-saga/effects'
 
 import {
   FETCH, FETCH_ONE, CREATE, UPDATE, DELETE, API_CALL, GARBAGE_COLLECT
@@ -15,9 +14,13 @@ import type { CrudAction } from './actionTypes'
 
 // Generator type parameters are: Generator<+Yield,+Return,-Next>
 
+// NOTE: need to avoid hoisting generator functions or they'll happen
+// before this definition. See garbageCollector definition below, e.g.
+const regeneratorRuntime = require('regenerator-runtime')
+
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-function* garbageCollector() {
+const garbageCollector = function* garbageCollector() {
   yield call(delay, 10 * 60 * 1000) // initial 10 minute delay
   for (;;) {
     yield call(delay, 5 * 60 * 1000) // every 5 minutes thereafter
@@ -43,32 +46,32 @@ function* _apiGeneric(action: CrudAction<any>): Generator<Effect, void, any> {
 }
 
 const watchFetch = (apiClient) => function* _watchFetch() {
-  yield* takeEvery(FETCH, apiGeneric(apiClient))
+  yield takeEvery(FETCH, apiGeneric(apiClient))
 }
 
 const watchFetchOne = (apiClient) => function* _watchFetchOne() {
-  yield* takeEvery(FETCH_ONE, apiGeneric(apiClient))
+  yield takeEvery(FETCH_ONE, apiGeneric(apiClient))
 }
 
 const watchCreate = (apiClient) => function* _watchCreate() {
-  yield* takeEvery(CREATE, apiGeneric(apiClient))
+  yield takeEvery(CREATE, apiGeneric(apiClient))
 }
 
 const watchUpdate = (apiClient) => function* _watchUpdate() {
-  yield* takeEvery(UPDATE, apiGeneric(apiClient))
+  yield takeEvery(UPDATE, apiGeneric(apiClient))
 }
 
 const watchDelete = (apiClient) => function* _watchDelete() {
-  yield* takeEvery(DELETE, apiGeneric(apiClient))
+  yield takeEvery(DELETE, apiGeneric(apiClient))
 }
 
 const watchApiCall = (apiClient) => function* _watchApiCall() {
-  yield* takeEvery(API_CALL, apiGeneric(apiClient))
+  yield takeEvery(API_CALL, apiGeneric(apiClient))
 }
 
 export default function crudSaga(apiClient: Object) {
   return function* _crudSaga(): Generator<Effect, void, any> {
-    yield [
+    yield all([
       fork(watchFetch(apiClient)),
       fork(watchFetchOne(apiClient)),
       fork(watchCreate(apiClient)),
@@ -76,6 +79,6 @@ export default function crudSaga(apiClient: Object) {
       fork(watchDelete(apiClient)),
       fork(watchApiCall(apiClient)),
       fork(garbageCollector)
-    ]
+    ])
   }
 }
