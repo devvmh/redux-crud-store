@@ -48,7 +48,7 @@ export function select<T>(action: CrudAction<T>, crud: State, opts: SelectorOpts
   let selection
   switch (action.type) {
     case FETCH:
-      selection = selectCollection(model, crud, params)
+      selection = selectCollection(model, crud, params, opts)
       break
     case FETCH_ONE:
       id = action.meta.id

@@ -8592,7 +8592,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var selection = void 0;
 	  switch (action.type) {
 	    case _actionTypes.FETCH:
-	      selection = selectCollection(model, crud, params);
+	      selection = selectCollection(model, crud, params, opts);
 	      break;
 	    case _actionTypes.FETCH_ONE:
 	      id = action.meta.id;
