@@ -48,7 +48,7 @@ const initialState = {}
  */
 
 // server data is canonical, so blast away the old data
-export function byIdReducer(state = byIdInitialState, action) {
+function byIdReducerImpl(state = byIdInitialState, action) {
   const id = action.meta ? action.meta.id : undefined
   let newState // should only be used once per invocation
   switch (action.type) {
@@ -130,7 +130,7 @@ export function byIdReducer(state = byIdInitialState, action) {
 /*
  * Note: fetchTime of null means "needs fetch"
  */
-export function collectionReducer(state = collectionInitialState, action) {
+function collectionReducerImpl(state = collectionInitialState, action) {
   switch (action.type) {
     case FETCH:
       return Object.assign({}, state, {
@@ -175,10 +175,8 @@ export function collectionReducer(state = collectionInitialState, action) {
   }
 }
 
-/* eslint-disable no-shadow, no-use-before-define */
-export function collectionsReducer(state = collectionsInitialState, action,
-                                   { collectionReducer = collectionReducer } = {}) {
-/* eslint-enable no-shadow, no-use-before-define */
+function collectionsReducerImpl(state = collectionsInitialState, action,
+                            { collectionReducer = collectionReducerImpl } = {}) {
   switch (action.type) {
     case FETCH:
     case FETCH_SUCCESS:
@@ -215,7 +213,7 @@ export function collectionsReducer(state = collectionsInitialState, action,
   }
 }
 
-export function actionStatusReducer(state = actionStatusInitialState, action) {
+function actionStatusReducerImpl(state = actionStatusInitialState, action) {
   switch (action.type) {
     case CLEAR_ACTION_STATUS:
       return Object.assign({}, state, {
@@ -277,12 +275,10 @@ export function actionStatusReducer(state = actionStatusInitialState, action) {
   }
 }
 
-/* eslint-disable no-shadow, no-use-before-define */
-function modelReducer(state = initialState, action,
-                      { actionStatusReducer = actionStatusReducer,
-                        byIdReducer = byIdReducer,
-                        collectionsReducer = collectionsReducer } = {}) {
-/* eslint-enable no-shadow, no-use-before-define */
+function modelReducerImpl(state = initialState, action,
+                      { actionStatusReducer = actionStatusReducerImpl,
+                        byIdReducer = byIdReducerImpl,
+                        collectionsReducer = collectionsReducerImpl } = {}) {
   const id = action.meta ? action.meta.id : undefined
   switch (action.type) {
     case GARBAGE_COLLECT:
@@ -343,17 +339,15 @@ function modelReducer(state = initialState, action,
   }
 }
 
-/* eslint-disable no-shadow, no-use-before-define */
-export default function crudReducer(state = initialState, action,
-                                    { actionStatusReducer = actionStatusReducer,
-                                      byIdReducer = byIdReducer,
-                                      collectionsReducer = collectionsReducer } = {}) {
-/* eslint-enable no-shadow, no-use-before-define */
+function crudReducer(state = initialState, action,
+                     { actionStatusReducer = actionStatusReducerImpl,
+                       byIdReducer = byIdReducerImpl,
+                       collectionsReducer = collectionsReducerImpl } = {}) {
   switch (action.type) {
     case GARBAGE_COLLECT:
       return Object.keys(state).reduce((newState, model) => (
         Object.assign({}, newState, {
-          [model]: modelReducer(state[model], action, {
+          [model]: modelReducerImpl(state[model], action, {
             actionStatusReducer, byIdReducer, collectionsReducer
           })
         })
@@ -377,7 +371,7 @@ export default function crudReducer(state = initialState, action,
     case DELETE_ERROR:
       const model = action.meta && action.meta.model || action.payload.model
       return Object.assign({}, state, {
-        [model]: modelReducer(state[model], action, {
+        [model]: modelReducerImpl(state[model], action, {
           actionStatusReducer, byIdReducer, collectionsReducer
         })
       })
@@ -385,3 +379,10 @@ export default function crudReducer(state = initialState, action,
       return state
   }
 }
+
+export { byIdReducerImpl as byIdReducer }
+export { collectionReducerImpl as collectionReducer }
+export { collectionsReducerImpl as collectionsReducer }
+export { actionStatusReducerImpl as actionStatusReducer }
+export { modelReducerImpl as modelReducer }
+export default crudReducer
