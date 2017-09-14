@@ -1,6 +1,6 @@
 import expect from 'expect'
-import { fromJS } from 'immutable'
 import { actionStatusReducer } from '../src/reducers.js'
+import deepFreeze from 'deep-freeze'
 import {
   CLEAR_ACTION_STATUS,
   CREATE, CREATE_SUCCESS, CREATE_ERROR,
@@ -8,11 +8,12 @@ import {
   DELETE, DELETE_SUCCESS, DELETE_ERROR
 } from '../src/actionTypes'
 
-const initialState = fromJS({
+const initialState = {
   create: { test: 'data' },
   update: { test: 'data2' },
   delete: { test: 'data3' }
-})
+}
+deepFreeze(initialState)
 
 const actionsList = [
   { statusKey: 'create', actionString: 'CREATE',
@@ -29,7 +30,7 @@ describe('actionStatusReducer', () => {
       it(`clears status for ${statusKey} actions`, () => {
         const action = { type: CLEAR_ACTION_STATUS, payload: { action: statusKey } }
         const newState = actionStatusReducer(initialState, action)
-        expect(newState.toJS()[statusKey]).toEqual({})
+        expect(newState[statusKey]).toEqual({})
       })
     })
   })
@@ -39,8 +40,8 @@ describe('actionStatusReducer', () => {
         const meta = initAction === CREATE ? undefined : { id: 1 }
         const action = { type: initAction, meta }
         const newState = actionStatusReducer(initialState, action)
-        expect(newState.toJS()[statusKey].pending).toEqual(true)
-        expect(newState.toJS()[statusKey].id).toEqual(initAction === CREATE ? null : 1)
+        expect(newState[statusKey].pending).toEqual(true)
+        expect(newState[statusKey].id).toEqual(initAction === CREATE ? null : 1)
       })
     })
   })
@@ -50,7 +51,7 @@ describe('actionStatusReducer', () => {
         const payload = { payload: true, id: 1 }
         const action = { type: successAction, meta: { id: 1 }, payload, error: false }
         const newState = actionStatusReducer(initialState, action)
-        const statusObject = newState.toJS()[statusKey]
+        const statusObject = newState[statusKey]
         expect(statusObject.pending).toEqual(false)
         expect(statusObject.id).toEqual(1)
         expect(statusObject.isSuccess).toEqual(true)
@@ -64,7 +65,7 @@ describe('actionStatusReducer', () => {
         const error = { error: 'error data' }
         const action = { type: errorAction, meta: { id: 1 }, payload: error, error: true }
         const newState = actionStatusReducer(initialState, action)
-        const statusObject = newState.toJS()[statusKey]
+        const statusObject = newState[statusKey]
         expect(statusObject.pending).toEqual(false)
         expect(statusObject.id).toEqual(errorAction === CREATE_ERROR ? undefined : 1)
         expect(statusObject.isSuccess).toEqual(false)
