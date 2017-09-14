@@ -2,6 +2,7 @@
 
 import isEqual from 'lodash.isequal'
 import devMessage from './devMessage'
+import { cachePeriodAgo } from './cachePeriod'
 import {
   FETCH, FETCH_SUCCESS, FETCH_ERROR,
   FETCH_ONE, FETCH_ONE_SUCCESS, FETCH_ONE_ERROR,
@@ -116,10 +117,9 @@ function byIdReducerImpl(state = byIdInitialState, action) {
       delete newState[id]
       return newState
     case GARBAGE_COLLECT:
-      const tenMinutesAgo = action.meta.now - 10 * 60 * 1000
       newState = Object.assign({}, state)
       Object.keys(state)
-        .filter(key => newState[key].fetchTime < tenMinutesAgo)
+        .filter(key => newState[key].fetchTime < cachePeriodAgo(action.meta.now))
         .forEach(key => { delete newState[key] })
       return newState
     default:
@@ -203,9 +203,8 @@ function collectionsReducerImpl(state = collectionsInitialState, action,
         Object.assign({}, item, { fetchTime: null })
       ))
     case GARBAGE_COLLECT:
-      const tenMinutesAgo = action.meta.now - 10 * 60 * 1000
       return state.filter(collection => (
-        collection.fetchTime > tenMinutesAgo ||
+        collection.fetchTime > cachePeriodAgo(action.meta.now) ||
         collection.fetchTime === null
       ))
     default:
