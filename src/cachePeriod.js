@@ -41,8 +41,9 @@ function getHalfCachePeriod() {
 const cachePeriod = getCachePeriod()
 const halfCachePeriod = getHalfCachePeriod()
 
-function cachePeriodAgo(now) {
-  return now - cachePeriod
+function cachePeriodAgo(now, customCachePeriod = undefined) {
+  const actualCachePeriod = customCachePeriod || cachePeriod
+  return now - actualCachePeriod
 }
 
 export { cachePeriodAgo, cachePeriod, halfCachePeriod }
