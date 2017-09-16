@@ -2,22 +2,22 @@ import devMessage from './devMessage'
 
 const TEN_MINUTES = 10 * 60 * 1000
 
-function getCachePeriod({ showMessages = true } = {}) {
+function getCachePeriod({ showMessages } = {}) {
   let value = process.env.CACHE_PERIOD ||
     process.env.REACT_APP_CACHE_PERIOD ||
     TEN_MINUTES
-  console.log(`value is ${value}`)
   value = Math.round(value)
   if (isNaN(value)) {
     value = TEN_MINUTES
     if (showMessages) {
-      devMessage("getCachePeriod got NaN! Falling back to ten minute cache period")
+      devMessage('getCachePeriod got NaN! Falling back to ten minute cache period')
     }
   }
   if (value < 1000) {
     value = TEN_MINUTES
     if (showMessages) {
-      devMessage("getCachePeriod got a value under one second! Falling back to ten minute cache period")
+      devMessage(`getCachePeriod got a value under one second!
+                  Falling back to ten minute cache period`)
     }
   }
   return value
@@ -34,7 +34,8 @@ function getHalfCachePeriod() {
   }
   if (value < 500) {
     value = Math.round(getCachePeriod({ showMessages: false }) / 2)
-    devMessage(`getHalfCachePeriod got a value under 500ms! Falling back to half of cache period: ${value}`)
+    devMessage(`getHalfCachePeriod got a value under 500ms!
+                Falling back to half of cache period: ${value}`)
   }
   return value
 }

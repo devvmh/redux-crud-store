@@ -118,8 +118,9 @@ function byIdReducerImpl(state = byIdInitialState, action) {
       return newState
     case GARBAGE_COLLECT:
       newState = Object.assign({}, state)
+      const cutoff = cachePeriodAgo(action.meta.now, action.meta.cachePeriod)
       Object.keys(state)
-        .filter(key => newState[key].fetchTime < cachePeriodAgo(action.meta.now, action.meta.cachePeriod))
+        .filter(key => newState[key].fetchTime < cutoff)
         .forEach(key => { delete newState[key] })
       return newState
     default:
