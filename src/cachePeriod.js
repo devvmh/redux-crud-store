@@ -1,10 +1,12 @@
+import devMessage from './devMessage'
+
 const TEN_MINUTES = 10 * 60 * 1000
 
-// private
-function getCachePeriod({ showMessages = true }) {
-  let value = process.env.CACHE_PERIOD
-    || process.env.REACT_APP_CACHE_PERIOD
-    || TEN_MINUTES
+function getCachePeriod({ showMessages = true } = {}) {
+  let value = process.env.CACHE_PERIOD ||
+    process.env.REACT_APP_CACHE_PERIOD ||
+    TEN_MINUTES
+  console.log(`value is ${value}`)
   value = Math.round(value)
   if (isNaN(value)) {
     value = TEN_MINUTES
@@ -21,11 +23,10 @@ function getCachePeriod({ showMessages = true }) {
   return value
 }
 
-// private
 function getHalfCachePeriod() {
-  let value = process.env.HALF_CACHE_PERIOD
-    || process.env.REACT_APP_HALF_CACHE_PERIOD
-    || getCachePeriod() / 2
+  let value = process.env.HALF_CACHE_PERIOD ||
+    process.env.REACT_APP_HALF_CACHE_PERIOD ||
+    getCachePeriod() / 2
   value = Math.round(value)
   if (isNaN(value)) {
     value = Math.round(getCachePeriod({ showMessages: false }) / 2)
@@ -46,4 +47,8 @@ function cachePeriodAgo(now, customCachePeriod = undefined) {
   return now - actualCachePeriod
 }
 
+// public
 export { cachePeriodAgo, cachePeriod, halfCachePeriod }
+
+// only visible for testing
+export { getCachePeriod, getHalfCachePeriod }
