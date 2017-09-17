@@ -1,5 +1,4 @@
 /* Imports */
-require("babel-polyfill")
 require("isomorphic-fetch")
 const { crudSaga, crudReducer, fetchCollection, selectCollection, ApiClient } = require("redux-crud-store")
 const { createStore, compose, applyMiddleware } = require("redux")
@@ -27,12 +26,12 @@ store.subscribe(() => {
     log.push("selectCollection after first FETCH:")
     log.push(selectCollection('issues', store.getState(), params))
     log.push("state after first FETCH:")
-    log.push(store.getState().toJS())
+    log.push(store.getState())
   } else if (log.length === 4) {
     log.push("selectCollection after FETCH_SUCCESS/FETCH_ERROR:")
     log.push(selectCollection('issues', store.getState(), params))
     log.push("state after FETCH_SUCCESS/FETCH_ERROR:")
-    log.push(store.getState().toJS())
+    log.push(store.getState())
     console.log(log)
   }
 })

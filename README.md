@@ -192,7 +192,7 @@ Select is a helper function to minimize what you need to import into each compon
 
 ```js
 {
-  otherInfo,   # if response was sent in a data envelope, provides the other keys (e.g. paging data)
+  otherInfo,   # if response was sent in a data envelope, provides the other keys (e.g. pagination data)
   data,        # if isLoading is false, then this will hold either a collection of records, or a single record
   isLoading,   # boolean: false if data is ready and no error occurred while loading data
   needsFetch,  # boolean: true if you still need to dispatch a fetch action (iselect(...).fetch)
@@ -220,11 +220,11 @@ If you ever worry about your cache getting out of sync, it's easy to manually sy
 
 ### What's new
 
-- As of 5.4.0, the code no longer uses immutable.js! This should improve performance and debuggability.
+- As of 5.4.0, the code no longer uses immutable.js! This should improve performance and debuggability. Please file an issue if you discover any bugs after this change!
 
 **Breaking changes in 5.0.0**
 
-- babel-polyfill is removed. You must import it yourself if you want sagas to work in IE9, Edge 12, or Safari 9 (other other browsers without generator functions).
+- babel-polyfill is removed. You must import it yourself if you want sagas to work in IE9, Edge 12, or Safari 9 (or other browsers without generator functions).
 - the UPDATE action no longer changes fetchTime on the record. This is probably only a good thing for your app, but it is a change in behaviour.
 
 ### What's still missing (TODO)
@@ -238,7 +238,7 @@ If you ever worry about your cache getting out of sync, it's easy to manually sy
 
 ### Brief layout of what state.models should look like
 
-This is a slightly airbrushed representation of what the state.models key in your store might look like, if it were represented as JSON instead of with Immutable JS.
+This is a slightly airbrushed representation of what the state.models key in your store might look like:
 
     state.models : {
       posts: {
@@ -303,7 +303,7 @@ This is a slightly airbrushed representation of what the state.models key in you
    - state.posts.collections refers to previously executed queries
    - a single collection is made up of params, the returned ids, and then metadata
  - fetch means to go to the server
- - select means to get the existing models from the state, or an object that communicates to the component that it should dispatch a fetch action
+ - select means to get the existing models from the state and return an object for use in components
 
 # License
 
