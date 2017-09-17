@@ -7,3 +7,4 @@ webpack/dist
 .gitattributes
 .editorconfig
 .nyc_output
+package-lock.json
