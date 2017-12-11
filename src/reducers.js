@@ -97,7 +97,7 @@ function byIdReducerImpl(state = byIdInitialState, action) {
       })
     case UPDATE:
       return Object.assign({}, state, {
-        [id]: {
+        [id]: state[id] === undefined ? undefined : {
           fetchTime: 0,
           error: state[id].error,
           record: state[id].record
