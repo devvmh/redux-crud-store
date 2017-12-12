@@ -24,11 +24,13 @@ describe('crudReducer', () => {
   describe('CLEAR_MODEL_DATA', () => {
     it('resets an existing model', () => {
       const action = { type: CLEAR_MODEL_DATA, payload: { model: 'widgets' } }
+      deepFreeze(action)
       const newState = crudReducer(initialState, action)
       expect(newState.widgets).toEqual(modelInitialState)
     })
     it('creates a blank model if not already present', () => {
       const action = { type: CLEAR_MODEL_DATA, payload: { model: 'posts' } }
+      deepFreeze(action)
       const newState = crudReducer(initialState, action)
       expect(newState.posts).toEqual(modelInitialState)
     })
@@ -39,6 +41,7 @@ describe('crudReducer', () => {
       const expectedData = { create: { other: 'new data' } }
       const actionStatusReducer = expect.createSpy().andReturn(expectedData)
       const action = { type: CLEAR_ACTION_STATUS, payload: { model: 'widgets' } }
+      deepFreeze(action)
 
       const newState = crudReducer(initialState, action, { actionStatusReducer })
 
@@ -60,6 +63,7 @@ describe('crudReducer', () => {
         const collectionsReducer = expect.createSpy().andReturn(expectedCollections)
         const byIdReducer = expect.createSpy().andReturn(expectedById)
         const action = { type: actionType, meta: { model: 'widgets' } }
+        deepFreeze(action)
 
         const newState = crudReducer(initialState, action, { collectionsReducer, byIdReducer })
 
@@ -80,6 +84,7 @@ describe('crudReducer', () => {
         const expectedById = { some: 'byId data' }
         const byIdReducer = expect.createSpy().andReturn(expectedById)
         const action = { type: actionType, meta: { model: 'widgets' } }
+        deepFreeze(action)
 
         const newState = crudReducer(initialState, action, { byIdReducer })
 
@@ -99,6 +104,7 @@ describe('crudReducer', () => {
         const expectedActionStatus = { some: 'actionStatus data' }
         const actionStatusReducer = expect.createSpy().andReturn(expectedActionStatus)
         const action = { type: actionType, meta: { model: 'widgets' } }
+        deepFreeze(action)
 
         const newState = crudReducer(initialState, action, { actionStatusReducer })
 
@@ -116,6 +122,7 @@ describe('crudReducer', () => {
       const byIdReducer = expect.createSpy().andReturn(expectedById)
       const collectionsReducer = expect.createSpy().andReturn(expectedCollections)
       const action = { type: CREATE_SUCCESS, meta: { model: 'widgets' } }
+      deepFreeze(action)
 
       const newState = crudReducer(initialState, action,
                                    { actionStatusReducer, byIdReducer, collectionsReducer })
@@ -139,6 +146,7 @@ describe('crudReducer', () => {
         const actionStatusReducer = expect.createSpy().andReturn(expectedActionStatus)
         const byIdReducer = expect.createSpy().andReturn(expectedById)
         const action = { type: actionType, meta: { model: 'widgets' } }
+        deepFreeze(action)
 
         const newState = crudReducer(initialState, action, { actionStatusReducer, byIdReducer })
 
@@ -163,6 +171,7 @@ describe('crudReducer', () => {
         const byIdReducer = expect.createSpy().andReturn(expectedById)
         const collectionsReducer = expect.createSpy().andReturn(expectedCollections)
         const action = { type: actionType, meta: { model: 'widgets' } }
+        deepFreeze(action)
 
         const newState = crudReducer(initialState, action,
                                      { actionStatusReducer, byIdReducer, collectionsReducer })

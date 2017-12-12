@@ -41,6 +41,7 @@ deepFreeze(initialState)
 
 const doesNothing = actionType => () => {
   const action = { type: actionType }
+  deepFreeze(action)
   expect(byIdReducer(initialState, action)).toEqual(initialState)
 }
 
@@ -51,18 +52,21 @@ describe('byIdReducer', () => {
   describe('FETCH_SUCCESS', () => {
     it('adds data', () => {
       const action = { type: FETCH_SUCCESS, meta: {}, payload: [newRecord] }
+      deepFreeze(action)
       const newState = byIdReducer(initialState, action)
       expect(newState[2].record).toEqual(newRecord)
     })
 
     it('replaces data', () => {
       const action = { type: FETCH_SUCCESS, meta: {}, payload: [changedRecord] }
+      deepFreeze(action)
       const newState = byIdReducer(initialState, action)
       expect(newState[1].record).toEqual(changedRecord)
     })
 
     it('reads data from a data envelope', () => {
       const action = { type: FETCH_SUCCESS, meta: {}, payload: { data: [newRecord] } }
+      deepFreeze(action)
       const newState = byIdReducer(initialState, action)
       expect(newState[2].record).toEqual(newRecord)
     })
@@ -70,6 +74,7 @@ describe('byIdReducer', () => {
 
   it('clears record, clears error on FETCH_ONE', () => {
     const action = { type: FETCH_ONE, meta: { id: 1 } }
+    deepFreeze(action)
     const newState = byIdReducer(initialState, action)
     expect(newState[1].fetchTime).toEqual(0)
     expect(newState[1].error).toEqual(null)
@@ -82,6 +87,7 @@ describe('byIdReducer', () => {
       meta: { id: 1, fetchTime: arbitraryFetchTime },
       payload: changedRecord
     }
+    deepFreeze(action)
     const newState = byIdReducer(initialState, action)
     expect(newState[1].fetchTime).toEqual(arbitraryFetchTime)
     expect(newState[1].error).toEqual(null)
@@ -95,6 +101,7 @@ describe('byIdReducer', () => {
       meta: { id: 1, fetchTime: arbitraryFetchTime },
       payload: error
     }
+    deepFreeze(action)
     const newState = byIdReducer(initialState, action)
     expect(newState[1].fetchTime).toEqual(arbitraryFetchTime)
     expect(newState[1].error).toEqual(error)
@@ -110,6 +117,7 @@ describe('byIdReducer', () => {
         payload: newRecord,
         meta: { fetchTime: arbitraryFetchTime }
       }
+      deepFreeze(action)
       const newState = byIdReducer(initialState, action)
       expect(newState[2].record.created).toEqual(true)
       expect(newState[2].fetchTime).toEqual(arbitraryFetchTime)
@@ -117,6 +125,7 @@ describe('byIdReducer', () => {
     it('does nothing for CREATE_ERROR', doesNothing(CREATE_ERROR))
     it('resets fetchTime on UPDATE', () => {
       const action = { type: UPDATE, meta: { id: 1 } }
+      deepFreeze(action)
       const newState = byIdReducer(initialState, action)
       expect(newState[1].fetchTime).toEqual(0)
     })
@@ -125,6 +134,7 @@ describe('byIdReducer', () => {
         type: UPDATE_SUCCESS, meta: { id: 1 },
         payload: changedRecord
       }
+      deepFreeze(action)
       const newState = byIdReducer(initialState, action)
       expect(newState[1].record.changed).toEqual(true)
     })
@@ -132,6 +142,7 @@ describe('byIdReducer', () => {
     it('does nothing for DELETE', doesNothing(DELETE))
     it('removes record on DELETE_SUCCESS', () => {
       const action = { type: DELETE_SUCCESS, meta: { id: 1 } }
+      deepFreeze(action)
       const newState = byIdReducer(initialState, action)
       expect(newState[0]).toEqual(sampleRecord)
       expect(Object.keys(newState).length).toEqual(1)
@@ -150,6 +161,7 @@ describe('byIdReducer', () => {
 
     it('clears records older than 10 minutes', () => {
       const action = { type: GARBAGE_COLLECT, meta: { now } }
+      deepFreeze(action)
       const newState = byIdReducer(gcInitialState, action)
       expect(Object.keys(newState).length).toEqual(1)
       expect(newState['1']).toEqual(sampleRecord)
