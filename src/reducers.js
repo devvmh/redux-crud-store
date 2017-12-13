@@ -141,7 +141,9 @@ function collectionReducerImpl(state = collectionInitialState, action) {
     case FETCH_SUCCESS:
       const originalPayload = action.payload || {}
       const payload = ('data' in originalPayload) ? originalPayload.data : originalPayload
-      const otherInfo = ('data' in originalPayload) ? originalPayload : {}
+      const otherInfo = ('data' in originalPayload)
+        ? Object.assign({}, originalPayload)
+        : {}
       delete otherInfo.data
       if (!Array.isArray(payload)) {
         devMessage(`

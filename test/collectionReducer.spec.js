@@ -19,6 +19,7 @@ describe('collectionReducer', () => {
 
   it('FETCH', () => {
     const action = { type: FETCH, meta: { params } }
+    deepFreeze(action)
 
     const newState = collectionReducer(initialState, action)
 
@@ -36,6 +37,7 @@ describe('collectionReducer', () => {
       payload: envelope,
       meta: { fetchTime, params }
     }
+    deepFreeze(action)
 
     const newState = collectionReducer(initialState, action)
 
@@ -48,6 +50,7 @@ describe('collectionReducer', () => {
   it('FETCH_ERROR', () => {
     const error = { error: 'oh no' }
     const action = { type: FETCH_ERROR, payload: error, meta: { params } }
+    deepFreeze(action)
 
     const newState = collectionReducer(initialState, action)
 

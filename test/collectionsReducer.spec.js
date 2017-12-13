@@ -28,6 +28,7 @@ const updatedCollection = { mock: true, params: { page: 0 }, ids: [2] }
 describe('collectionsReducer', () => {
   it('does nothing if action.meta.params is undefined', () => {
     const action = { type: FETCH, meta: {} }
+    deepFreeze(action)
     const newState = collectionsReducer(initialState, action)
     expect(newState).toEqual(initialState)
   })
@@ -45,6 +46,7 @@ describe('collectionsReducer', () => {
       fetchTestsArray.forEach(({ actionType, testName }) => {
         it(testName, () => {
           const action = { type: actionType, meta: { params } }
+          deepFreeze(action)
           const newState = collectionsReducer(initialState, action, { collectionReducer })
 
           // behaviour check
@@ -64,6 +66,7 @@ describe('collectionsReducer', () => {
       fetchTestsArray.forEach(({ actionType, testName }) => {
         it(testName, () => {
           const action = { type: actionType, meta: { params } }
+          deepFreeze(action)
           const newState = collectionsReducer(initialState, action, { collectionReducer })
 
           // behaviour check
@@ -81,12 +84,14 @@ describe('collectionsReducer', () => {
     // TODO this seems like incorrect behaviour
     it('CREATE_SUCCESS sets fetchTime to null', () => {
       const action = { type: CREATE_SUCCESS }
+      deepFreeze(action)
       const newState = collectionsReducer(initialState, action)
       expect(newState[0].fetchTime).toEqual(null)
       expect(newState[1].fetchTime).toEqual(null)
     })
     it('DELETE_SUCCESS sets fetchTime to null', () => {
       const action = { type: DELETE_SUCCESS }
+      deepFreeze(action)
       const newState = collectionsReducer(initialState, action)
       expect(newState[0].fetchTime).toEqual(null)
       expect(newState[1].fetchTime).toEqual(null)
@@ -101,6 +106,7 @@ describe('collectionsReducer', () => {
       const initialStatePlusOldCollection = initialState.concat([oldCollection])
       deepFreeze(initialStatePlusOldCollection)
       const action = { type: GARBAGE_COLLECT, meta: { now } }
+      deepFreeze(action)
       const newState = collectionsReducer(initialStatePlusOldCollection, action)
 
       expect(initialStatePlusOldCollection.length).toEqual(3)
