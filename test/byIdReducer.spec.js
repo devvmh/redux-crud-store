@@ -129,6 +129,15 @@ describe('byIdReducer', () => {
       const newState = byIdReducer(initialState, action)
       expect(newState[1].fetchTime).toEqual(0)
     })
+    it("can handle UPDATE even if record isn't present", () => {
+      const action = { type: UPDATE, meta: { id: 1 } }
+      deepFreeze(action)
+      const initialStateRecordNotPresent = {}
+      deepFreeze(initialStateRecordNotPresent)
+
+      const newState = byIdReducer(initialStateRecordNotPresent, action)
+      expect(newState[1]).toEqual(undefined)
+    })
     it('updates record on UPDATE_SUCCESS', () => {
       const action = {
         type: UPDATE_SUCCESS, meta: { id: 1 },
