@@ -32,9 +32,9 @@ export type SelectorOpts = {
  *  - fetchTime is 0 (but note, this won't return NEEDS_FETCH)
  */
 function recent(fetchTime, opts: SelectorOpts = {}) {
-  if (fetchTime === null) return false
+  if (!fetchTime) return false
 
-  const interval = opts.interval || 10 * 60 * 1000 // ten minutes
+  const interval = (opts && opts.interval) || 10 * 60 * 1000 // ten minutes
 
   return Date.now() - interval < fetchTime
 }
