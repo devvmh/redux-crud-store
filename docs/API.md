@@ -266,3 +266,17 @@ We used to use this function to send autocomplete queries from an autocomplete i
 - data (default undefined) is the data that will be passed along with POST or PUT requests
 - opts (default {}) can have any of the following keys, with the stated effect:
   - 'meta': Can contain any properties except 'success' or 'failure', and will be passed to the success or failure actions in the action.meta key.
+
+# Environment variable configuration
+
+By default, reducers, selectors, and the crudSaga will clear records every 10 minutes. You can configure this value by setting either of these environment variables:
+
+CACHE_PERIOD  
+REACT_APP_CACHE_PERIOD
+
+Similarly, the saga will dispatch an action to delete older records every five minutes. You can configure this value by setting either of these environment variables:
+
+HALF_CACHE_PERIOD
+REACT_APP_HALF_CACHE_PERIOD
+
+See more about how this works in src/cachePeriod.js.

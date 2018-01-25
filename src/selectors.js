@@ -28,7 +28,7 @@ export type SelectorOpts = {
 
 /*
  * Returns false if:
- *  - fetchTime is more than [cache period (default 10 minutes)] ago
+ *  - fetchTime is more than cache period (default 10 minutes) ago
  *  - fetchTime is null (hasn't been set yet)
  *  - fetchTime is 0 (but note, this won't return NEEDS_FETCH)
  */
