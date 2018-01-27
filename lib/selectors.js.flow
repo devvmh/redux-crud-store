@@ -3,6 +3,7 @@
 /* eslint no-use-before-define: 0 */
 
 import isEqual from 'lodash.isequal'
+import { cachePeriod } from './cachePeriod'
 import {
   FETCH, FETCH_ONE, CREATE, UPDATE, DELETE
 } from './actionTypes'
@@ -27,14 +28,16 @@ export type SelectorOpts = {
 
 /*
  * Returns false if:
- *  - fetchTime is more than 10 minutes ago
+ *  - fetchTime is more than cache period (default 10 minutes) ago
  *  - fetchTime is null (hasn't been set yet)
  *  - fetchTime is 0 (but note, this won't return NEEDS_FETCH)
  */
 function recent(fetchTime, opts: SelectorOpts = {}) {
   if (fetchTime === null) return false
 
-  const interval = opts.interval || 10 * 60 * 1000 // ten minutes
+  // note: components can override the default cache period using opts.interval
+  // when they do so, it won't change the behaviour of sagas.js or reducers.js, just selectors.js
+  const interval = opts.interval || cachePeriod
 
   return Date.now() - interval < fetchTime
 }

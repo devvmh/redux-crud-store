@@ -3,6 +3,7 @@
 
 import { all, call, fork, put, takeEvery } from 'redux-saga/effects'
 
+import { cachePeriod, halfCachePeriod } from './cachePeriod'
 import {
   FETCH, FETCH_ONE, CREATE, UPDATE, DELETE, API_CALL, GARBAGE_COLLECT
 } from './actionTypes'
@@ -21,9 +22,9 @@ const regeneratorRuntime = require('regenerator-runtime')
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 const garbageCollector = function* garbageCollector() {
-  yield call(delay, 10 * 60 * 1000) // initial 10 minute delay
+  yield call(delay, cachePeriod) // initial delay of cache period (default 10 minutes)
   for (;;) {
-    yield call(delay, 5 * 60 * 1000) // every 5 minutes thereafter
+    yield call(delay, halfCachePeriod) // every 1/2 cache period thereafter (default 5 minutes)
     yield put({ type: GARBAGE_COLLECT, meta: { now: Date.now() } })
   }
 }

@@ -54,7 +54,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(9);
+	module.exports = __webpack_require__(10);
 
 
 /***/ },
@@ -330,6 +330,97 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.getHalfCachePeriod = exports.getCachePeriod = exports.halfCachePeriod = exports.cachePeriod = exports.cachePeriodAgo = undefined;
+
+	var _devMessage = __webpack_require__(4);
+
+	var _devMessage2 = _interopRequireDefault(_devMessage);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var TEN_MINUTES = 10 * 60 * 1000;
+
+	function getCachePeriod() {
+	  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+	      showMessages = _ref.showMessages;
+
+	  var value = process.env.CACHE_PERIOD || process.env.REACT_APP_CACHE_PERIOD || TEN_MINUTES;
+	  value = Math.round(value);
+	  if (isNaN(value)) {
+	    value = TEN_MINUTES;
+	    if (showMessages) {
+	      (0, _devMessage2.default)('getCachePeriod got NaN! Falling back to ten minute cache period');
+	    }
+	  }
+	  if (value < 1000) {
+	    value = TEN_MINUTES;
+	    if (showMessages) {
+	      (0, _devMessage2.default)('getCachePeriod got a value under one second!\n                  Falling back to ten minute cache period');
+	    }
+	  }
+	  return value;
+	}
+
+	function getHalfCachePeriod() {
+	  var value = process.env.HALF_CACHE_PERIOD || process.env.REACT_APP_HALF_CACHE_PERIOD || getCachePeriod() / 2;
+	  value = Math.round(value);
+	  if (isNaN(value)) {
+	    value = Math.round(getCachePeriod({ showMessages: false }) / 2);
+	    (0, _devMessage2.default)('getHalfCachePeriod got NaN! Falling back to half of cachePeriod: ' + value);
+	  }
+	  if (value < 500) {
+	    value = Math.round(getCachePeriod({ showMessages: false }) / 2);
+	    (0, _devMessage2.default)('getHalfCachePeriod got a value under 500ms!\n                Falling back to half of cache period: ' + value);
+	  }
+	  return value;
+	}
+
+	var cachePeriod = getCachePeriod();
+	var halfCachePeriod = getHalfCachePeriod();
+
+	function cachePeriodAgo(now) {
+	  var customCachePeriod = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+
+	  var actualCachePeriod = customCachePeriod || cachePeriod;
+	  return now - actualCachePeriod;
+	}
+
+	// public
+	exports.cachePeriodAgo = cachePeriodAgo;
+	exports.cachePeriod = cachePeriod;
+	exports.halfCachePeriod = halfCachePeriod;
+
+	// only visible for testing
+
+	exports.getCachePeriod = getCachePeriod;
+	exports.getHalfCachePeriod = getHalfCachePeriod;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	exports.default = function (message) {
+	  if (true) {
+	    console.log(message); // eslint-disable-line no-console
+	  }
+	};
+
+/***/ },
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, module) {/**
@@ -2181,10 +2272,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = isEqual;
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(20)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(22)(module)))
 
 /***/ },
-/* 4 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2297,7 +2388,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 5 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2329,7 +2420,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(2);
 
-	var _sagaHelpers = __webpack_require__(16);
+	var _sagaHelpers = __webpack_require__(18);
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -2572,7 +2663,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 6 */
+/* 8 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2710,7 +2801,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = ApiClient;
 
 /***/ },
-/* 7 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2897,23 +2988,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	exports.default = function (message) {
-	  if (true) {
-	    console.log(message); // eslint-disable-line no-console
-	  }
-	};
-
-/***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2923,7 +2998,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.selectActionStatus = exports.selectRecordOrEmptyObject = exports.selectRecord = exports.selectCollection = exports.select = exports.clearModelData = exports.apiCall = exports.clearActionStatus = exports.deleteRecord = exports.updateRecord = exports.createRecord = exports.fetchRecord = exports.fetchCollection = exports.ApiClient = exports.crudActions = exports.crudReducer = exports.crudSaga = undefined;
 
-	var _actionCreators = __webpack_require__(7);
+	var _actionCreators = __webpack_require__(9);
 
 	Object.defineProperty(exports, 'fetchCollection', {
 	  enumerable: true,
@@ -2974,7 +3049,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	});
 
-	var _selectors = __webpack_require__(12);
+	var _selectors = __webpack_require__(13);
 
 	Object.defineProperty(exports, 'select', {
 	  enumerable: true,
@@ -3007,11 +3082,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	});
 
-	var _sagas = __webpack_require__(11);
+	var _sagas = __webpack_require__(12);
 
 	var _sagas2 = _interopRequireDefault(_sagas);
 
-	var _reducers = __webpack_require__(10);
+	var _reducers = __webpack_require__(11);
 
 	var _reducers2 = _interopRequireDefault(_reducers);
 
@@ -3019,7 +3094,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var crudActions = _interopRequireWildcard(_actionTypes);
 
-	var _ApiClient = __webpack_require__(6);
+	var _ApiClient = __webpack_require__(8);
 
 	var _ApiClient2 = _interopRequireDefault(_ApiClient);
 
@@ -3033,7 +3108,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.ApiClient = _ApiClient2.default;
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3043,13 +3118,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.modelReducer = exports.actionStatusReducer = exports.collectionsReducer = exports.collectionReducer = exports.byIdReducer = exports.modelInitialState = undefined;
 
-	var _lodash = __webpack_require__(3);
+	var _lodash = __webpack_require__(5);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _devMessage = __webpack_require__(8);
+	var _devMessage = __webpack_require__(4);
 
 	var _devMessage2 = _interopRequireDefault(_devMessage);
+
+	var _cachePeriod = __webpack_require__(3);
 
 	var _actionTypes = __webpack_require__(1);
 
@@ -3152,10 +3229,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      delete newState[id];
 	      return newState;
 	    case _actionTypes.GARBAGE_COLLECT:
-	      var tenMinutesAgo = action.meta.now - 10 * 60 * 1000;
 	      newState = Object.assign({}, state);
+	      var cutoff = (0, _cachePeriod.cachePeriodAgo)(action.meta.now, action.meta.cachePeriod);
 	      Object.keys(state).filter(function (key) {
-	        return newState[key].fetchTime < tenMinutesAgo;
+	        return newState[key].fetchTime < cutoff;
 	      }).forEach(function (key) {
 	        delete newState[key];
 	      });
@@ -3240,9 +3317,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return Object.assign({}, item, { fetchTime: null });
 	      });
 	    case _actionTypes.GARBAGE_COLLECT:
-	      var tenMinutesAgo = action.meta.now - 10 * 60 * 1000;
 	      return state.filter(function (collection) {
-	        return collection.fetchTime > tenMinutesAgo || collection.fetchTime === null;
+	        return collection.fetchTime > (0, _cachePeriod.cachePeriodAgo)(action.meta.now, action.meta.cachePeriod) || collection.fetchTime === null;
 	      });
 	    default:
 	      return state;
@@ -3437,7 +3513,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = crudReducer;
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3452,7 +3528,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = crudSaga;
 
-	var _effects = __webpack_require__(13);
+	var _effects = __webpack_require__(15);
+
+	var _cachePeriod = __webpack_require__(3);
 
 	var _actionTypes = __webpack_require__(1);
 
@@ -3464,7 +3542,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// TODO: The `Effect` type is not actually defined. Because 'redux-saga' does
 	// not use  annotations, flow pretends that this import succeeds.
-	var regeneratorRuntime = __webpack_require__(18);
+	var regeneratorRuntime = __webpack_require__(20);
 
 	var delay = function delay(ms) {
 	  return new Promise(function (resolve) {
@@ -3478,11 +3556,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      switch (_context.prev = _context.next) {
 	        case 0:
 	          _context.next = 2;
-	          return (0, _effects.call)(delay, 10 * 60 * 1000);
+	          return (0, _effects.call)(delay, _cachePeriod.cachePeriod);
 
 	        case 2:
 	          _context.next = 4;
-	          return (0, _effects.call)(delay, 5 * 60 * 1000);
+	          return (0, _effects.call)(delay, _cachePeriod.halfCachePeriod);
 
 	        case 4:
 	          _context.next = 6;
@@ -3668,7 +3746,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3687,9 +3765,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.selectRecordOrEmptyObject = selectRecordOrEmptyObject;
 	exports.selectActionStatus = selectActionStatus;
 
-	var _lodash = __webpack_require__(3);
+	var _lodash = __webpack_require__(5);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _cachePeriod = __webpack_require__(3);
 
 	var _actionTypes = __webpack_require__(1);
 
@@ -3697,7 +3777,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/*
 	 * Returns false if:
-	 *  - fetchTime is more than 10 minutes ago
+	 *  - fetchTime is more than cache period (default 10 minutes) ago
 	 *  - fetchTime is null (hasn't been set yet)
 	 *  - fetchTime is 0 (but note, this won't return NEEDS_FETCH)
 	 */
@@ -3709,7 +3789,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  if (fetchTime === null) return false;
 
-	  var interval = opts.interval || 10 * 60 * 1000; // ten minutes
+	  // note: components can override the default cache period using opts.interval
+	  // when they do so, it won't change the behaviour of sagas.js or reducers.js, just selectors.js
+	  var interval = opts.interval || _cachePeriod.cachePeriod;
 
 	  return Date.now() - interval < fetchTime;
 	}
@@ -3876,13 +3958,199 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
+/* 14 */
+/***/ function(module, exports) {
 
-	module.exports = __webpack_require__(14)
+	// shim for using process in browser
+	var process = module.exports = {};
+
+	// cached from whatever global is present so that test runners that stub it
+	// don't break things.  But we need to wrap it in a try catch in case it is
+	// wrapped in strict mode code which doesn't define any globals.  It's inside a
+	// function because try/catches deoptimize in certain engines.
+
+	var cachedSetTimeout;
+	var cachedClearTimeout;
+
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout () {
+	    throw new Error('clearTimeout has not been defined');
+	}
+	(function () {
+	    try {
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
+	        }
+	    } catch (e) {
+	        cachedSetTimeout = defaultSetTimout;
+	    }
+	    try {
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
+	        }
+	    } catch (e) {
+	        cachedClearTimeout = defaultClearTimeout;
+	    }
+	} ())
+	function runTimeout(fun) {
+	    if (cachedSetTimeout === setTimeout) {
+	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
+	        return setTimeout(fun, 0);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedSetTimeout(fun, 0);
+	    } catch(e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+	            return cachedSetTimeout.call(null, fun, 0);
+	        } catch(e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+	            return cachedSetTimeout.call(this, fun, 0);
+	        }
+	    }
+
+
+	}
+	function runClearTimeout(marker) {
+	    if (cachedClearTimeout === clearTimeout) {
+	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
+	        return clearTimeout(marker);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedClearTimeout(marker);
+	    } catch (e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+	            return cachedClearTimeout.call(null, marker);
+	        } catch (e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+	            return cachedClearTimeout.call(this, marker);
+	        }
+	    }
+
+
+
+	}
+	var queue = [];
+	var draining = false;
+	var currentQueue;
+	var queueIndex = -1;
+
+	function cleanUpNextTick() {
+	    if (!draining || !currentQueue) {
+	        return;
+	    }
+	    draining = false;
+	    if (currentQueue.length) {
+	        queue = currentQueue.concat(queue);
+	    } else {
+	        queueIndex = -1;
+	    }
+	    if (queue.length) {
+	        drainQueue();
+	    }
+	}
+
+	function drainQueue() {
+	    if (draining) {
+	        return;
+	    }
+	    var timeout = runTimeout(cleanUpNextTick);
+	    draining = true;
+
+	    var len = queue.length;
+	    while(len) {
+	        currentQueue = queue;
+	        queue = [];
+	        while (++queueIndex < len) {
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
+	        }
+	        queueIndex = -1;
+	        len = queue.length;
+	    }
+	    currentQueue = null;
+	    draining = false;
+	    runClearTimeout(timeout);
+	}
+
+	process.nextTick = function (fun) {
+	    var args = new Array(arguments.length - 1);
+	    if (arguments.length > 1) {
+	        for (var i = 1; i < arguments.length; i++) {
+	            args[i - 1] = arguments[i];
+	        }
+	    }
+	    queue.push(new Item(fun, args));
+	    if (queue.length === 1 && !draining) {
+	        runTimeout(drainQueue);
+	    }
+	};
+
+	// v8 likes predictible objects
+	function Item(fun, array) {
+	    this.fun = fun;
+	    this.array = array;
+	}
+	Item.prototype.run = function () {
+	    this.fun.apply(null, this.array);
+	};
+	process.title = 'browser';
+	process.browser = true;
+	process.env = {};
+	process.argv = [];
+	process.version = ''; // empty string to avoid regexp issues
+	process.versions = {};
+
+	function noop() {}
+
+	process.on = noop;
+	process.addListener = noop;
+	process.once = noop;
+	process.off = noop;
+	process.removeListener = noop;
+	process.removeAllListeners = noop;
+	process.emit = noop;
+
+	process.binding = function (name) {
+	    throw new Error('process.binding is not supported');
+	};
+
+	process.cwd = function () { return '/' };
+	process.chdir = function (dir) {
+	    throw new Error('process.chdir is not supported');
+	};
+	process.umask = function() { return 0; };
+
 
 /***/ },
-/* 14 */
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(16)
+
+/***/ },
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3891,7 +4159,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _io = __webpack_require__(5);
+	var _io = __webpack_require__(7);
 
 	Object.defineProperty(exports, 'take', {
 	  enumerable: true,
@@ -4003,7 +4271,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4022,9 +4290,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(2);
 
-	var _buffers = __webpack_require__(4);
+	var _buffers = __webpack_require__(6);
 
-	var _scheduler = __webpack_require__(17);
+	var _scheduler = __webpack_require__(19);
 
 	var CHANNEL_END_TYPE = '@@redux-saga/CHANNEL_END';
 	var END = exports.END = { type: CHANNEL_END_TYPE };
@@ -4212,7 +4480,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 16 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4228,13 +4496,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.takeLatestHelper = takeLatestHelper;
 	exports.throttleHelper = throttleHelper;
 
-	var _channel = __webpack_require__(15);
+	var _channel = __webpack_require__(17);
 
 	var _utils = __webpack_require__(2);
 
-	var _io = __webpack_require__(5);
+	var _io = __webpack_require__(7);
 
-	var _buffers = __webpack_require__(4);
+	var _buffers = __webpack_require__(6);
 
 	var done = { done: true, value: undefined };
 	var qEnd = {};
@@ -4393,7 +4661,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var throttle = exports.throttle = (0, _utils.deprecate)(throttleHelper, deprecationWarning('throttle'));
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -4459,7 +4727,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 18 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {// This method of obtaining a reference to the global object needs to be
@@ -4480,7 +4748,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Force reevalutation of runtime.js.
 	g.regeneratorRuntime = undefined;
 
-	module.exports = __webpack_require__(19);
+	module.exports = __webpack_require__(21);
 
 	if (hadRuntime) {
 	  // Restore the original runtime.
@@ -4497,7 +4765,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 19 */
+/* 21 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
@@ -5240,7 +5508,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {

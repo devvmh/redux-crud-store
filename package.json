@@ -1,6 +1,6 @@
 {
   "name": "redux-crud-store",
-  "version": "5.4.1",
+  "version": "5.5.0",
   "description": "Store of server-side models for Redux single page applications",
   "main": "lib/index.js",
   "jsnext:main": "es/index.js",
