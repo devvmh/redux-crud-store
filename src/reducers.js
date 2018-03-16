@@ -109,7 +109,7 @@ function byIdReducerImpl(state = byIdInitialState, action) {
         [id]: {
           fetchTime: action.meta.fetchTime,
           error: null,
-          record: action.payload
+          record: ('data' in action.payload) ? action.payload.data : action.payload
         }
       })
     case DELETE_SUCCESS:
@@ -156,7 +156,7 @@ function collectionReducerImpl(state = collectionInitialState, action) {
           or
 
           [ ... ]
-        
+
           Here are the contents of your action:`)
         devMessage(JSON.stringify(action))
       }
