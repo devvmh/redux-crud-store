@@ -109,7 +109,7 @@ function byIdReducerImpl() {
       return Object.assign({}, state, _defineProperty({}, id, {
         fetchTime: action.meta.fetchTime,
         error: null,
-        record: action.payload
+        record: 'data' in action.payload ? action.payload.data : action.payload
       }));
     case _actionTypes.DELETE_SUCCESS:
       newState = Object.assign({}, state);
@@ -149,7 +149,7 @@ function collectionReducerImpl() {
       var otherInfo = 'data' in originalPayload ? Object.assign({}, originalPayload) : {};
       delete otherInfo.data;
       if (!Array.isArray(payload)) {
-        (0, _devMessage2.default)('\n          Payload is not an array! Your server response for a FETCH action\n          should be in one of the following forms:\n\n          { data: [ ... ] }\n\n          or\n\n          [ ... ]\n        \n          Here are the contents of your action:');
+        (0, _devMessage2.default)('\n          Payload is not an array! Your server response for a FETCH action\n          should be in one of the following forms:\n\n          { data: [ ... ] }\n\n          or\n\n          [ ... ]\n\n          Here are the contents of your action:');
         (0, _devMessage2.default)(JSON.stringify(action));
       }
       var ids = payload.map(function (elt) {
