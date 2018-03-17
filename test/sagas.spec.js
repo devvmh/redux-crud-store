@@ -66,7 +66,7 @@ describe('apiGeneric', () => {
     const gen = apiGeneric(apiClient)(fetchWidgets(1))
     const apiCall = gen.next().value
     expect(apiCall).toEqual(
-      call(apiClient.get, '/widgets', {
+      call([apiClient, apiClient.get], '/widgets', {
         params: { page: 1 },
         data: undefined,
         fetchConfig: undefined
